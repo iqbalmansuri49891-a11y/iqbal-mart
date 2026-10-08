@@ -8,6 +8,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
     <div class="max-w-6xl mx-auto">
+        <!-- Header -->
         <header class="flex justify-between items-center mb-8 bg-white p-4 rounded-lg shadow">
             <h1 class="text-2xl font-bold text-gray-800">🛍️ Iqbal Mart Admin Dashboard</h1>
             <span class="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">Live Mode / Payout Panel</span>
@@ -31,7 +32,6 @@
                         </tr>
                     </thead>
                     <tbody id="vendor-banks-list" class="text-gray-700 text-sm divide-y divide-gray-200">
-                        <!-- Data Firebase se yahan load hoga -->
                         <tr>
                             <td colspan="5" class="py-4 text-center text-gray-500">Loading vendor bank details...</td>
                         </tr>
@@ -57,7 +57,6 @@
                         </tr>
                     </thead>
                     <tbody id="products-list" class="text-gray-700 text-sm divide-y divide-gray-200">
-                        <!-- Products data Firebase se yahan load hoga -->
                         <tr>
                             <td colspan="4" class="py-4 text-center text-gray-500">Loading products...</td>
                         </tr>
@@ -67,10 +66,81 @@
         </div>
     </div>
 
-    <!-- Firebase Script Integration (Modular ya CDN version aapke project ke mutabiq) -->
+    <!-- Firebase Script Integration -->
     <script type="module">
-        // Apke Firebase config ke sath yahan data fetch karne ka logic aayega
-        // Jaise hi aap isse project mein integrate karenge, yeh `vendor_banks` aur `products` collection se data uthakar table mein dikha dega.
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Apni Firebase configuration yahan daalein
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadVendorBanks() {
+            const tableBody = document.getElementById("vendor-banks-list");
+            try {
+                const querySnapshot = await getDocs(collection(db, "vendor_banks"));
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili.</td></tr>`;
+                    return;
+                }
+                tableBody.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    tableBody.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-6 font-mono text-xs text-gray-600">${doc.id}</td>
+                            <td class="py-3 px-6 font-medium text-gray-800">${data.accountHolder || 'N/A'}</td>
+                            <td class="py-3 px-6 font-mono">${data.accountNumber || 'N/A'}</td>
+                            <td class="py-3 px-6 font-mono uppercase">${data.ifscCode || 'N/A'}</td>
+                            <td class="py-3 px-6 font-mono text-blue-600">${data.upiId || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error loading vendor banks:", error);
+                tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-red-500">Data load karne mein error aaya.</td></tr>`;
+            }
+        }
+
+        async function loadProducts() {
+            const tableBody = document.getElementById("products-list");
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                if (querySnapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-500">Koi products upload nahi hue hain.</td></tr>`;
+                    return;
+                }
+                tableBody.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    tableBody.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-6 font-medium text-gray-800">${data.name || 'N/A'}</td>
+                            <td class="py-3 px-6 text-gray-600">${data.category || 'N/A'}</td>
+                            <td class="py-3 px-6 font-semibold text-green-600">₹${data.price || '0'}</td>
+                            <td class="py-3 px-6 text-gray-500 text-xs">${data.sellerEmail || data.vendorEmail || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error loading products:", error);
+                tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-red-500">Products load karne mein error aaya.</td></tr>`;
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            loadVendorBanks();
+            loadProducts();
+        });
     </script>
 </body>
 </html>
