@@ -52,7 +52,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
 /* PRODUCTS */
 .section { max-width: 1200px; margin: 15px auto; padding: 0 12px; }
-.section-title { background: var(--card); padding: 15px; border-bottom: 1px solid var(--border); font-size: 20px; font-weight: bold; }
+.section-title { background: var(--card); padding: 15px; border-bottom: 1px solid var(--border); font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
 .products { background: var(--card); padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
 .product { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--card); transition: .2s; cursor: pointer; position: relative; }
 .product:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,.12); }
@@ -98,7 +98,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 .qr-box { text-align: center; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px dashed var(--blue); }
 .qr-box img { width: 180px; height: 180px; border-radius: 8px; margin: 10px 0; }
 .upi-id { font-weight: bold; background: #e0edff; padding: 6px 12px; border-radius: 4px; display: inline-block; color: var(--blue); margin-bottom: 8px; }
-.input-field { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; font-size: 14px; }
+.input-field, .select-field { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; font-size: 14px; background: var(--card); color: var(--text); }
 
 /* BOTTOM NAV & RESPONSIVE */
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 62px; background: var(--card); border-top: 1px solid var(--border); display: none; z-index: 1500; justify-content: space-around; }
@@ -166,7 +166,10 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
 <!-- PRODUCTS SECTION -->
 <section class="section" id="productsSection">
-  <div class="section-title"><span id="sectionTitle">Best Deals</span></div>
+  <div class="section-title">
+    <span id="sectionTitle">Best Deals</span>
+    <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product (Seller)</button>
+  </div>
   <div class="products" id="productGrid"></div>
 </section>
 
@@ -185,7 +188,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- PRODUCT MODAL -->
+<!-- PRODUCT DETAILS MODAL -->
 <div class="modal-bg" id="productModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeProductModal()">×</button>
@@ -236,6 +239,31 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
+<!-- ADD PRODUCT MODAL (SELLER DASHBOARD) -->
+<div class="modal-bg" id="addProductModal">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
+    <h2>📦 Upload New Product</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">List your item on Iqbal Mart marketplace</p>
+
+    <input type="text" id="newProdName" class="input-field" placeholder="Product Name (e.g. Copper Wire)">
+    <select id="newProdCategory" class="select-field">
+      <option value="Electrical">Electrical</option>
+      <option value="Plumbing">Plumbing</option>
+      <option value="Mobiles">Mobiles</option>
+      <option value="Furniture">Furniture</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Grocery">Grocery</option>
+    </select>
+    <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹ (e.g. 599)">
+    <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹ (e.g. 999)">
+    <input type="text" id="newProdEmoji" class="input-field" placeholder="Emoji Icon (e.g. ⚡ or 🔌)">
+    <input type="text" id="newProdDesc" class="input-field" placeholder="Short description...">
+
+    <button class="add-cart" onclick="submitNewProduct()">PUBLISH PRODUCT</button>
+  </div>
+</div>
+
 <!-- ORDERS MODAL -->
 <div class="modal-bg" id="ordersModal">
   <div class="modal">
@@ -259,7 +287,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <!-- FIREBASE MODULE INTEGRATION -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyALVuRv4qKbafSKz9ZqULjuvENYXtTXFvc",
@@ -274,6 +302,23 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // Global cache for verified sellers
+  window.verifiedSellersList = [];
+
+  // Fetch Sellers List to verify subscription
+  window.fetchVerifiedSellers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "sellers"));
+      window.verifiedSellersList = [];
+      querySnapshot.forEach((doc) => {
+        window.verifiedSellersList.push(doc.data().sellerPhone);
+      });
+    } catch (e) {
+      console.log("Error fetching sellers:", e);
+    }
+  };
+
+  // Save Subscription & Notify via WhatsApp
   window.saveSellerSubscription = async (planName, planPrice, phone, utr) => {
     try {
       const docRef = await addDoc(collection(db, "sellers"), {
@@ -285,21 +330,53 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
         createdAt: new Date()
       });
       
-      // WhatsApp Notification Alert for Admin (Aapke Number par)
-      const adminWhatsAppNumber = "919714739355"; // Yahan aap apna WhatsApp number daal sakte hain
+      const adminWhatsAppNumber = "919714739355";
       const message = `🔔 *New Seller Subscription!*%0A%0A*Plan:* ${planName}%0A*Price:* ₹${planPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}%0A*Ref ID:* ${docRef.id}`;
       
-      alert("✅ Payment details submitted successfully! Redirecting to WhatsApp for notification...");
+      alert("✅ Payment details submitted successfully! Redirecting to WhatsApp...");
       closeSellerModal();
-
-      // Open WhatsApp to send notification to Admin
       window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
-
+      window.fetchVerifiedSellers(); // Refresh list
     } catch (e) {
       console.error("Firestore Error: ", e);
       alert("❌ Firestore Error: " + e.message);
     }
   };
+
+  // Save New Product to Firestore
+  window.saveProductToFirestore = async (productData) => {
+    try {
+      const docRef = await addDoc(collection(db, "products"), {
+        ...productData,
+        createdAt: new Date()
+      });
+      alert("✅ Product published successfully on Iqbal Mart!");
+      closeAddProductModal();
+      window.loadFirebaseProducts();
+    } catch (e) {
+      console.error("Error adding product: ", e);
+      alert("❌ Error: " + e.message);
+    }
+  };
+
+  // Fetch Products from Firestore
+  window.loadFirebaseProducts = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const firebaseProducts = [];
+      querySnapshot.forEach((doc) => {
+        firebaseProducts.push({ id: doc.id, ...doc.data() });
+      });
+      if(firebaseProducts.length > 0) {
+        window.mergeProducts(firebaseProducts);
+      }
+    } catch (e) {
+      console.log("Error loading products:", e);
+    }
+  };
+
+  window.loadFirebaseProducts();
+  window.fetchVerifiedSellers();
 </script>
 
 <script>
@@ -331,19 +408,34 @@ function submitSubscription() {
     return;
   }
   if(!utr || utr.length < 6) {
-    alert("Please enter valid Transaction UTR / Ref Number from your GPay/PhonePe.");
+    alert("Please enter valid Transaction UTR / Ref Number.");
     return;
   }
 
   if (window.saveSellerSubscription) {
     window.saveSellerSubscription(selectedPlanName, selectedPlanPrice, phone, utr);
   } else {
-    alert("Subscription module loading... please retry.");
+    alert("Module loading... please retry.");
   }
 }
 
-/* ALL PRODUCTS */
-const products = [
+// SECURE VERIFICATION FOR ADDING PRODUCT
+function verifyAndOpenAddProduct() {
+  const sellerPhoneInput = prompt("Enter your registered Seller WhatsApp/Mobile number to upload product:");
+  if (!sellerPhoneInput) return;
+
+  const cleanPhone = sellerPhoneInput.trim();
+  
+  // Check if phone exists in verified list
+  if (window.verifiedSellersList && window.verifiedSellersList.includes(cleanPhone)) {
+    document.getElementById("addProductModal").style.display = "flex";
+  } else {
+    alert("❌ Access Denied! Yeh mobile number registered nahi hai ya subscription pending hai. Pehle 'Sell Products' par click karke payment karein!");
+  }
+}
+
+/* INITIAL STATIC PRODUCTS */
+const staticProducts = [
   { id: 1, name: "Smartphone Pro 5G", category: "Mobiles", price: 14999, oldPrice: 19999, rating: 4.5, emoji: "📱", description: "5G smartphone with smooth performance and clear camera." },
   { id: 2, name: "Modular Switch Board Set", category: "Electrical", price: 499, oldPrice: 899, rating: 4.6, emoji: "🔌", description: "Heavy-duty copper switches and sockets for home wiring." },
   { id: 3, name: "CPVC Pipe & Fitting Kit", category: "Plumbing", price: 1299, oldPrice: 1999, rating: 4.4, emoji: "🔧", description: "High-grade leak-proof plumbing fittings and pipes." },
@@ -356,11 +448,18 @@ const products = [
   { id: 10, name: "Wooden Study Table", category: "Furniture", price: 3499, oldPrice: 5999, rating: 4.4, emoji: "🪑", description: "Durable wooden study and office table." }
 ];
 
+let products = [...staticProducts];
 let cart = JSON.parse(localStorage.getItem("iqbal_cart") || "[]");
 let wishlist = JSON.parse(localStorage.getItem("iqbal_wishlist") || "[]");
 let orders = JSON.parse(localStorage.getItem("iqbal_orders") || "[]");
 let currentProducts = [...products];
 let selectedProduct = null;
+
+window.mergeProducts = function(firebaseList) {
+  products = [...firebaseList, ...staticProducts];
+  currentProducts = [...products];
+  renderProducts(currentProducts);
+}
 
 function renderProducts(list = currentProducts) {
   const grid = document.getElementById("productGrid");
@@ -369,19 +468,18 @@ function renderProducts(list = currentProducts) {
     return;
   }
   grid.innerHTML = list.map(product => {
-    const discount = Math.round((1 - product.price / product.oldPrice) * 100);
+    const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 10;
     const liked = wishlist.includes(product.id);
     return `
-      <div class="product" onclick="openProduct(${product.id})">
-        <button class="wishlist" onclick="toggleWishlist(event, ${product.id})">${liked ? "❤️" : "♡"}</button>
-        <div class="product-img">${product.emoji}</div>
+      <div class="product" onclick="openProduct('${product.id}')">
+        <button class="wishlist" onclick="toggleWishlist(event, '${product.id}')">${liked ? "❤️" : "♡"}</button>
+        <div class="product-img">${product.emoji || '📦'}</div>
         <div class="product-info">
           <div class="product-name">${product.name}</div>
-          <span class="rating">⭐ ${product.rating}</span>
+          <span class="rating">⭐ ${product.rating || 4.5}</span>
           <div>
             <span class="price">₹${product.price.toLocaleString("en-IN")}</span>
-            <span class="old-price">₹${product.oldPrice.toLocaleString("en-IN")}</span>
-            <span class="discount">${discount}% off</span>
+            ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice.toLocaleString("en-IN")}</span><span class="discount">${discount}% off</span>` : ''}
           </div>
         </div>
       </div>
@@ -394,30 +492,28 @@ function searchProducts() {
   currentProducts = products.filter(product =>
     product.name.toLowerCase().includes(query) || product.category.toLowerCase().includes(query)
   );
-  document.getElementById("sectionTitle").textContent = query ? `Search: ${query}` : "Best Deals";
+  document.getElementById("sectionTitle").innerHTML = `<span id="sectionTitleText">${query ? `Search: ${query}` : "Best Deals"}</span>`;
   renderProducts(currentProducts);
 }
 
 function filterCategory(category) {
   if (category === "All") {
     currentProducts = [...products];
-    document.getElementById("sectionTitle").textContent = "Best Deals";
   } else {
     currentProducts = products.filter(p => p.category === category);
-    document.getElementById("sectionTitle").textContent = category;
   }
   renderProducts(currentProducts);
   document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
 }
 
 function openProduct(id) {
-  selectedProduct = products.find(p => p.id === id);
+  selectedProduct = products.find(p => p.id == id);
   if (!selectedProduct) return;
-  document.getElementById("modalEmoji").textContent = selectedProduct.emoji;
+  document.getElementById("modalEmoji").textContent = selectedProduct.emoji || '📦';
   document.getElementById("modalName").textContent = selectedProduct.name;
-  document.getElementById("modalRating").textContent = `⭐ ${selectedProduct.rating} Rating`;
+  document.getElementById("modalRating").textContent = `⭐ ${selectedProduct.rating || 4.5} Rating`;
   document.getElementById("modalPrice").textContent = selectedProduct.price.toLocaleString("en-IN");
-  document.getElementById("modalDescription").textContent = selectedProduct.description;
+  document.getElementById("modalDescription").textContent = selectedProduct.description || 'Verified product listing.';
   document.getElementById("productModal").style.display = "flex";
 }
 function closeProductModal() { document.getElementById("productModal").style.display = "none"; }
@@ -426,8 +522,30 @@ function addModalProduct() { if (!selectedProduct) return; addToCart(selectedPro
 function showSellerModal() { document.getElementById("sellerModal").style.display = "flex"; }
 function closeSellerModal() { document.getElementById("sellerModal").style.display = "none"; }
 
+function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
+
+function submitNewProduct() {
+  const name = document.getElementById("newProdName").value.trim();
+  const category = document.getElementById("newProdCategory").value;
+  const price = Number(document.getElementById("newProdPrice").value);
+  const oldPrice = Number(document.getElementById("newProdOldPrice").value) || price + 500;
+  const emoji = document.getElementById("newProdEmoji").value.trim() || "🛍️";
+  const description = document.getElementById("newProdDesc").value.trim() || "Seller uploaded product item.";
+
+  if(!name || !price) {
+    alert("Please enter valid Product Name and Price.");
+    return;
+  }
+
+  if (window.saveProductToFirestore) {
+    window.saveProductToFirestore({ name, category, price, oldPrice, emoji, description, rating: 4.6 });
+  } else {
+    alert("Database connection loading... please retry.");
+  }
+}
+
 function addToCart(id) {
-  const existing = cart.find(item => item.id === id);
+  const existing = cart.find(item => item.id == id);
   if (existing) { existing.qty++; } else { cart.push({ id: id, qty: 1 }); }
   saveCart();
   showToast("🛒 Added to cart");
@@ -451,21 +569,21 @@ function renderCart() {
   }
   let total = 0;
   container.innerHTML = cart.map(item => {
-    const product = products.find(p => p.id === item.id);
+    const product = products.find(p => p.id == item.id);
     if (!product) return "";
     total += product.price * item.qty;
     return `
       <div class="cart-item">
-        <div class="cart-emoji">${product.emoji}</div>
+        <div class="cart-emoji">${product.emoji || '📦'}</div>
         <div class="cart-details">
           <div class="cart-name">${product.name}</div>
           <b>₹${product.price.toLocaleString("en-IN")}</b><br><br>
           <div class="qty">
-            <button onclick="changeQty(${product.id}, -1)">−</button>
+            <button onclick="changeQty('${product.id}', -1)">−</button>
             <span>${item.qty}</span>
-            <button onclick="changeQty(${product.id}, 1)">+</button>
+            <button onclick="changeQty('${product.id}', 1)">+</button>
           </div><br>
-          <button class="remove" onclick="removeFromCart(${product.id})">Remove</button>
+          <button class="remove" onclick="removeFromCart('${product.id}')">Remove</button>
         </div>
       </div>
     `;
@@ -474,22 +592,22 @@ function renderCart() {
 }
 
 function changeQty(id, change) {
-  const item = cart.find(i => i.id === id);
+  const item = cart.find(i => i.id == id);
   if (!item) return;
   item.qty += change;
-  if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+  if (item.qty <= 0) cart = cart.filter(i => i.id != id);
   saveCart(); renderCart();
 }
 function removeFromCart(id) {
-  cart = cart.filter(item => item.id !== id);
+  cart = cart.filter(item => item.id != id);
   saveCart(); renderCart(); showToast("Product removed");
 }
 
 function checkout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
   const total = cart.reduce((sum, item) => {
-    const product = products.find(p => p.id === item.id);
-    return sum + product.price * item.qty;
+    const product = products.find(p => p.id == item.id);
+    return sum + (product ? product.price * item.qty : 0);
   }, 0);
   const order = { id: "ORD" + Date.now(), date: new Date().toLocaleString(), items: [...cart], total: total, status: "Order Placed" };
   orders.unshift(order);
@@ -515,10 +633,10 @@ function showOrders() {
 }
 function closeOrders() { document.getElementById("ordersModal").style.display = "none"; }
 
-function toggleWishlist(entry, id) {
-  if(entry) entry.stopPropagation();
+function toggleWishlist(event, id) {
+  if(event) event.stopPropagation();
   if (wishlist.includes(id)) {
-    wishlist = wishlist.filter(x => x !== id);
+    wishlist = wishlist.filter(x => x != id);
     showToast("Removed from wishlist");
   } else {
     wishlist.push(id);
@@ -530,7 +648,7 @@ function toggleWishlist(entry, id) {
 
 function showWishlist() {
   const list = products.filter(p => wishlist.includes(p.id));
-  document.getElementById("sectionTitle").textContent = "❤️ Wishlist";
+  document.getElementById("sectionTitle").innerHTML = `<span id="sectionTitleText">❤️ Wishlist</span>`;
   currentProducts = list; renderProducts(list);
   document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
 }
