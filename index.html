@@ -201,8 +201,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="modal-bg" id="directPayModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeDirectPayModal()">×</button>
-    <h2>⚡ Strict UPI Verification</h2>
-    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">QR scan karke payment karein aur kam se kam 12-digit ka asli UTR No. dalein, tabhi order aage badhega!</p>
+    <h2>🛡️ 100% Safe Payment Verification</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">QR scan karke payment karein, 12-digit UTR dalein aur payment ka **Screenshot upload karein**, tabhi order aage badhega!</p>
 
     <div class="qr-box">
       <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
@@ -214,9 +214,13 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <input type="text" id="custName" class="input-field" placeholder="Enter Your Name">
     <input type="text" id="custPhone" class="input-field" placeholder="Enter Your Mobile / WhatsApp Number">
     <input type="text" id="custAddress" class="input-field" placeholder="Enter Delivery Address">
-    <input type="text" id="custUtr" class="input-field" placeholder="Enter 12-Digit UPI UTR No. (Strictly Required)">
+    <input type="text" id="custUtr" class="input-field" placeholder="Enter 12-Digit UPI UTR No. (Required)">
+    
+    <!-- PAYMENT SCREENSHOT UPLOAD -->
+    <label style="display:block; margin-top:12px; font-size:13px; font-weight:bold; color:var(--muted);">Upload Payment Screenshot (Required):</label>
+    <input type="file" id="custPaymentProof" class="input-field" accept="image/*">
 
-    <button class="add-cart" onclick="confirmAndSendOrder()">SUBMIT UTR & NOTIFY ADMIN</button>
+    <button class="add-cart" onclick="confirmAndSendOrder()">SUBMIT PROOF & NOTIFY ADMIN</button>
   </div>
 </div>
 
@@ -311,7 +315,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
     <h2>📦 My Orders & Admin Approvals</h2>
-    <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Bank account mein paisa confirm karne ke baad hi order approve karein.</p>
+    <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Screenshot aur Bank Balance match karne ke baad hi order approve karein.</p>
     <div id="ordersContent"></div>
   </div>
 </div>
@@ -445,9 +449,8 @@ function submitSubscription() {
     alert("Please enter a valid WhatsApp/Mobile number.");
     return;
   }
-  // STRICT 12-DIGIT CHECK FOR SELLER SUBSCRIPTION
   if(!utr || utr.length < 12) {
-    alert("❌ Invalid UTR! Asli UPI payment ka kam se kam 12-digit ka UTR number daalna zaroori hai.");
+    alert("❌ Invalid UTR! Asli UPI payment ka 12-digit ka UTR number daalna zaroori hai.");
     return;
   }
 
@@ -703,43 +706,54 @@ function confirmAndSendOrder() {
   const phone = document.getElementById("custPhone").value.trim();
   const address = document.getElementById("custAddress").value.trim();
   const utr = document.getElementById("custUtr").value.trim();
+  const proofInput = document.getElementById("custPaymentProof");
 
   if (!name || !phone || !address) {
     alert("Please fill in your Name, Phone Number, and Address.");
     return;
   }
 
-  // STRICT 12-DIGIT VALIDATION: 123456 jaisa chota number reject ho jayega
   if (!utr || utr.length < 12) {
-    alert("❌ Invalid UTR! Asli UPI transaction ka kam se kam 12-digit ka UTR number daalna zaroori hai (jaise 123456789012).");
+    alert("❌ Invalid UTR! Asli 12-digit ka UPI UTR number daalna zaroori hai.");
     return;
   }
 
-  let total = 0;
-  let itemsList = "";
-  cart.forEach(item => {
-    const product = products.find(p => p.id == item.id);
-    if (product) {
-      total += product.price * item.qty;
-      itemsList += `• ${product.name} (x${item.qty}) - ₹${product.price * item.qty}%0A`;
-    }
-  });
+  if (!proofInput.files || !proofInput.files[0]) {
+    alert("❌ Payment Screenshot upload karna zaroori hai taaki aapki payment verify ho sake!");
+    return;
+  }
 
-  const orderId = "ORD" + Date.now();
-  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "⏳ Payment Verification Pending (Admin Approval Needed)", utr: utr, name: name, phone: phone };
-  orders.unshift(order);
-  localStorage.setItem("iqbal_orders", JSON.stringify(orders));
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const proofBase64 = e.target.result;
 
-  const adminWhatsAppNumber = "919714739355";
-  const message = `🔔 *New Order Verification Needed - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A*Submitted UTR:* ${utr}%0A%0A*Items:*%0A${itemsList}%0A*Total Amount:* ₹${total}%0A%0A⚠️ *Please check your bank app. Once payment received, approve from 'My Orders'.*`;
+    let total = 0;
+    let itemsList = "";
+    cart.forEach(item => {
+      const product = products.find(p => p.id == item.id);
+      if (product) {
+        total += product.price * item.qty;
+        itemsList += `• ${product.name} (x${item.qty}) - ₹${product.price * item.qty}%0A`;
+      }
+    });
 
-  cart = []; 
-  saveCart(); 
-  updateCartCount();
-  closeDirectPayModal();
+    const orderId = "ORD" + Date.now();
+    const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "⏳ Payment Verification Pending (Admin Approval Needed)", utr: utr, name: name, phone: phone, proof: proofBase64 };
+    orders.unshift(order);
+    localStorage.setItem("iqbal_orders", JSON.stringify(orders));
 
-  window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
-  showOrders();
+    const adminWhatsAppNumber = "919714739355";
+    const message = `🔔 *New Order Verification Needed - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A*UTR No:* ${utr}%0A%0A*Items:*%0A${itemsList}%0A*Total Amount:* ₹${total}%0A%0A⚠️ *Customer ne payment screenshot upload kar diya hai. Bank account mein check karke 'My Orders' se approve karein.*`;
+
+    cart = []; 
+    saveCart(); 
+    updateCartCount();
+    closeDirectPayModal();
+
+    window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
+    showOrders();
+  };
+  reader.readAsDataURL(proofInput.files[0]);
 }
 
 function approveOrder(orderId) {
@@ -762,6 +776,7 @@ function showOrders() {
         <b>${order.id}</b><br><small>${order.date}</small>
         <p style="margin:6px 0;">Customer: <b>${order.name || 'N/A'}</b> (${order.phone || 'N/A'})</p>
         <p style="margin:6px 0;">UTR No: <b>${order.utr || 'N/A'}</b></p>
+        ${order.proof ? `<div style="margin:8px 0;"><a href="${order.proof}" target="_blank"><img src="${order.proof}" style="width:70px; height:70px; object-fit:cover; border-radius:4px; border:1px solid var(--border);" alt="Payment Proof"></a><br><small style="color:var(--blue);">🔍 Click image to view full screenshot</small></div>` : ''}
         <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
         <p style="margin:6px 0; font-size:13px;">Status: <b style="color:${order.status.includes('Approved') ? 'var(--green)' : 'var(--orange)'};">${order.status}</b></p>
         ${!order.status.includes('Approved') ? `<button onclick="approveOrder('${order.id}')" style="margin-top:8px; background:var(--green); color:white; border:0; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Approve Payment Received</button>` : ''}
