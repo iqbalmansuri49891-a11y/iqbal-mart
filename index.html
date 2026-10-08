@@ -1,1525 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Iqbal Mart</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    :root {
-      --blue: #2874f0;
-      --yellow: #ffc107;
-      --bg: #f1f3f6;
-      --card: #fff;
-      --text: #212121;
-      --muted: #777;
-      --border: #e0e0e0;
-      --green: #008c45;
-    }
-
-    body.dark {
-      --bg: #111827;
-      --card: #1f2937;
-      --text: #f9fafb;
-      --muted: #cbd5e1;
-      --border: #374151;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      padding-bottom: 70px;
-    }
-
-    /* HEADER */
-    header {
-      background: var(--blue);
-      color: white;
-      padding: 10px 14px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 8px rgba(0,0,0,.2);
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    .logo {
-      font-size: 23px;
-      font-weight: bold;
-      white-space: nowrap;
-    }
-
-    .logo span {
-      color: var(--yellow);
-    }
-
-    .search {
-      flex: 1;
-      display: flex;
-      background: white;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .search input {
-      width: 100%;
-      border: 0;
-      outline: none;
-      padding: 12px;
-      font-size: 15px;
-      color: #222;
-    }
-
-    .search button {
-      width: 48px;
-      border: 0;
-      background: white;
-      color: var(--blue);
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .header-btn {
-      background: transparent;
-      border: 0;
-      color: white;
-      font-size: 14px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    /* CATEGORY BAR */
-    .categories {
-      background: var(--card);
-      display: flex;
-      gap: 22px;
-      padding: 12px 15px;
-      overflow-x: auto;
-      border-bottom: 1px solid var(--border);
-      scrollbar-width: none;
-    }
-
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
-
-    .category {
-      min-width: 70px;
-      text-align: center;
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text);
-    }
-
-    .category-icon {
-      width: 48px;
-      height: 48px;
-      margin: auto auto 5px;
-      border-radius: 50%;
-      background: #eef4ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 25px;
-    }
-
-    /* HERO */
-    .hero {
-      max-width: 1200px;
-      margin: 12px auto;
-      padding: 0 12px;
-    }
-
-    .hero-box {
-      min-height: 180px;
-      border-radius: 8px;
-      padding: 30px;
-      background: linear-gradient(110deg, #2874f0, #6aa0ff);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      overflow: hidden;
-    }
-
-    .hero h1 {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
-
-    .hero p {
-      margin-bottom: 15px;
-    }
-
-    .shop-btn {
-      border: 0;
-      background: var(--yellow);
-      padding: 11px 18px;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .hero-icon {
-      font-size: 95px;
-      opacity: .9;
-    }
-
-    /* PRODUCTS */
-    .section {
-      max-width: 1200px;
-      margin: 15px auto;
-      padding: 0 12px;
-    }
-
-    .section-title {
-      background: var(--card);
-      padding: 15px;
-      border-bottom: 1px solid var(--border);
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .products {
-      background: var(--card);
-      padding: 12px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .product {
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      overflow: hidden;
-      background: var(--card);
-      transition: .2s;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .product:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(0,0,0,.12);
-    }
-
-    .product-img {
-      height: 170px;
-      background: #f8fafc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 75px;
-    }
-
-    .product-info {
-      padding: 10px;
-    }
-
-    .product-name {
-      font-size: 14px;
-      min-height: 38px;
-      line-height: 19px;
-    }
-
-    .rating {
-      display: inline-block;
-      background: var(--green);
-      color: white;
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-      margin: 6px 0;
-    }
-
-    .price {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .old-price {
-      color: var(--muted);
-      text-decoration: line-through;
-      font-size: 12px;
-      margin-left: 5px;
-    }
-
-    .discount {
-      color: var(--green);
-      font-size: 12px;
-      margin-left: 5px;
-    }
-
-    .wishlist {
-      position: absolute;
-      right: 8px;
-      top: 8px;
-      width: 32px;
-      height: 32px;
-      border: 0;
-      border-radius: 50%;
-      background: white;
-      font-size: 19px;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,.15);
-    }
-
-    /* CART DRAWER */
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.55);
-      z-index: 2000;
-    }
-
-    .cart {
-      position: absolute;
-      right: 0;
-      top: 0;
-      height: 100%;
-      width: min(420px, 94%);
-      background: var(--card);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .cart-header {
-      padding: 17px;
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      font-weight: bold;
-      font-size: 18px;
-    }
-
-    .close {
-      border: 0;
-      background: transparent;
-      font-size: 24px;
-      cursor: pointer;
-      color: var(--text);
-    }
-
-    .cart-items {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-    }
-
-    .cart-item {
-      display: flex;
-      gap: 10px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .cart-emoji {
-      width: 65px;
-      height: 65px;
-      background: #f4f6f8;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 35px;
-    }
-
-    .cart-details {
-      flex: 1;
-    }
-
-    .cart-name {
-      font-size: 14px;
-      margin-bottom: 6px;
-    }
-
-    .qty {
-      display: inline-flex;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .qty button {
-      border: 0;
-      background: var(--bg);
-      color: var(--text);
-      width: 30px;
-      height: 28px;
-      cursor: pointer;
-    }
-
-    .qty span {
-      width: 32px;
-      text-align: center;
-      line-height: 28px;
-    }
-
-    .remove {
-      border: 0;
-      background: transparent;
-      color: #e53935;
-      cursor: pointer;
-      margin-top: 5px;
-      font-size: 12px;
-    }
-
-    .cart-footer {
-      border-top: 1px solid var(--border);
-      padding: 15px;
-    }
-
-    .total {
-      display: flex;
-      justify-content: space-between;
-      font-size: 19px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-    .checkout {
-      width: 100%;
-      border: 0;
-      background: #ff9f00;
-      padding: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 4px;
-      color: #111;
-    }
-
-    /* MODAL */
-    .modal-bg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.6);
-      z-index: 3000;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-    }
-
-    .modal {
-      width: min(520px, 100%);
-      max-height: 90vh;
-      overflow-y: auto;
-      background: var(--card);
-      border-radius: 10px;
-      padding: 20px;
-      color: var(--text);
-      position: relative;
-    }
-
-    .modal-product {
-      text-align: center;
-    }
-
-    .big-product {
-      height: 210px;
-      background: #f8fafc;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 110px;
-      margin-bottom: 15px;
-    }
-
-    .modal h2 {
-      margin-bottom: 8px;
-    }
-
-    .modal-price {
-      font-size: 25px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-
-    .add-cart {
-      width: 100%;
-      border: 0;
-      padding: 14px;
-      background: var(--yellow);
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-
-    /* EMPTY */
-    .empty {
-      text-align: center;
-      padding: 40px 10px;
-      color: var(--muted);
-    }
-
-    /* BOTTOM NAV */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 62px;
-      background: var(--card);
-      border-top: 1px solid var(--border);
-      display: none;
-      z-index: 1500;
-      justify-content: space-around;
-    }
-
-    .bottom-nav button {
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .bottom-nav .nav-icon {
-      display: block;
-      font-size: 21px;
-      margin-bottom: 2px;
-    }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #222;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 6px;
-      opacity: 0;
-      pointer-events: none;
-      transition: .25s;
-      z-index: 5000;
-      white-space: nowrap;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .products {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 650px) {
-      body {
-        padding-bottom: 65px;
-      }
-
-      .topbar {
-        flex-wrap: wrap;
-      }
-
-      .logo {
-        font-size: 20px;
-      }
-
-      .header-btn {
-        display: none;
-      }
-
-      .search {
-        order: 2;
-        flex-basis: 100%;
-      }
-
-      .hero-box {
-        min-height: 160px;
-        padding: 22px;
-      }
-
-      .hero h1 {
-        font-size: 23px;
-      }
-
-      .hero-icon {
-        font-size: 65px;
-      }
-
-      .products {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        padding: 8px;
-      }
-
-      .product-img {
-        height: 140px;
-        font-size: 65px;
-      }
-
-      .section {
-        padding: 0 7px;
-      }
-
-      .bottom-nav {
-        display: flex;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iqbal Mart - Multi Vendor Marketplace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+:root {
+  --blue: #2874f0;
+  --yellow: #ffc107;
+  --bg: #f1f3f6;
+  --card: #fff;
+  --text: #212121;
+  --muted: #777;
+  --border: #e0e0e0;
+  --green: #008c45;
+}
+body.dark {
+  --bg: #111827;
+  --card: #1f2937;
+  --text: #f9fafb;
+  --muted: #cbd5e1;
+  --border: #374151;
+}
+body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
+
+/* HEADER */
+header { background: var(--blue); color: white; padding: 10px 14px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+.topbar { display: flex; align-items: center; gap: 10px; max-width: 1200px; margin: auto; }
+.logo { font-size: 23px; font-weight: bold; white-space: nowrap; }
+.logo span { color: var(--yellow); }
+.search { flex: 1; display: flex; background: white; border-radius: 4px; overflow: hidden; }
+.search input { width: 100%; border: 0; outline: none; padding: 12px; font-size: 15px; color: #222; }
+.search button { width: 48px; border: 0; background: white; color: var(--blue); font-size: 20px; cursor: pointer; }
+.header-btn { background: transparent; border: 0; color: white; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.seller-btn { background: var(--yellow); color: #111; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+
+/* CATEGORY BAR */
+.categories { background: var(--card); display: flex; gap: 22px; padding: 12px 15px; overflow-x: auto; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+.categories::-webkit-scrollbar { display: none; }
+.category { min-width: 70px; text-align: center; cursor: pointer; font-size: 13px; color: var(--text); }
+.category-icon { width: 48px; height: 48px; margin: auto auto 5px; border-radius: 50%; background: #eef4ff; display: flex; align-items: center; justify-content: center; font-size: 25px; }
+
+/* HERO */
+.hero { max-width: 1200px; margin: 12px auto; padding: 0 12px; }
+.hero-box { min-height: 180px; border-radius: 8px; padding: 30px; background: linear-gradient(110deg, #2874f0, #6aa0ff); color: white; display: flex; align-items: center; justify-content: space-between; overflow: hidden; }
+.hero h1 { font-size: 30px; margin-bottom: 8px; }
+.hero p { margin-bottom: 15px; }
+.shop-btn { border: 0; background: var(--yellow); padding: 11px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.hero-icon { font-size: 95px; opacity: .9; }
+
+/* PRODUCTS */
+.section { max-width: 1200px; margin: 15px auto; padding: 0 12px; }
+.section-title { background: var(--card); padding: 15px; border-bottom: 1px solid var(--border); font-size: 20px; font-weight: bold; }
+.products { background: var(--card); padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.product { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--card); transition: .2s; cursor: pointer; position: relative; }
+.product:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,.12); }
+.product-img { height: 170px; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 75px; }
+.product-info { padding: 10px; }
+.product-name { font-size: 14px; min-height: 38px; line-height: 19px; }
+.rating { display: inline-block; background: var(--green); color: white; padding: 3px 6px; border-radius: 4px; font-size: 12px; margin: 6px 0; }
+.price { font-size: 18px; font-weight: bold; }
+.old-price { color: var(--muted); text-decoration: line-through; font-size: 12px; margin-left: 5px; }
+.discount { color: var(--green); font-size: 12px; margin-left: 5px; }
+.wishlist { position: absolute; right: 8px; top: 8px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: white; font-size: 19px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+
+/* CART DRAWER */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 2000; }
+.cart { position: absolute; right: 0; top: 0; height: 100%; width: min(420px, 94%); background: var(--card); color: var(--text); display: flex; flex-direction: column; }
+.cart-header { padding: 17px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); font-weight: bold; font-size: 18px; }
+.close { border: 0; background: transparent; font-size: 24px; cursor: pointer; color: var(--text); }
+.cart-items { flex: 1; overflow-y: auto; padding: 12px; }
+.cart-item { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.cart-emoji { width: 65px; height: 65px; background: #f4f6f8; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 35px; }
+.cart-details { flex: 1; }
+.cart-name { font-size: 14px; margin-bottom: 6px; }
+.qty { display: inline-flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.qty button { border: 0; background: var(--bg); color: var(--text); width: 30px; height: 28px; cursor: pointer; }
+.qty span { width: 32px; text-align: center; line-height: 28px; }
+.remove { border: 0; background: transparent; color: #e53935; cursor: pointer; margin-top: 5px; font-size: 12px; }
+.cart-footer { border-top: 1px solid var(--border); padding: 15px; }
+.total { display: flex; justify-content: space-between; font-size: 19px; font-weight: bold; margin-bottom: 12px; }
+.checkout { width: 100%; border: 0; background: #ff9f00; padding: 14px; font-weight: bold; cursor: pointer; border-radius: 4px; color: #111; }
+
+/* MODALS */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
+.modal { width: min(520px, 100%); max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 10px; padding: 20px; color: var(--text); position: relative; }
+.modal-product { text-align: center; }
+.big-product { height: 210px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 110px; margin-bottom: 15px; }
+.modal h2 { margin-bottom: 8px; }
+.modal-price { font-size: 25px; font-weight: bold; margin: 10px 0; }
+.add-cart { width: 100%; border: 0; padding: 14px; background: var(--yellow); border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+
+/* SUBSCRIPTION CARDS */
+.plan-card { border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-top: 10px; text-align: left; cursor: pointer; transition: 0.2s; }
+.plan-card.active { border: 2px solid var(--blue); background: #f0f7ff; }
+
+/* BOTTOM NAV & RESPONSIVE */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 62px; background: var(--card); border-top: 1px solid var(--border); display: none; z-index: 1500; justify-content: space-around; }
+.bottom-nav button { border: 0; background: transparent; color: var(--muted); font-size: 11px; cursor: pointer; }
+.bottom-nav .nav-icon { display: block; font-size: 21px; margin-bottom: 2px; }
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: #222; color: white; padding: 12px 18px; border-radius: 6px; opacity: 0; pointer-events: none; transition: .25s; z-index: 5000; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 900px) { .products { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 650px) {
+  body { padding-bottom: 65px; }
+  .topbar { flex-wrap: wrap; }
+  .logo { font-size: 20px; }
+  .header-btn { display: none; }
+  .search { order: 2; flex-basis: 100%; }
+  .hero-box { min-height: 160px; padding: 22px; }
+  .hero h1 { font-size: 23px; }
+  .hero-icon { font-size: 65px; }
+  .products { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px; }
+  .product-img { height: 140px; font-size: 65px; }
+  .section { padding: 0 7px; }
+  .bottom-nav { display: flex; }
+}
+</style>
 </head>
-
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="topbar">
-
-      <div class="logo">
-        Iqbal<span>Mart</span>
-      </div>
-
-      <div class="search">
-        <input
-          id="searchInput"
-          type="search"
-          placeholder="Search products..."
-          oninput="searchProducts()"
-        >
-        <button onclick="searchProducts()">🔍</button>
-      </div>
-
-      <button class="header-btn" onclick="showOrders()">
-        📦 Orders
-      </button>
-
-      <button class="header-btn" onclick="toggleDarkMode()">
-        🌙
-      </button>
-
-      <button class="header-btn" onclick="openCart()">
-        🛒 Cart (<span id="cartCount">0</span>)
-      </button>
-
+<!-- HEADER -->
+<header>
+  <div class="topbar">
+    <div class="logo">Iqbal<span>Mart</span></div>
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="Search Electrical, Plumbing, Mobiles..." oninput="searchProducts()">
+      <button onclick="searchProducts()">🔍</button>
     </div>
-  </header>
-
-  <!-- CATEGORIES -->
-  <div class="categories">
-
-    <div class="category" onclick="filterCategory('All')">
-      <div class="category-icon">🏠</div>
-      All
-    </div>
-
-    <div class="category" onclick="filterCategory('Mobiles')">
-      <div class="category-icon">📱</div>
-      Mobiles
-    </div>
-
-    <div class="category" onclick="filterCategory('Electronics')">
-      <div class="category-icon">💻</div>
-      Electronics
-    </div>
-
-    <div class="category" onclick="filterCategory('Fashion')">
-      <div class="category-icon">👕</div>
-      Fashion
-    </div>
-
-    <div class="category" onclick="filterCategory('Shoes')">
-      <div class="category-icon">👟</div>
-      Shoes
-    </div>
-
-    <div class="category" onclick="filterCategory('Home')">
-      <div class="category-icon">🏠</div>
-      Home
-    </div>
-
-    <div class="category" onclick="filterCategory('Beauty')">
-      <div class="category-icon">💄</div>
-      Beauty
-    </div>
-
-    <div class="category" onclick="filterCategory('Grocery')">
-      <div class="category-icon">🛒</div>
-      Grocery
-    </div>
-
+    <button class="header-btn seller-btn" onclick="showSellerModal()">📢 Sell Products</button>
+    <button class="header-btn" onclick="showOrders()">📦 Orders</button>
+    <button class="header-btn" onclick="toggleDarkMode()">🌙</button>
+    <button class="header-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
   </div>
+</header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-box">
+<!-- CATEGORIES -->
+<div class="categories">
+  <div class="category" onclick="filterCategory('All')"><div class="category-icon">🏠</div>All</div>
+  <div class="category" onclick="filterCategory('Electrical')"><div class="category-icon">⚡</div>Electrical</div>
+  <div class="category" onclick="filterCategory('Plumbing')"><div class="category-icon">🔧</div>Plumbing</div>
+  <div class="category" onclick="filterCategory('Mobiles')"><div class="category-icon">📱</div>Mobiles</div>
+  <div class="category" onclick="filterCategory('Furniture')"><div class="category-icon">🛋️</div>Furniture</div>
+  <div class="category" onclick="filterCategory('Electronics')"><div class="category-icon">📺</div>Electronics</div>
+  <div class="category" onclick="filterCategory('Grocery')"><div class="category-icon">🛒</div>Grocery</div>
+</div>
 
-      <div>
-        <h1>Big Shopping Sale!</h1>
-        <p>Great products • Great prices • Fast delivery</p>
-        <button class="shop-btn" onclick="scrollProducts()">
-          Shop Now
-        </button>
-      </div>
-
-      <div class="hero-icon">🛍️</div>
-
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-box">
+    <div>
+      <h1>Multi-Vendor Mega Sale!</h1>
+      <p>Electrical • Plumbing • Mobiles • Furniture • Fast Delivery</p>
+      <button class="shop-btn" onclick="scrollProducts()">Shop Now</button>
     </div>
-  </section>
+    <div class="hero-icon">🛍️</div>
+  </div>
+</section>
 
-  <!-- PRODUCT SECTION -->
-  <section class="section" id="productsSection">
+<!-- PRODUCTS SECTION -->
+<section class="section" id="productsSection">
+  <div class="section-title"><span id="sectionTitle">Best Deals</span></div>
+  <div class="products" id="productGrid"></div>
+</section>
 
-    <div class="section-title">
-      <span id="sectionTitle">Best Deals</span>
+<!-- CART OVERLAY -->
+<div class="overlay" id="cartOverlay" onclick="closeCartOutside(event)">
+  <div class="cart">
+    <div class="cart-header">
+      <span>🛒 My Cart</span>
+      <button class="close" onclick="closeCart()">×</button>
     </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="total"><span>Total</span><span>₹<span id="cartTotal">0</span></span></div>
+      <button class="checkout" onclick="checkout()">PLACE ORDER</button>
+    </div>
+  </div>
+</div>
 
-    <div class="products" id="productGrid"></div>
+<!-- PRODUCT MODAL -->
+<div class="modal-bg" id="productModal">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeProductModal()">×</button>
+    <div class="modal-product">
+      <div class="big-product" id="modalEmoji">📱</div>
+      <h2 id="modalName">Product</h2>
+      <div id="modalRating">⭐ 4.5</div>
+      <div class="modal-price">₹<span id="modalPrice">999</span></div>
+      <p id="modalDescription">Good quality product with fast delivery.</p>
+      <button class="add-cart" onclick="addModalProduct()">🛒 ADD TO CART</button>
+    </div>
+  </div>
+</div>
 
-  </section>
+<!-- SELLER SUBSCRIPTION MODAL -->
+<div class="modal-bg" id="sellerModal">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
+    <h2>📢 Become a Seller (Subscription Plans)</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">List your products on Iqbal Mart with zero commission!</p>
+    
+    <div class="plan-card" onclick="selectPlan(this, 'Basic', 199)">
+      <b>Basic Plan - ₹199 / month</b>
+      <p style="font-size:12px; color:var(--muted);">Upload up to 10 products (Electrical/Plumbing/Mobiles)</p>
+    </div>
+    <div class="plan-card active" onclick="selectPlan(this, 'Pro', 499)">
+      <b>Pro Plan - ₹499 / month</b>
+      <p style="font-size:12px; color:var(--muted);">Upload up to 100 products + Top Banner Priority</p>
+    </div>
+    <div class="plan-card" onclick="selectPlan(this, 'Enterprise', 999)">
+      <b>Enterprise Plan - ₹999 / month</b>
+      <p style="font-size:12px; color:var(--muted);">Unlimited Product Listings + National Delivery Support</p>
+    </div>
+    
+    <button class="add-cart" onclick="submitSubscription()">SUBSCRIBE & START SELLING</button>
+  </div>
+</div>
 
-  <!-- CART -->
-  <div class="overlay" id="cartOverlay" onclick="closeCartOutside(event)">
+<!-- ORDERS MODAL -->
+<div class="modal-bg" id="ordersModal">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
+    <h2>📦 My Orders</h2>
+    <div id="ordersContent"></div>
+  </div>
+</div>
 
-    <div class="cart">
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="nav-icon">🏠</span> Home</button>
+  <button onclick="document.getElementById('searchInput').focus()"><span class="nav-icon">🔍</span> Search</button>
+  <button onclick="showWishlist()"><span class="nav-icon">❤️</span> Wishlist</button>
+  <button onclick="openCart()"><span class="nav-icon">🛒</span> Cart</button>
+  <button onclick="showSellerModal()"><span class="nav-icon">📢</span> Sell</button>
+</nav>
 
-      <div class="cart-header">
-        <span>🛒 My Cart</span>
-        <button class="close" onclick="closeCart()">×</button>
-      </div>
+<div class="toast" id="toast"></div>
 
-      <div class="cart-items" id="cartItems"></div>
+<!-- FIREBASE MODULE INTEGRATION -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      <div class="cart-footer">
+  const firebaseConfig = {
+    apiKey: "AIzaSyALVuRv4qKbafSKz9ZqULjuvENYXtTXFvc",
+    authDomain: "iqbal-mart-4324e.firebaseapp.com",
+    projectId: "iqbal-mart-4324e",
+    storageBucket: "iqbal-mart-4324e.firebasestorage.app",
+    messagingSenderId: "970971077102",
+    appId: "1:970971077102:web:7ab797480fd370a0c296ff",
+    measurementId: "G-8S0GCRK0M3"
+  };
 
-        <div class="total">
-          <span>Total</span>
-          <span>₹<span id="cartTotal">0</span></span>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.saveSellerSubscription = async (planName, planPrice) => {
+    try {
+      const docRef = await addDoc(collection(db, "sellers"), {
+        subscriptionPlan: planName,
+        price: planPrice,
+        status: "Active",
+        createdAt: new Date()
+      });
+      alert("✅ Subscription successful! Firestore Ref ID: " + docRef.id);
+      closeSellerModal();
+    } catch (e) {
+      console.error("Firestore Error: ", e);
+      alert("❌ Firestore Error: " + e.message);
+    }
+  };
+</script>
+
+<script>
+let selectedPlanName = "Pro";
+let selectedPlanPrice = 499;
+
+function selectPlan(element, name, price) {
+  document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('active'));
+  element.classList.add('active');
+  selectedPlanName = name;
+  selectedPlanPrice = price;
+}
+
+function submitSubscription() {
+  if (window.saveSellerSubscription) {
+    window.saveSellerSubscription(selectedPlanName, selectedPlanPrice);
+  } else {
+    alert("Subscription module loading... please retry.");
+  }
+}
+
+/* ALL PRODUCTS (Electrical, Plumbing, Furniture, Mobiles, Electronics) */
+const products = [
+  { id: 1, name: "Smartphone Pro 5G", category: "Mobiles", price: 14999, oldPrice: 19999, rating: 4.5, emoji: "📱", description: "5G smartphone with smooth performance and clear camera." },
+  { id: 2, name: "Modular Switch Board Set", category: "Electrical", price: 499, oldPrice: 899, rating: 4.6, emoji: "🔌", description: "Heavy-duty copper switches and sockets for home wiring." },
+  { id: 3, name: "CPVC Pipe & Fitting Kit", category: "Plumbing", price: 1299, oldPrice: 1999, rating: 4.4, emoji: "🔧", description: "High-grade leak-proof plumbing fittings and pipes." },
+  { id: 4, name: "Luxury 5-Seater Sofa Set", category: "Furniture", price: 18999, oldPrice: 29999, rating: 4.8, emoji: "🛋️", description: "Comfortable wooden sofa set with premium cushions." },
+  { id: 5, name: "Smart LED TV 43 Inch", category: "Electronics", price: 21999, oldPrice: 32999, rating: 4.7, emoji: "📺", description: "4K Ultra HD Smart TV with Android/Google OS support." },
+  { id: 6, name: "Double Door Refrigerator", category: "Electronics", price: 24999, oldPrice: 31999, rating: 4.5, emoji: "🧊", description: "Energy-efficient frost-free refrigerator." },
+  { id: 7, name: "Brass Basin Water Tap", category: "Plumbing", price: 349, oldPrice: 699, rating: 4.3, emoji: "🚰", description: "Rust-proof chrome-plated brass tap for bathroom & kitchen." },
+  { id: 8, name: "LED Ceiling Lights 12W", category: "Electrical", price: 299, oldPrice: 599, rating: 4.5, emoji: "💡", description: "Bright energy-saving concealed LED panel light." },
+  { id: 9, name: "Wireless Earbuds 5.0", category: "Mobiles", price: 999, oldPrice: 1999, rating: 4.2, emoji: "🎧", description: "Deep bass bluetooth earbuds with 20h battery life." },
+  { id: 10, name: "Wooden Study Table", category: "Furniture", price: 3499, oldPrice: 5999, rating: 4.4, emoji: "🪑", description: "Durable wooden study and office table." }
+];
+
+let cart = JSON.parse(localStorage.getItem("iqbal_cart") || "[]");
+let wishlist = JSON.parse(localStorage.getItem("iqbal_wishlist") || "[]");
+let orders = JSON.parse(localStorage.getItem("iqbal_orders") || "[]");
+let currentProducts = [...products];
+let selectedProduct = null;
+
+function renderProducts(list = currentProducts) {
+  const grid = document.getElementById("productGrid");
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;">😔<br><br>No products found.</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(product => {
+    const discount = Math.round((1 - product.price / product.oldPrice) * 100);
+    const liked = wishlist.includes(product.id);
+    return `
+      <div class="product" onclick="openProduct(${product.id})">
+        <button class="wishlist" onclick="toggleWishlist(event, ${product.id})">${liked ? "❤️" : "♡"}</button>
+        <div class="product-img">${product.emoji}</div>
+        <div class="product-info">
+          <div class="product-name">${product.name}</div>
+          <span class="rating">⭐ ${product.rating}</span>
+          <div>
+            <span class="price">₹${product.price.toLocaleString("en-IN")}</span>
+            <span class="old-price">₹${product.oldPrice.toLocaleString("en-IN")}</span>
+            <span class="discount">${discount}% off</span>
+          </div>
         </div>
-
-        <button class="checkout" onclick="checkout()">
-          PLACE ORDER
-        </button>
-
       </div>
+    `;
+  }).join("");
+}
 
-    </div>
+function searchProducts() {
+  const query = document.getElementById("searchInput").value.toLowerCase().trim();
+  currentProducts = products.filter(product =>
+    product.name.toLowerCase().includes(query) || product.category.toLowerCase().includes(query)
+  );
+  document.getElementById("sectionTitle").textContent = query ? `Search: ${query}` : "Best Deals";
+  renderProducts(currentProducts);
+}
 
-  </div>
+function filterCategory(category) {
+  if (category === "All") {
+    currentProducts = [...products];
+    document.getElementById("sectionTitle").textContent = "Best Deals";
+  } else {
+    currentProducts = products.filter(p => p.category === category);
+    document.getElementById("sectionTitle").textContent = category;
+  }
+  renderProducts(currentProducts);
+  document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
+}
 
-  <!-- PRODUCT MODAL -->
-  <div class="modal-bg" id="productModal">
+function openProduct(id) {
+  selectedProduct = products.find(p => p.id === id);
+  if (!selectedProduct) return;
+  document.getElementById("modalEmoji").textContent = selectedProduct.emoji;
+  document.getElementById("modalName").textContent = selectedProduct.name;
+  document.getElementById("modalRating").textContent = `⭐ ${selectedProduct.rating} Rating`;
+  document.getElementById("modalPrice").textContent = selectedProduct.price.toLocaleString("en-IN");
+  document.getElementById("modalDescription").textContent = selectedProduct.description;
+  document.getElementById("productModal").style.display = "flex";
+}
+function closeProductModal() { document.getElementById("productModal").style.display = "none"; }
+function addModalProduct() { if (!selectedProduct) return; addToCart(selectedProduct.id); closeProductModal(); }
 
-    <div class="modal">
+function showSellerModal() { document.getElementById("sellerModal").style.display = "flex"; }
+function closeSellerModal() { document.getElementById("sellerModal").style.display = "none"; }
 
-      <button
-        class="close"
-        style="position:absolute;right:15px;top:10px;"
-        onclick="closeProductModal()"
-      >
-        ×
-      </button>
+function addToCart(id) {
+  const existing = cart.find(item => item.id === id);
+  if (existing) { existing.qty++; } else { cart.push({ id: id, qty: 1 }); }
+  saveCart();
+  showToast("🛒 Added to cart");
+  renderCart();
+}
+function saveCart() { localStorage.setItem("iqbal_cart", JSON.stringify(cart)); updateCartCount(); }
+function updateCartCount() {
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById("cartCount").textContent = count;
+}
+function openCart() { renderCart(); document.getElementById("cartOverlay").style.display = "block"; }
+function closeCart() { document.getElementById("cartOverlay").style.display = "none"; }
+function closeCartOutside(event) { if (event.target.id === "cartOverlay") closeCart(); }
 
-      <div class="modal-product">
-
-        <div class="big-product" id="modalEmoji">📱</div>
-
-        <h2 id="modalName">Product</h2>
-
-        <div id="modalRating">⭐ 4.5</div>
-
-        <div class="modal-price">
-          ₹<span id="modalPrice">999</span>
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  if (!cart.length) {
+    container.innerHTML = `<div class="empty">🛒<br><br>Your cart is empty.</div>`;
+    document.getElementById("cartTotal").textContent = "0";
+    return;
+  }
+  let total = 0;
+  container.innerHTML = cart.map(item => {
+    const product = products.find(p => p.id === item.id);
+    if (!product) return "";
+    total += product.price * item.qty;
+    return `
+      <div class="cart-item">
+        <div class="cart-emoji">${product.emoji}</div>
+        <div class="cart-details">
+          <div class="cart-name">${product.name}</div>
+          <b>₹${product.price.toLocaleString("en-IN")}</b><br><br>
+          <div class="qty">
+            <button onclick="changeQty(${product.id}, -1)">−</button>
+            <span>${item.qty}</span>
+            <button onclick="changeQty(${product.id}, 1)">+</button>
+          </div><br>
+          <button class="remove" onclick="removeFromCart(${product.id})">Remove</button>
         </div>
-
-        <p id="modalDescription">
-          Good quality product with fast delivery.
-        </p>
-
-        <button class="add-cart" onclick="addModalProduct()">
-          🛒 ADD TO CART
-        </button>
-
       </div>
-
-    </div>
-
-  </div>
-
-  <!-- ORDERS MODAL -->
-  <div class="modal-bg" id="ordersModal">
-
-    <div class="modal">
-
-      <button
-        class="close"
-        style="position:absolute;right:15px;top:10px;"
-        onclick="closeOrders()"
-      >
-        ×
-      </button>
-
-      <h2>📦 My Orders</h2>
-
-      <div id="ordersContent"></div>
-
-    </div>
-
-  </div>
-
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-
-    <button onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <span class="nav-icon">🏠</span>
-      Home
-    </button>
-
-    <button onclick="document.getElementById('searchInput').focus()">
-      <span class="nav-icon">🔍</span>
-      Search
-    </button>
-
-    <button onclick="showWishlist()">
-      <span class="nav-icon">❤️</span>
-      Wishlist
-    </button>
-
-    <button onclick="openCart()">
-      <span class="nav-icon">🛒</span>
-      Cart
-    </button>
-
-    <button onclick="showProfile()">
-      <span class="nav-icon">👤</span>
-      Profile
-    </button>
-
-  </nav>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-
-    /* PRODUCTS */
-
-    const products = [
-
-      {
-        id: 1,
-        name: "Smartphone Pro 5G",
-        category: "Mobiles",
-        price: 14999,
-        oldPrice: 19999,
-        rating: 4.5,
-        emoji: "📱",
-        description: "5G smartphone with a bright display and powerful performance."
-      },
-
-      {
-        id: 2,
-        name: "Wireless Bluetooth Headphones",
-        category: "Electronics",
-        price: 1299,
-        oldPrice: 2499,
-        rating: 4.3,
-        emoji: "🎧",
-        description: "Comfortable wireless headphones with clear sound."
-      },
-
-      {
-        id: 3,
-        name: "Smart Watch Series X",
-        category: "Electronics",
-        price: 1999,
-        oldPrice: 3999,
-        rating: 4.4,
-        emoji: "⌚",
-        description: "Modern smartwatch with fitness and notification features."
-      },
-
-      {
-        id: 4,
-        name: "Men's Casual T-Shirt",
-        category: "Fashion",
-        price: 499,
-        oldPrice: 999,
-        rating: 4.2,
-        emoji: "👕",
-        description: "Comfortable everyday casual T-shirt."
-      },
-
-      {
-        id: 5,
-        name: "Running Sports Shoes",
-        category: "Shoes",
-        price: 1199,
-        oldPrice: 2499,
-        rating: 4.4,
-        emoji: "👟",
-        description: "Lightweight sports shoes for walking and running."
-      },
-
-      {
-        id: 6,
-        name: "Laptop Pro 15",
-        category: "Electronics",
-        price: 49999,
-        oldPrice: 59999,
-        rating: 4.6,
-        emoji: "💻",
-        description: "Powerful laptop suitable for work, study and entertainment."
-      },
-
-      {
-        id: 7,
-        name: "Modern Backpack",
-        category: "Fashion",
-        price: 799,
-        oldPrice: 1499,
-        rating: 4.1,
-        emoji: "🎒",
-        description: "Spacious backpack for school, office and travel."
-      },
-
-      {
-        id: 8,
-        name: "Kitchen Mixer",
-        category: "Home",
-        price: 2299,
-        oldPrice: 3499,
-        rating: 4.3,
-        emoji: "🥣",
-        description: "Useful kitchen mixer for everyday cooking."
-      },
-
-      {
-        id: 9,
-        name: "Face Care Kit",
-        category: "Beauty",
-        price: 599,
-        oldPrice: 999,
-        rating: 4.2,
-        emoji: "🧴",
-        description: "Daily personal care kit."
-      },
-
-      {
-        id: 10,
-        name: "Fresh Grocery Pack",
-        category: "Grocery",
-        price: 399,
-        oldPrice: 499,
-        rating: 4.5,
-        emoji: "🥦",
-        description: "Everyday grocery essentials."
-      }
-
-    ];
-
-    let cart = JSON.parse(localStorage.getItem("iqbal_cart") || "[]");
-    let wishlist = JSON.parse(localStorage.getItem("iqbal_wishlist") || "[]");
-    let orders = JSON.parse(localStorage.getItem("iqbal_orders") || "[]");
-
-    let currentProducts = [...products];
-    let selectedProduct = null;
-
-
-    /* RENDER PRODUCTS */
-
-    function renderProducts(list = currentProducts) {
-
-      const grid = document.getElementById("productGrid");
-
-      if (!list.length) {
-
-        grid.innerHTML = `
-          <div class="empty" style="grid-column:1/-1;">
-            😔<br><br>
-            No products found.
-          </div>
-        `;
-
-        return;
-      }
-
-      grid.innerHTML = list.map(product => {
-
-        const discount =
-          Math.round((1 - product.price / product.oldPrice) * 100);
-
-        const liked = wishlist.includes(product.id);
-
-        return `
-
-          <div class="product" onclick="openProduct(${product.id})">
-
-            <button
-              class="wishlist"
-              onclick="toggleWishlist(event, ${product.id})"
-            >
-              ${liked ? "❤️" : "♡"}
-            </button>
-
-            <div class="product-img">
-              ${product.emoji}
-            </div>
-
-            <div class="product-info">
-
-              <div class="product-name">
-                ${product.name}
-              </div>
-
-              <span class="rating">
-                ⭐ ${product.rating}
-              </span>
-
-              <div>
-                <span class="price">
-                  ₹${product.price.toLocaleString("en-IN")}
-                </span>
-
-                <span class="old-price">
-                  ₹${product.oldPrice.toLocaleString("en-IN")}
-                </span>
-
-                <span class="discount">
-                  ${discount}% off
-                </span>
-              </div>
-
-            </div>
-
-          </div>
-        `;
-
-      }).join("");
-
-    }
-
-
-    /* SEARCH */
-
-    function searchProducts() {
-
-      const query =
-        document.getElementById("searchInput")
-          .value
-          .toLowerCase()
-          .trim();
-
-      currentProducts = products.filter(product =>
-
-        product.name.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query)
-
-      );
-
-      document.getElementById("sectionTitle").textContent =
-        query ? `Search: ${query}` : "Best Deals";
-
-      renderProducts(currentProducts);
-    }
-
-
-    /* CATEGORY */
-
-    function filterCategory(category) {
-
-      if (category === "All") {
-
-        currentProducts = [...products];
-        document.getElementById("sectionTitle").textContent = "Best Deals";
-
-      } else {
-
-        currentProducts =
-          products.filter(p => p.category === category);
-
-        document.getElementById("sectionTitle").textContent =
-          category;
-      }
-
-      renderProducts(currentProducts);
-
-      document.getElementById("productsSection")
-        .scrollIntoView({ behavior: "smooth" });
-    }
-
-
-    /* PRODUCT DETAILS */
-
-    function openProduct(id) {
-
-      selectedProduct =
-        products.find(p => p.id === id);
-
-      if (!selectedProduct) return;
-
-      document.getElementById("modalEmoji").textContent =
-        selectedProduct.emoji;
-
-      document.getElementById("modalName").textContent =
-        selectedProduct.name;
-
-      document.getElementById("modalRating").textContent =
-        `⭐ ${selectedProduct.rating} Rating`;
-
-      document.getElementById("modalPrice").textContent =
-        selectedProduct.price.toLocaleString("en-IN");
-
-      document.getElementById("modalDescription").textContent =
-        selectedProduct.description;
-
-      document.getElementById("productModal").style.display =
-        "flex";
-    }
-
-    function closeProductModal() {
-      document.getElementById("productModal").style.display =
-        "none";
-    }
-
-    function addModalProduct() {
-
-      if (!selectedProduct) return;
-
-      addToCart(selectedProduct.id);
-
-      closeProductModal();
-    }
-
-
-    /* CART */
-
-    function addToCart(id) {
-
-      const existing =
-        cart.find(item => item.id === id);
-
-      if (existing) {
-        existing.qty++;
-      } else {
-        cart.push({
-          id: id,
-          qty: 1
-        });
-      }
-
-      saveCart();
-
-      showToast("🛒 Added to cart");
-
-      renderCart();
-    }
-
-    function saveCart() {
-
-      localStorage.setItem(
-        "iqbal_cart",
-        JSON.stringify(cart)
-      );
-
-      updateCartCount();
-    }
-
-    function updateCartCount() {
-
-      const count =
-        cart.reduce((sum, item) => sum + item.qty, 0);
-
-      document.getElementById("cartCount").textContent =
-        count;
-    }
-
-    function openCart() {
-
-      renderCart();
-
-      document.getElementById("cartOverlay").style.display =
-        "block";
-    }
-
-    function closeCart() {
-
-      document.getElementById("cartOverlay").style.display =
-        "none";
-    }
-
-    function closeCartOutside(event) {
-
-      if (event.target.id === "cartOverlay") {
-        closeCart();
-      }
-    }
-
-    function renderCart() {
-
-      const container =
-        document.getElementById("cartItems");
-
-      if (!cart.length) {
-
-        container.innerHTML = `
-          <div class="empty">
-            🛒<br><br>
-            Your cart is empty.
-          </div>
-        `;
-
-        document.getElementById("cartTotal").textContent = "0";
-
-        return;
-      }
-
-      let total = 0;
-
-      container.innerHTML =
-        cart.map(item => {
-
-          const product =
-            products.find(p => p.id === item.id);
-
-          if (!product) return "";
-
-          total += product.price * item.qty;
-
-          return `
-
-            <div class="cart-item">
-
-              <div class="cart-emoji">
-                ${product.emoji}
-              </div>
-
-              <div class="cart-details">
-
-                <div class="cart-name">
-                  ${product.name}
-                </div>
-
-                <b>
-                  ₹${product.price.toLocaleString("en-IN")}
-                </b>
-
-                <br><br>
-
-                <div class="qty">
-
-                  <button
-                    onclick="changeQty(${product.id}, -1)"
-                  >
-                    −
-                  </button>
-
-                  <span>${item.qty}</span>
-
-                  <button
-                    onclick="changeQty(${product.id}, 1)"
-                  >
-                    +
-                  </button>
-
-                </div>
-
-                <br>
-
-                <button
-                  class="remove"
-                  onclick="removeFromCart(${product.id})"
-                >
-                  Remove
-                </button>
-
-              </div>
-
-            </div>
-          `;
-
-        }).join("");
-
-      document.getElementById("cartTotal").textContent =
-        total.toLocaleString("en-IN");
-    }
-
-    function changeQty(id, change) {
-
-      const item =
-        cart.find(i => i.id === id);
-
-      if (!item) return;
-
-      item.qty += change;
-
-      if (item.qty <= 0) {
-
-        cart =
-          cart.filter(i => i.id !== id);
-      }
-
-      saveCart();
-      renderCart();
-    }
-
-    function removeFromCart(id) {
-
-      cart =
-        cart.filter(item => item.id !== id);
-
-      saveCart();
-      renderCart();
-
-      showToast("Product removed");
-    }
-
-
-    /* CHECKOUT */
-
-    function checkout() {
-
-      if (!cart.length) {
-
-        showToast("Your cart is empty");
-
-        return;
-      }
-
-      const total =
-        cart.reduce((sum, item) => {
-
-          const product =
-            products.find(p => p.id === item.id);
-
-          return sum + product.price * item.qty;
-
-        }, 0);
-
-      const order = {
-
-        id: "ORD" + Date.now(),
-
-        date: new Date().toLocaleString(),
-
-        items: [...cart],
-
-        total: total,
-
-        status: "Order Placed"
-
-      };
-
-      orders.unshift(order);
-
-      localStorage.setItem(
-        "iqbal_orders",
-        JSON.stringify(orders)
-      );
-
-      cart = [];
-
-      saveCart();
-
-      renderCart();
-
-      showToast("✅ Order placed successfully");
-
-      setTimeout(() => {
-
-        closeCart();
-
-        showOrders();
-
-      }, 800);
-
-    }
-
-
-    /* ORDERS */
-
-    function showOrders() {
-
-      const content =
-        document.getElementById("ordersContent");
-
-      if (!orders.length) {
-
-        content.innerHTML = `
-          <div class="empty">
-            📦<br><br>
-            No orders yet.
-          </div>
-        `;
-
-      } else {
-
-        content.innerHTML =
-          orders.map(order => `
-
-            <div style="
-              border:1px solid var(--border);
-              border-radius:8px;
-              padding:12px;
-              margin-top:12px;
-            ">
-
-              <b>${order.id}</b>
-
-              <br>
-
-              <small>${order.date}</small>
-
-              <p style="margin:10px 0;">
-                Total:
-                <b>
-                  ₹${order.total.toLocaleString("en-IN")}
-                </b>
-              </p>
-
-              <span style="color:var(--green);">
-                ● ${order.status}
-              </span>
-
-            </div>
-
-          `).join("");
-      }
-
-      document.getElementById("ordersModal").style.display =
-        "flex";
-    }
-
-    function closeOrders() {
-
-      document.getElementById("ordersModal").style.display =
-        "none";
-    }
-
-
-    /* WISHLIST */
-
-    function toggleWishlist(event, id) {
-
-      event.stopPropagation();
-
-      if (wishlist.includes(id)) {
-
-        wishlist =
-          wishlist.filter(x => x !== id);
-
-        showToast("Removed from wishlist");
-
-      } else {
-
-        wishlist.push(id);
-
-        showToast("❤️ Added to wishlist");
-      }
-
-      localStorage.setItem(
-        "iqbal_wishlist",
-        JSON.stringify(wishlist)
-      );
-
-      renderProducts(currentProducts);
-    }
-
-    function showWishlist() {
-
-      const list =
-        products.filter(p => wishlist.includes(p.id));
-
-      document.getElementById("sectionTitle").textContent =
-        "❤️ Wishlist";
-
-      currentProducts = list;
-
-      renderProducts(list);
-
-      document.getElementById("productsSection")
-        .scrollIntoView({ behavior: "smooth" });
-    }
-
-
-    /* PROFILE */
-
-    function showProfile() {
-
-      alert(
-        "👤 IqbalMart Profile\n\n" +
-        "Login / Signup backend can be added next."
-      );
-    }
-
-
-    /* DARK MODE */
-
-    function toggleDarkMode() {
-
-      document.body.classList.toggle("dark");
-
-      localStorage.setItem(
-        "iqbal_dark",
-        document.body.classList.contains("dark")
-      );
-    }
-
-    if (localStorage.getItem("iqbal_dark") === "true") {
-      document.body.classList.add("dark");
-    }
-
-
-    /* TOAST */
-
-    function showToast(message) {
-
-      const toast =
-        document.getElementById("toast");
-
-      toast.textContent = message;
-
-      toast.classList.add("show");
-
-      setTimeout(() => {
-
-        toast.classList.remove("show");
-
-      }, 1800);
-    }
-
-
-    /* SCROLL */
-
-    function scrollProducts() {
-
-      document.getElementById("productsSection")
-        .scrollIntoView({
-          behavior: "smooth"
-        });
-    }
-
-
-    /* START */
-
-    renderProducts();
-
-    updateCartCount();
-
-  </script>
-
+    `;
+  }).join("");
+  document.getElementById("cartTotal").textContent = total.toLocaleString("en-IN");
+}
+
+function changeQty(id, change) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty += change;
+  if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+  saveCart(); renderCart();
+}
+function removeFromCart(id) {
+  cart = cart.filter(item => item.id !== id);
+  saveCart(); renderCart(); showToast("Product removed");
+}
+
+function checkout() {
+  if (!cart.length) { showToast("Your cart is empty"); return; }
+  const total = cart.reduce((sum, item) => {
+    const product = products.find(p => p.id === item.id);
+    return sum + product.price * item.qty;
+  }, 0);
+  const order = { id: "ORD" + Date.now(), date: new Date().toLocaleString(), items: [...cart], total: total, status: "Order Placed" };
+  orders.unshift(order);
+  localStorage.setItem("iqbal_orders", JSON.stringify(orders));
+  cart = []; saveCart(); renderCart(); showToast("✅ Order placed successfully");
+  setTimeout(() => { closeCart(); showOrders(); }, 800);
+}
+
+function showOrders() {
+  const content = document.getElementById("ordersContent");
+  if (!orders.length) {
+    content.innerHTML = `<div class="empty">📦<br><br>No orders yet.</div>`;
+  } else {
+    content.innerHTML = orders.map(order => `
+      <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px;">
+        <b>${order.id}</b><br><small>${order.date}</small>
+        <p style="margin:10px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
+        <span style="color:var(--green);">● ${order.status}</span>
+      </div>
+    `).join("");
+  }
+  document.getElementById("ordersModal").style.display = "flex";
+}
+function closeOrders() { document.getElementById("ordersModal").style.display = "none"; }
+
+function toggleWishlist(event, id) {
+  event.stopPropagation();
+  if (wishlist.includes(id)) {
+    wishlist = wishlist.filter(x => x !== id);
+    showToast("Removed from wishlist");
+  } else {
+    wishlist.push(id);
+    showToast("❤️ Added to wishlist");
+  }
+  localStorage.setItem("iqbal_wishlist", JSON.stringify(wishlist));
+  renderProducts(currentProducts);
+}
+
+function showWishlist() {
+  const list = products.filter(p => wishlist.includes(p.id));
+  document.getElementById("sectionTitle").textContent = "❤️ Wishlist";
+  currentProducts = list; renderProducts(list);
+  document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("iqbal_dark", document.body.classList.contains("dark"));
+}
+if (localStorage.getItem("iqbal_dark") === "true") document.body.classList.add("dark");
+
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message; toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+function scrollProducts() { document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" }); }
+
+renderProducts();
+updateCartCount();
+</script>
 </body>
 </html>
