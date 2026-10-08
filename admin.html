@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iqbal Mart - Admin Payout Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-8 bg-white p-4 rounded-lg shadow">
+            <h1 class="text-2xl font-bold text-gray-800">🛍️ Iqbal Mart Admin Dashboard</h1>
+            <span class="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">Live Mode / Payout Panel</span>
+        </header>
+
+        <!-- Sellers Bank & UPI Details Section -->
+        <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
+            <div class="px-6 py-4 bg-gray-50 border-b">
+                <h2 class="text-lg font-semibold text-gray-700">💳 Vendor Payout Details (`vendor_banks`)</h2>
+                <p class="text-sm text-gray-500">Yeh wahi secure bank aur UPI details hain jo sellers ne apni profile mein save ki hain.</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 text-sm uppercase">
+                            <th class="py-3 px-6">Vendor UID</th>
+                            <th class="py-3 px-6">Account Holder</th>
+                            <th class="py-3 px-6">Bank Account No.</th>
+                            <th class="py-3 px-6">IFSC Code</th>
+                            <th class="py-3 px-6">UPI ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vendor-banks-list" class="text-gray-700 text-sm divide-y divide-gray-200">
+                        <!-- Data Firebase se yahan load hoga -->
+                        <tr>
+                            <td colspan="5" class="py-4 text-center text-gray-500">Loading vendor bank details...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Products Management Section -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b">
+                <h2 class="text-lg font-semibold text-gray-700">📦 Marketplace Products (`products`)</h2>
+                <p class="text-sm text-gray-500">Sellers dwara upload kiye gaye sabhi products ki list.</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 text-sm uppercase">
+                            <th class="py-3 px-6">Product Name</th>
+                            <th class="py-3 px-6">Category</th>
+                            <th class="py-3 px-6">Price</th>
+                            <th class="py-3 px-6">Seller Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-list" class="text-gray-700 text-sm divide-y divide-gray-200">
+                        <!-- Products data Firebase se yahan load hoga -->
+                        <tr>
+                            <td colspan="4" class="py-4 text-center text-gray-500">Loading products...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script Integration (Modular ya CDN version aapke project ke mutabiq) -->
+    <script type="module">
+        // Apke Firebase config ke sath yahan data fetch karne ka logic aayega
+        // Jaise hi aap isse project mein integrate karenge, yeh `vendor_banks` aur `products` collection se data uthakar table mein dikha dega.
+    </script>
+</body>
+</html>
