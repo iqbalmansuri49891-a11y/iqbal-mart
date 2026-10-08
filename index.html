@@ -142,6 +142,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     </div>
     <button class="header-btn seller-btn" onclick="showSellerModal()">📢 Sell Products</button>
     <button class="header-btn" onclick="showOrders()">📦 Orders</button>
+    <button class="header-btn" id="authNavBtn" onclick="openAuthModal()">👤 Login</button>
     <button class="header-btn" onclick="toggleDarkMode()">🌙</button>
     <button class="header-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
   </div>
@@ -195,6 +196,41 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <div class="cart-footer">
       <div class="total"><span>Total</span><span>₹<span id="cartTotal">0</span></span></div>
       <button class="checkout" onclick="proceedToCheckout()">PAY VIA RAZORPAY</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTHENTICATION MODAL (LOGIN / SIGNUP & BANK DETAILS) -->
+<div class="modal-bg" id="authModal">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
+    <div id="authViewContainer">
+      <h2 id="authTitle">🔐 Seller & User Login</h2>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Login karein ya naya account banayein</p>
+
+      <input type="email" id="authEmail" class="input-field" placeholder="Enter Email">
+      <input type="password" id="authPassword" class="input-field" placeholder="Enter Password">
+
+      <div style="margin-top:15px; display:flex; gap:10px;">
+        <button class="add-cart" style="margin-top:0; background:var(--blue); color:white;" onclick="handleLogin()">Login</button>
+        <button class="add-cart" style="margin-top:0; background:var(--yellow);" onclick="handleSignup()">Sign Up</button>
+      </div>
+    </div>
+
+    <!-- LOGGED IN PROFILE & BANK DETAILS SECTION -->
+    <div id="profileViewContainer" style="display:none;">
+      <h2>👤 My Profile & Bank Payout Details</h2>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Apna Bank Account ya UPI ID jodein taaki sell hone par paisa mil sake:</p>
+      
+      <p><b>Email:</b> <span id="userEmailDisplay"></span></p>
+
+      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name">
+      <input type="text" id="bankAccNo" class="input-field" placeholder="Bank Account Number">
+      <input type="text" id="bankIfsc" class="input-field" placeholder="IFSC Code">
+      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID (e.g. user@okicici)">
+
+      <button class="add-cart" onclick="saveUserBankDetails()">SAVE BANK DETAILS</button>
+      <button class="add-cart" style="background:#e53935; color:white; margin-top:10px;" onclick="handleLogout()">LOGOUT</button>
     </div>
   </div>
 </div>
@@ -305,10 +341,11 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE MODULE INTEGRATION -->
+<!-- FIREBASE MODULE INTEGRATION WITH AUTH & FIRESTORE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyALVuRv4qKbafSKz9ZqULjuvENYXtTXFvc",
@@ -322,6 +359,84 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  window.currentUser = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    window.currentUser = user;
+    const navBtn = document.getElementById("authNavBtn");
+    if (user) {
+      navBtn.textContent = "👤 " + user.email.split('@')[0];
+      document.getElementById("userEmailDisplay").textContent = user.email;
+      document.getElementById("authViewContainer").style.display = "none";
+      document.getElementById("profileViewContainer").style.display = "block";
+      
+      // Load saved bank details if available
+      try {
+        const docRef = doc(db, "vendor_banks", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById("bankAccName").value = data.accName || "";
+          document.getElementById("bankAccNo").value = data.accNo || "";
+          document.getElementById("bankIfsc").value = data.ifsc || "";
+          document.getElementById("bankUpi").value = data.upi || "";
+        }
+      } catch(e) { console.log(e); }
+    } else {
+      navBtn.textContent = "👤 Login";
+      document.getElementById("authViewContainer").style.display = "block";
+      document.getElementById("profileViewContainer").style.display = "none";
+    }
+  });
+
+  window.handleSignup = async () => {
+    const email = document.getElementById("authEmail").value.trim();
+    const password = document.getElementById("authPassword").value.trim();
+    if(!email || !password) { alert("Please enter email and password."); return; }
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("✅ Account created successfully!");
+      closeAuthModal();
+    } catch(e) { alert("❌ Error: " + e.message); }
+  };
+
+  window.handleLogin = async () => {
+    const email = document.getElementById("authEmail").value.trim();
+    const password = document.getElementById("authPassword").value.trim();
+    if(!email || !password) { alert("Please enter email and password."); return; }
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("✅ Logged in successfully!");
+      closeAuthModal();
+    } catch(e) { alert("❌ Error: " + e.message); }
+  };
+
+  window.handleLogout = async () => {
+    try {
+      await signOut(auth);
+      alert("✅ Logged out successfully!");
+      closeAuthModal();
+    } catch(e) { alert("❌ Error: " + e.message); }
+  };
+
+  window.saveUserBankDetails = async () => {
+    if(!window.currentUser) return;
+    const accName = document.getElementById("bankAccName").value.trim();
+    const accNo = document.getElementById("bankAccNo").value.trim();
+    const ifsc = document.getElementById("bankIfsc").value.trim();
+    const upi = document.getElementById("bankUpi").value.trim();
+
+    try {
+      await setDoc(doc(db, "vendor_banks", window.currentUser.uid), {
+        email: window.currentUser.email,
+        accName, accNo, ifsc, upi, updatedAt: new Date()
+      });
+      alert("✅ Bank Payout details saved successfully! Ab product sell hone par aapko isi account mein paisa bheja jayega.");
+      closeAuthModal();
+    } catch(e) { alert("❌ Error saving bank details: " + e.message); }
+  };
 
   window.verifiedSellersList = [];
 
@@ -365,6 +480,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     try {
       const docRef = await addDoc(collection(db, "products"), {
         ...productData,
+        sellerEmail: window.currentUser ? window.currentUser.email : "admin",
         createdAt: new Date()
       });
       alert("✅ Product published successfully on Iqbal Mart!");
@@ -436,17 +552,16 @@ function submitSubscription() {
   }
 }
 
-function verifyAndOpenAddProduct() {
-  const sellerPhoneInput = prompt("Enter your registered Seller WhatsApp/Mobile number to upload product:");
-  if (!sellerPhoneInput) return;
+function openAuthModal() { document.getElementById("authModal").style.display = "flex"; }
+function closeAuthModal() { document.getElementById("authModal").style.display = "none"; }
 
-  const cleanPhone = sellerPhoneInput.trim();
-  
-  if (window.verifiedSellersList && window.verifiedSellersList.includes(cleanPhone)) {
-    document.getElementById("addProductModal").style.display = "flex";
-  } else {
-    alert("❌ Access Denied! Yeh mobile number registered nahi hai ya subscription pending hai. Pehle 'Sell Products' par click karke payment karein!");
+function verifyAndOpenAddProduct() {
+  if (!window.currentUser) {
+    alert("❌ Please Login first to add products!");
+    openAuthModal();
+    return;
   }
+  document.getElementById("addProductModal").style.display = "flex";
 }
 
 /* INITIAL STATIC PRODUCTS WITH CAMERAS */
@@ -723,7 +838,7 @@ function showOrders() {
         <b>${order.id}</b><br><small>${order.date}</small>
         <p style="margin:6px 0;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
         <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
-        <p style="margin:6px 0; font-size:13px;">Status: <b style="color:var(--green);">${order.status}</b></p>
+        <p style="margin:6px 0; font-size:13px;">Status: <b style="color:var::green);">${order.status}</b></p>
       </div>
     `).join("");
   }
