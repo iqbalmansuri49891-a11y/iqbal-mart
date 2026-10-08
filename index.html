@@ -260,7 +260,10 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     </select>
     <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹ (e.g. 24999)">
     <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹ (e.g. 32999)">
-    <input type="text" id="newProdImage" class="input-field" placeholder="Product Image URL (e.g. https://... or leave blank for emoji)">
+    
+    <label style="display:block; margin-top:12px; font-size:13px; font-weight:bold; color:var(--muted);">Select Product Photo from Gallery/Camera:</label>
+    <input type="file" id="newProdFile" class="input-field" accept="image/*">
+
     <input type="text" id="newProdEmoji" class="input-field" placeholder="Fallback Emoji Icon (e.g. 📷 or 📱)">
     <input type="text" id="newProdDesc" class="input-field" placeholder="Short description...">
 
@@ -524,19 +527,28 @@ function submitNewProduct() {
   const category = document.getElementById("newProdCategory").value;
   const price = Number(document.getElementById("newProdPrice").value);
   const oldPrice = Number(document.getElementById("newProdOldPrice").value) || price + 500;
-  const image = document.getElementById("newProdImage").value.trim();
   const emoji = document.getElementById("newProdEmoji").value.trim() || "🛍️";
   const description = document.getElementById("newProdDesc").value.trim() || "Seller uploaded product item.";
+  const fileInput = document.getElementById("newProdFile");
 
   if(!name || !price) {
     alert("Please enter valid Product Name and Price.");
     return;
   }
 
-  if (window.saveProductToFirestore) {
-    window.saveProductToFirestore({ name, category, price, oldPrice, image, emoji, description, rating: 4.6 });
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const base64Image = e.target.result;
+      if (window.saveProductToFirestore) {
+        window.saveProductToFirestore({ name, category, price, oldPrice, image: base64Image, emoji, description, rating: 4.6 });
+      }
+    };
+    reader.readAsDataURL(fileInput.files[0]);
   } else {
-    alert("Database connection loading... please retry.");
+    if (window.saveProductToFirestore) {
+      window.saveProductToFirestore({ name, category, price, oldPrice, image: "", emoji, description, rating: 4.6 });
+    }
   }
 }
 
