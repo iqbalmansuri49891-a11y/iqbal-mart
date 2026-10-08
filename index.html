@@ -129,6 +129,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </head>
 <body>
 
+<!-- HEADER -->
 <header>
   <div class="topbar">
     <div class="logo">Iqbal<span>Mart</span></div>
@@ -143,6 +144,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </header>
 
+<!-- CATEGORIES -->
 <div class="categories">
   <div class="category" onclick="filterCategory('All')"><div class="category-icon">🏠</div>All</div>
   <div class="category" onclick="filterCategory('Cameras')"><div class="category-icon">📷</div>Cameras</div>
@@ -158,6 +160,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="category" onclick="filterCategory('Grocery')"><div class="category-icon">🛒</div>Grocery</div>
 </div>
 
+<!-- HERO -->
 <section class="hero">
   <div class="hero-box">
     <div>
@@ -169,6 +172,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </section>
 
+<!-- PRODUCTS SECTION -->
 <section class="section" id="productsSection">
   <div class="section-title">
     <span id="sectionTitle">Best Deals</span>
@@ -177,6 +181,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="products" id="productGrid"></div>
 </section>
 
+<!-- CART OVERLAY -->
 <div class="overlay" id="cartOverlay" onclick="closeCartOutside(event)">
   <div class="cart">
     <div class="cart-header">
@@ -186,11 +191,12 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-footer">
       <div class="total"><span>Total</span><span>₹<span id="cartTotal">0</span></span></div>
-      <button class="checkout" onclick="checkout()">PLACE ORDER</button>
+      <button class="checkout" onclick="checkout()">PLACE ORDER (WhatsApp / UPI)</button>
     </div>
   </div>
 </div>
 
+<!-- PRODUCT DETAILS MODAL -->
 <div class="modal-bg" id="productModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeProductModal()">×</button>
@@ -205,6 +211,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
+<!-- SELLER SUBSCRIPTION MODAL -->
 <div class="modal-bg" id="sellerModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
@@ -224,6 +231,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       <p style="font-size:12px; color:var(--muted);">Unlimited Product Listings + National Delivery</p>
     </div>
 
+    <!-- UPI QR DISPLAY SECTION -->
     <div class="qr-box">
       <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
       <div class="upi-id" id="displayUpi">UPI ID: iqbalelectricplumber-1@okicici</div><br>
@@ -231,6 +239,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       <p style="font-size:13px; font-weight:bold; color:var(--blue);">Paying Amount: ₹<span id="payAmount">499</span></p>
     </div>
 
+    <!-- TRANSACTION PROOF -->
     <input type="text" id="sellerPhone" class="input-field" placeholder="Enter Your Mobile / WhatsApp Number">
     <input type="text" id="utrNo" class="input-field" placeholder="Enter UPI Ref / Transaction UTR No.">
 
@@ -238,6 +247,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
+<!-- ADD PRODUCT MODAL (SELLER DASHBOARD) -->
 <div class="modal-bg" id="addProductModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
@@ -261,6 +271,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹ (e.g. 24999)">
     <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹ (e.g. 32999)">
     
+    <!-- FILE UPLOAD FIELD -->
     <label style="display:block; margin-top:12px; font-size:13px; font-weight:bold; color:var(--muted);">Select Product Photo from Gallery/Camera:</label>
     <input type="file" id="newProdFile" class="input-field" accept="image/*">
 
@@ -271,6 +282,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
+<!-- ORDERS MODAL -->
 <div class="modal-bg" id="ordersModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
@@ -279,6 +291,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="nav-icon">🏠</span> Home</button>
   <button onclick="document.getElementById('searchInput').focus()"><span class="nav-icon">🔍</span> Search</button>
@@ -289,6 +302,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
 <div class="toast" id="toast"></div>
 
+<!-- FIREBASE MODULE INTEGRATION -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -565,7 +579,6 @@ function submitNewProduct() {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Compress image quality to 0.7 to keep size well below 1MB
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
         if (window.saveProductToFirestore) {
@@ -643,15 +656,40 @@ function removeFromCart(id) {
 
 function checkout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
-  const total = cart.reduce((sum, item) => {
+  
+  const customerName = prompt("Enter your Name for Delivery:", "");
+  if (!customerName) return;
+  const customerPhone = prompt("Enter your Mobile Number:", "");
+  if (!customerPhone) return;
+  const customerAddress = prompt("Enter your Delivery Address:", "");
+  if (!customerAddress) return;
+
+  let total = 0;
+  let itemsList = "";
+  cart.forEach(item => {
     const product = products.find(p => p.id == item.id);
-    return sum + (product ? product.price * item.qty : 0);
-  }, 0);
-  const order = { id: "ORD" + Date.now(), date: new Date().toLocaleString(), items: [...cart], total: total, status: "Order Placed" };
+    if (product) {
+      total += product.price * item.qty;
+      itemsList += `• ${product.name} (x${item.qty}) - ₹${product.price * item.qty}%0A`;
+    }
+  });
+
+  const orderId = "ORD" + Date.now();
+  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "Order Placed & WhatsApp Sent" };
   orders.unshift(order);
   localStorage.setItem("iqbal_orders", JSON.stringify(orders));
-  cart = []; saveCart(); renderCart(); showToast("✅ Order placed successfully");
-  setTimeout(() => { closeCart(); showOrders(); }, 800);
+
+  const adminWhatsAppNumber = "919714739355";
+  const upiLink = `upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalMart&am=${total}&cu=INR`;
+  const message = `🛍️ *New Order Placed - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${customerName}%0A*Phone:* ${customerPhone}%0A*Address:* ${customerAddress}%0A%0A*Items Ordered:*%0A${itemsList}%0A*Total Amount:* ₹${total}%0A%0A*UPI Payment Link:* ${upiLink}%0A%0APlease pay ₹${total} via GPay/PhonePe/Paytm and share screenshot!`;
+
+  cart = []; 
+  saveCart(); 
+  renderCart(); 
+  closeCart();
+
+  window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
+  showOrders();
 }
 
 function showOrders() {
