@@ -200,8 +200,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="modal-bg" id="directPayModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeDirectPayModal()">×</button>
-    <h2>⚡ Instant UPI Payment & Order</h2>
-    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Scan QR or pay directly, then confirm order to send details to WhatsApp!</p>
+    <h2>⚡ Scan & Pay Required</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Pehle QR scan karke payment karein, phir UTR No. dalein tabhi order aage badhega!</p>
 
     <div class="qr-box">
       <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
@@ -213,7 +213,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <input type="text" id="custName" class="input-field" placeholder="Enter Your Name">
     <input type="text" id="custPhone" class="input-field" placeholder="Enter Your Mobile / WhatsApp Number">
     <input type="text" id="custAddress" class="input-field" placeholder="Enter Delivery Address">
-    <input type="text" id="custUtr" class="input-field" placeholder="Enter UPI Ref / Transaction UTR No. (Optional)">
+    <input type="text" id="custUtr" class="input-field" placeholder="Enter UPI Ref / Transaction UTR No. (Required)">
 
     <button class="add-cart" onclick="confirmAndSendOrder()">CONFIRM ORDER & SEND TO WHATSAPP</button>
   </div>
@@ -699,10 +699,16 @@ function confirmAndSendOrder() {
   const name = document.getElementById("custName").value.trim();
   const phone = document.getElementById("custPhone").value.trim();
   const address = document.getElementById("custAddress").value.trim();
-  const utr = document.getElementById("custUtr").value.trim() || "Pending / Direct UPI";
+  const utr = document.getElementById("custUtr").value.trim();
 
   if (!name || !phone || !address) {
     alert("Please fill in your Name, Phone Number, and Address.");
+    return;
+  }
+
+  // STRICT VALIDATION: UTR number is now required
+  if (!utr || utr.length < 6) {
+    alert("❌ Please enter valid UPI Ref / Transaction UTR No. after making payment to proceed!");
     return;
   }
 
@@ -717,12 +723,12 @@ function confirmAndSendOrder() {
   });
 
   const orderId = "ORD" + Date.now();
-  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "Paid & Ordered via UPI" };
+  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "Verified & Paid via UPI" };
   orders.unshift(order);
   localStorage.setItem("iqbal_orders", JSON.stringify(orders));
 
   const adminWhatsAppNumber = "919714739355";
-  const message = `🛍️ *Paid Order Received - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A*UTR / Ref:* ${utr}%0A%0A*Items:*%0A${itemsList}%0A*Total Paid:* ₹${total}`;
+  const message = `🛍️ *Paid Order Confirmed - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A*UPI UTR / Ref:* ${utr}%0A%0A*Items:*%0A${itemsList}%0A*Total Paid:* ₹${total}`;
 
   cart = []; 
   saveCart(); 
