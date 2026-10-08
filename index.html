@@ -15,6 +15,7 @@
   --muted: #777;
   --border: #e0e0e0;
   --green: #008c45;
+  --orange: #ff9f00;
 }
 body.dark {
   --bg: #111827;
@@ -200,8 +201,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="modal-bg" id="directPayModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeDirectPayModal()">×</button>
-    <h2>⚡ Scan & Pay Required</h2>
-    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Pehle QR scan karke payment karein, phir UTR No. dalein tabhi order aage badhega!</p>
+    <h2>⚡ Scan & Pay Verification</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Pehle QR scan karke payment karein, phir asli UTR No. dalein. Admin check karne ke baad hi order approve karega!</p>
 
     <div class="qr-box">
       <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
@@ -215,7 +216,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <input type="text" id="custAddress" class="input-field" placeholder="Enter Delivery Address">
     <input type="text" id="custUtr" class="input-field" placeholder="Enter UPI Ref / Transaction UTR No. (Required)">
 
-    <button class="add-cart" onclick="confirmAndSendOrder()">CONFIRM ORDER & SEND TO WHATSAPP</button>
+    <button class="add-cart" onclick="confirmAndSendOrder()">SUBMIT UTR & NOTIFY ADMIN</button>
   </div>
 </div>
 
@@ -309,7 +310,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="modal-bg" id="ordersModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
-    <h2>📦 My Orders</h2>
+    <h2>📦 My Orders & Admin Approvals</h2>
+    <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Admin can approve orders after verifying money received in bank.</p>
     <div id="ordersContent"></div>
   </div>
 </div>
@@ -706,9 +708,8 @@ function confirmAndSendOrder() {
     return;
   }
 
-  // STRICT VALIDATION: UTR number is now required
   if (!utr || utr.length < 6) {
-    alert("❌ Please enter valid UPI Ref / Transaction UTR No. after making payment to proceed!");
+    alert("❌ Please enter valid UPI Ref / Transaction UTR No. after making payment!");
     return;
   }
 
@@ -723,12 +724,13 @@ function confirmAndSendOrder() {
   });
 
   const orderId = "ORD" + Date.now();
-  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "Verified & Paid via UPI" };
+  // Status is now strictly set to Pending Admin Verification so admin must approve manually
+  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "⏳ Payment Verification Pending (Admin Approval Needed)", utr: utr, name: name, phone: phone };
   orders.unshift(order);
   localStorage.setItem("iqbal_orders", JSON.stringify(orders));
 
   const adminWhatsAppNumber = "919714739355";
-  const message = `🛍️ *Paid Order Confirmed - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A*UPI UTR / Ref:* ${utr}%0A%0A*Items:*%0A${itemsList}%0A*Total Paid:* ₹${total}`;
+  const message = `🔔 *New Order Verification Needed - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A*Submitted UTR:* ${utr}%0A%0A*Items:*%0A${itemsList}%0A*Total Amount:* ₹${total}%0A%0A⚠️ *Please check your bank/UPI app. Once payment received, approve from 'My Orders'.*`;
 
   cart = []; 
   saveCart(); 
@@ -739,16 +741,29 @@ function confirmAndSendOrder() {
   showOrders();
 }
 
+function approveOrder(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (order) {
+    order.status = "✅ Payment Approved & Confirmed by Admin";
+    localStorage.setItem("iqbal_orders", JSON.stringify(orders));
+    showOrders();
+    alert("Order successfully approved!");
+  }
+}
+
 function showOrders() {
   const content = document.getElementById("ordersContent");
   if (!orders.length) {
     content.innerHTML = `<div class="empty">📦<br><br>No orders yet.</div>`;
   } else {
     content.innerHTML = orders.map(order => `
-      <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px;">
+      <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px; background:var(--bg);">
         <b>${order.id}</b><br><small>${order.date}</small>
-        <p style="margin:10px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
-        <span style="color:var(--green);">● ${order.status}</span>
+        <p style="margin:6px 0;">Customer: <b>${order.name || 'N/A'}</b> (${order.phone || 'N/A'})</p>
+        <p style="margin:6px 0;">UTR No: <b>${order.utr || 'N/A'}</b></p>
+        <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
+        <p style="margin:6px 0; font-size:13px;">Status: <b style="color:${order.status.includes('Approved') ? 'var(--green)' : 'var(--orange)'};">${order.status}</b></p>
+        ${!order.status.includes('Approved') ? `<button onclick="approveOrder('${order.id}')" style="margin-top:8px; background:var(--green); color:white; border:0; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Approve Payment Received</button>` : ''}
       </div>
     `).join("");
   }
