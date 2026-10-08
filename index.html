@@ -39,7 +39,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 /* CATEGORY BAR */
 .categories { background: var(--card); display: flex; gap: 22px; padding: 12px 15px; overflow-x: auto; border-bottom: 1px solid var(--border); scrollbar-width: none; }
 .categories::-webkit-scrollbar { display: none; }
-.category { min-width: 70px; text-align: center; cursor: pointer; font-size: 13px; color: var(--text); }
+.category { min-width: 75px; text-align: center; cursor: pointer; font-size: 13px; color: var(--text); }
 .category-icon { width: 48px; height: 48px; margin: auto auto 5px; border-radius: 50%; background: #eef4ff; display: flex; align-items: center; justify-content: center; font-size: 25px; }
 
 /* HERO */
@@ -126,12 +126,11 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="topbar">
     <div class="logo">Iqbal<span>Mart</span></div>
     <div class="search">
-      <input id="searchInput" type="search" placeholder="Search Electrical, Plumbing, Mobiles..." oninput="searchProducts()">
+      <input id="searchInput" type="search" placeholder="Search Medicines, Fashion, Tools, Mobiles..." oninput="searchProducts()">
       <button onclick="searchProducts()">🔍</button>
     </div>
     <button class="header-btn seller-btn" onclick="showSellerModal()">📢 Sell Products</button>
@@ -141,9 +140,12 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </header>
 
-<!-- CATEGORIES -->
 <div class="categories">
   <div class="category" onclick="filterCategory('All')"><div class="category-icon">🏠</div>All</div>
+  <div class="category" onclick="filterCategory('Medicines')"><div class="category-icon">💊</div>Medicines</div>
+  <div class="category" onclick="filterCategory('Fashion')"><div class="category-icon">👕</div>Fashion</div>
+  <div class="category" onclick="filterCategory('Footwear')"><div class="category-icon">👟</div>Footwear</div>
+  <div class="category" onclick="filterCategory('Tools')"><div class="category-icon">🛠️</div>Tools</div>
   <div class="category" onclick="filterCategory('Electrical')"><div class="category-icon">⚡</div>Electrical</div>
   <div class="category" onclick="filterCategory('Plumbing')"><div class="category-icon">🔧</div>Plumbing</div>
   <div class="category" onclick="filterCategory('Mobiles')"><div class="category-icon">📱</div>Mobiles</div>
@@ -152,19 +154,17 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="category" onclick="filterCategory('Grocery')"><div class="category-icon">🛒</div>Grocery</div>
 </div>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-box">
     <div>
       <h1>Multi-Vendor Mega Sale!</h1>
-      <p>Electrical • Plumbing • Mobiles • Furniture • Fast Delivery</p>
+      <p>Medicines • Fashion • Footwear • Tools • Electronics • Fast Delivery</p>
       <button class="shop-btn" onclick="scrollProducts()">Shop Now</button>
     </div>
     <div class="hero-icon">🛍️</div>
   </div>
 </section>
 
-<!-- PRODUCTS SECTION -->
 <section class="section" id="productsSection">
   <div class="section-title">
     <span id="sectionTitle">Best Deals</span>
@@ -173,7 +173,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="products" id="productGrid"></div>
 </section>
 
-<!-- CART OVERLAY -->
 <div class="overlay" id="cartOverlay" onclick="closeCartOutside(event)">
   <div class="cart">
     <div class="cart-header">
@@ -188,7 +187,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- PRODUCT DETAILS MODAL -->
 <div class="modal-bg" id="productModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeProductModal()">×</button>
@@ -203,7 +201,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- SELLER SUBSCRIPTION MODAL -->
 <div class="modal-bg" id="sellerModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
@@ -223,7 +220,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       <p style="font-size:12px; color:var(--muted);">Unlimited Product Listings + National Delivery</p>
     </div>
 
-    <!-- UPI QR DISPLAY SECTION -->
     <div class="qr-box">
       <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
       <div class="upi-id" id="displayUpi">UPI ID: iqbalelectricplumber-1@okicici</div><br>
@@ -231,7 +227,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       <p style="font-size:13px; font-weight:bold; color:var(--blue);">Paying Amount: ₹<span id="payAmount">499</span></p>
     </div>
 
-    <!-- TRANSACTION PROOF -->
     <input type="text" id="sellerPhone" class="input-field" placeholder="Enter Your Mobile / WhatsApp Number">
     <input type="text" id="utrNo" class="input-field" placeholder="Enter UPI Ref / Transaction UTR No.">
 
@@ -239,15 +234,18 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- ADD PRODUCT MODAL (SELLER DASHBOARD) -->
 <div class="modal-bg" id="addProductModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
     <h2>📦 Upload New Product</h2>
     <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">List your item on Iqbal Mart marketplace</p>
 
-    <input type="text" id="newProdName" class="input-field" placeholder="Product Name (e.g. Copper Wire)">
+    <input type="text" id="newProdName" class="input-field" placeholder="Product Name (e.g. Cotton Shirt)">
     <select id="newProdCategory" class="select-field">
+      <option value="Medicines">Medicines</option>
+      <option value="Fashion">Fashion</option>
+      <option value="Footwear">Footwear</option>
+      <option value="Tools">Tools</option>
       <option value="Electrical">Electrical</option>
       <option value="Plumbing">Plumbing</option>
       <option value="Mobiles">Mobiles</option>
@@ -257,14 +255,13 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     </select>
     <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹ (e.g. 599)">
     <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹ (e.g. 999)">
-    <input type="text" id="newProdEmoji" class="input-field" placeholder="Emoji Icon (e.g. ⚡ or 🔌)">
+    <input type="text" id="newProdEmoji" class="input-field" placeholder="Emoji Icon (e.g. 👕 or 💊 or 🛠️)">
     <input type="text" id="newProdDesc" class="input-field" placeholder="Short description...">
 
     <button class="add-cart" onclick="submitNewProduct()">PUBLISH PRODUCT</button>
   </div>
 </div>
 
-<!-- ORDERS MODAL -->
 <div class="modal-bg" id="ordersModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
@@ -273,7 +270,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="nav-icon">🏠</span> Home</button>
   <button onclick="document.getElementById('searchInput').focus()"><span class="nav-icon">🔍</span> Search</button>
@@ -284,7 +280,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE MODULE INTEGRATION -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -302,10 +297,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Global cache for verified sellers
   window.verifiedSellersList = [];
 
-  // Fetch Sellers List to verify subscription
   window.fetchVerifiedSellers = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "sellers"));
@@ -318,7 +311,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     }
   };
 
-  // Save Subscription & Notify via WhatsApp
   window.saveSellerSubscription = async (planName, planPrice, phone, utr) => {
     try {
       const docRef = await addDoc(collection(db, "sellers"), {
@@ -336,14 +328,13 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       alert("✅ Payment details submitted successfully! Redirecting to WhatsApp...");
       closeSellerModal();
       window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
-      window.fetchVerifiedSellers(); // Refresh list
+      window.fetchVerifiedSellers();
     } catch (e) {
       console.error("Firestore Error: ", e);
       alert("❌ Firestore Error: " + e.message);
     }
   };
 
-  // Save New Product to Firestore
   window.saveProductToFirestore = async (productData) => {
     try {
       const docRef = await addDoc(collection(db, "products"), {
@@ -359,7 +350,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     }
   };
 
-  // Fetch Products from Firestore
   window.loadFirebaseProducts = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "products"));
@@ -419,14 +409,12 @@ function submitSubscription() {
   }
 }
 
-// SECURE VERIFICATION FOR ADDING PRODUCT
 function verifyAndOpenAddProduct() {
   const sellerPhoneInput = prompt("Enter your registered Seller WhatsApp/Mobile number to upload product:");
   if (!sellerPhoneInput) return;
 
   const cleanPhone = sellerPhoneInput.trim();
   
-  // Check if phone exists in verified list
   if (window.verifiedSellersList && window.verifiedSellersList.includes(cleanPhone)) {
     document.getElementById("addProductModal").style.display = "flex";
   } else {
@@ -434,18 +422,18 @@ function verifyAndOpenAddProduct() {
   }
 }
 
-/* INITIAL STATIC PRODUCTS */
+/* INITIAL STATIC PRODUCTS WITH NEW CATEGORIES */
 const staticProducts = [
-  { id: 1, name: "Smartphone Pro 5G", category: "Mobiles", price: 14999, oldPrice: 19999, rating: 4.5, emoji: "📱", description: "5G smartphone with smooth performance and clear camera." },
-  { id: 2, name: "Modular Switch Board Set", category: "Electrical", price: 499, oldPrice: 899, rating: 4.6, emoji: "🔌", description: "Heavy-duty copper switches and sockets for home wiring." },
-  { id: 3, name: "CPVC Pipe & Fitting Kit", category: "Plumbing", price: 1299, oldPrice: 1999, rating: 4.4, emoji: "🔧", description: "High-grade leak-proof plumbing fittings and pipes." },
-  { id: 4, name: "Luxury 5-Seater Sofa Set", category: "Furniture", price: 18999, oldPrice: 29999, rating: 4.8, emoji: "🛋️", description: "Comfortable wooden sofa set with premium cushions." },
-  { id: 5, name: "Smart LED TV 43 Inch", category: "Electronics", price: 21999, oldPrice: 32999, rating: 4.7, emoji: "📺", description: "4K Ultra HD Smart TV with Android/Google OS support." },
-  { id: 6, name: "Double Door Refrigerator", category: "Electronics", price: 24999, oldPrice: 31999, rating: 4.5, emoji: "🧊", description: "Energy-efficient frost-free refrigerator." },
-  { id: 7, name: "Brass Basin Water Tap", category: "Plumbing", price: 349, oldPrice: 699, rating: 4.3, emoji: "🚰", description: "Rust-proof chrome-plated brass tap for bathroom & kitchen." },
-  { id: 8, name: "LED Ceiling Lights 12W", category: "Electrical", price: 299, oldPrice: 599, rating: 4.5, emoji: "💡", description: "Bright energy-saving concealed LED panel light." },
-  { id: 9, name: "Wireless Earbuds 5.0", category: "Mobiles", price: 999, oldPrice: 1999, rating: 4.2, emoji: "🎧", description: "Deep bass bluetooth earbuds with 20h battery life." },
-  { id: 10, name: "Wooden Study Table", category: "Furniture", price: 3499, oldPrice: 5999, rating: 4.4, emoji: "🪑", description: "Durable wooden study and office table." }
+  { id: 1, name: "Multivitamin Immunity Tablets", category: "Medicines", price: 349, oldPrice: 599, rating: 4.6, emoji: "💊", description: "Daily health supplement tablets for energy and immunity." },
+  { id: 2, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", description: "Comfortable slim-fit cotton shirt for daily wear." },
+  { id: 3, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", description: "Lightweight breathable shoes for running and gym." },
+  { id: 4, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", description: "Complete tool set including pliers, screwdriver, and hammer." },
+  { id: 5, name: "Smartphone Pro 5G", category: "Mobiles", price: 14999, oldPrice: 19999, rating: 4.5, emoji: "📱", description: "5G smartphone with smooth performance and clear camera." },
+  { id: 6, name: "Modular Switch Board Set", category: "Electrical", price: 499, oldPrice: 899, rating: 4.6, emoji: "🔌", description: "Heavy-duty copper switches and sockets for home wiring." },
+  { id: 7, name: "CPVC Pipe & Fitting Kit", category: "Plumbing", price: 1299, oldPrice: 1999, rating: 4.4, emoji: "🔧", description: "High-grade leak-proof plumbing fittings and pipes." },
+  { id: 8, name: "Luxury 5-Seater Sofa Set", category: "Furniture", price: 18999, oldPrice: 29999, rating: 4.8, emoji: "🛋️", description: "Comfortable wooden sofa set with premium cushions." },
+  { id: 9, name: "Smart LED TV 43 Inch", category: "Electronics", price: 21999, oldPrice: 32999, rating: 4.7, emoji: "📺", description: "4K Ultra HD Smart TV with Android/Google OS support." },
+  { id: 10, name: "Double Door Refrigerator", category: "Electronics", price: 24999, oldPrice: 31999, rating: 4.5, emoji: "🧊", description: "Energy-efficient frost-free refrigerator." }
 ];
 
 let products = [...staticProducts];
@@ -521,7 +509,6 @@ function addModalProduct() { if (!selectedProduct) return; addToCart(selectedPro
 
 function showSellerModal() { document.getElementById("sellerModal").style.display = "flex"; }
 function closeSellerModal() { document.getElementById("sellerModal").style.display = "none"; }
-
 function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
 
 function submitNewProduct() {
