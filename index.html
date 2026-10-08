@@ -224,7 +224,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <div class="qr-box">
       <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
       <div class="upi-id" id="displayUpi">UPI ID: iqbalelectricplumber-1@okicici</div><br>
-      <img id="dynamicQr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalElectricPlumber&am=499&cu=INR" alt="UPI QR Code">
+      <img id="dynamicQr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalElectric&am=499&cu=INR" alt="UPI QR Code">
       <p style="font-size:13px; font-weight:bold; color:var(--blue);">Paying Amount: ₹<span id="payAmount">499</span></p>
     </div>
 
@@ -284,8 +284,17 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
         status: "Payment Verification Pending",
         createdAt: new Date()
       });
-      alert("✅ Payment details submitted successfully!\nTransaction UTR: " + utr + "\nFirestore Ref ID: " + docRef.id);
+      
+      // WhatsApp Notification Alert for Admin (Aapke Number par)
+      const adminWhatsAppNumber = "919714739355"; // Yahan aap apna WhatsApp number daal sakte hain
+      const message = `🔔 *New Seller Subscription!*%0A%0A*Plan:* ${planName}%0A*Price:* ₹${planPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}%0A*Ref ID:* ${docRef.id}`;
+      
+      alert("✅ Payment details submitted successfully! Redirecting to WhatsApp for notification...");
       closeSellerModal();
+
+      // Open WhatsApp to send notification to Admin
+      window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
+
     } catch (e) {
       console.error("Firestore Error: ", e);
       alert("❌ Firestore Error: " + e.message);
@@ -294,7 +303,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </script>
 
 <script>
-// AAPKA UPI ID UPDATE KAR DIYA GAYA HAI
 const YOUR_UPI_ID = "iqbalelectricplumber-1@okicici"; 
 
 let selectedPlanName = "Pro";
@@ -507,8 +515,8 @@ function showOrders() {
 }
 function closeOrders() { document.getElementById("ordersModal").style.display = "none"; }
 
-function toggleWishlist(event, id) {
-  event.stopPropagation();
+function toggleWishlist(entry, id) {
+  if(entry) entry.stopPropagation();
   if (wishlist.includes(id)) {
     wishlist = wishlist.filter(x => x !== id);
     showToast("Removed from wishlist");
