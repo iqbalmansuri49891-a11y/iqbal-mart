@@ -191,8 +191,31 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-footer">
       <div class="total"><span>Total</span><span>₹<span id="cartTotal">0</span></span></div>
-      <button class="checkout" onclick="checkout()">PLACE ORDER (WhatsApp / UPI)</button>
+      <button class="checkout" onclick="proceedToCheckout()">PAY & PLACE ORDER</button>
     </div>
+  </div>
+</div>
+
+<!-- INSTANT DIRECT PAYMENT MODAL -->
+<div class="modal-bg" id="directPayModal">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeDirectPayModal()">×</button>
+    <h2>⚡ Instant UPI Payment & Order</h2>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Scan QR or pay directly, then confirm order to send details to WhatsApp!</p>
+
+    <div class="qr-box">
+      <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
+      <div class="upi-id" id="checkoutUpi">UPI ID: iqbalelectricplumber-1@okicici</div><br>
+      <img id="checkoutQr" src="" alt="UPI QR Code">
+      <p style="font-size:15px; font-weight:bold; color:var(--blue); margin-top:8px;">Total Amount: ₹<span id="checkoutAmount">0</span></p>
+    </div>
+
+    <input type="text" id="custName" class="input-field" placeholder="Enter Your Name">
+    <input type="text" id="custPhone" class="input-field" placeholder="Enter Your Mobile / WhatsApp Number">
+    <input type="text" id="custAddress" class="input-field" placeholder="Enter Delivery Address">
+    <input type="text" id="custUtr" class="input-field" placeholder="Enter UPI Ref / Transaction UTR No. (Optional)">
+
+    <button class="add-cart" onclick="confirmAndSendOrder()">CONFIRM ORDER & SEND TO WHATSAPP</button>
   </div>
 </div>
 
@@ -535,6 +558,7 @@ function addModalProduct() { if (!selectedProduct) return; addToCart(selectedPro
 function showSellerModal() { document.getElementById("sellerModal").style.display = "flex"; }
 function closeSellerModal() { document.getElementById("sellerModal").style.display = "none"; }
 function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
+function closeDirectPayModal() { document.getElementById("directPayModal").style.display = "none"; }
 
 function submitNewProduct() {
   const name = document.getElementById("newProdName").value.trim();
@@ -654,15 +678,33 @@ function removeFromCart(id) {
   saveCart(); renderCart(); showToast("Product removed");
 }
 
-function checkout() {
+function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
   
-  const customerName = prompt("Enter your Name for Delivery:", "");
-  if (!customerName) return;
-  const customerPhone = prompt("Enter your Mobile Number:", "");
-  if (!customerPhone) return;
-  const customerAddress = prompt("Enter your Delivery Address:", "");
-  if (!customerAddress) return;
+  let total = 0;
+  cart.forEach(item => {
+    const product = products.find(p => p.id == item.id);
+    if (product) total += product.price * item.qty;
+  });
+
+  document.getElementById("checkoutAmount").textContent = total.toLocaleString("en-IN");
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=${YOUR_UPI_ID}&pn=IqbalMart&am=${total}&cu=INR`;
+  document.getElementById("checkoutQr").src = qrUrl;
+
+  closeCart();
+  document.getElementById("directPayModal").style.display = "flex";
+}
+
+function confirmAndSendOrder() {
+  const name = document.getElementById("custName").value.trim();
+  const phone = document.getElementById("custPhone").value.trim();
+  const address = document.getElementById("custAddress").value.trim();
+  const utr = document.getElementById("custUtr").value.trim() || "Pending / Direct UPI";
+
+  if (!name || !phone || !address) {
+    alert("Please fill in your Name, Phone Number, and Address.");
+    return;
+  }
 
   let total = 0;
   let itemsList = "";
@@ -675,18 +717,17 @@ function checkout() {
   });
 
   const orderId = "ORD" + Date.now();
-  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "Order Placed & WhatsApp Sent" };
+  const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "Paid & Ordered via UPI" };
   orders.unshift(order);
   localStorage.setItem("iqbal_orders", JSON.stringify(orders));
 
   const adminWhatsAppNumber = "919714739355";
-  const upiLink = `upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalMart&am=${total}&cu=INR`;
-  const message = `🛍️ *New Order Placed - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${customerName}%0A*Phone:* ${customerPhone}%0A*Address:* ${customerAddress}%0A%0A*Items Ordered:*%0A${itemsList}%0A*Total Amount:* ₹${total}%0A%0A*UPI Payment Link:* ${upiLink}%0A%0APlease pay ₹${total} via GPay/PhonePe/Paytm and share screenshot!`;
+  const message = `🛍️ *Paid Order Received - Iqbal Mart!*%0A%0A*Order ID:* ${orderId}%0A*Customer Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A*UTR / Ref:* ${utr}%0A%0A*Items:*%0A${itemsList}%0A*Total Paid:* ₹${total}`;
 
   cart = []; 
   saveCart(); 
-  renderCart(); 
-  closeCart();
+  updateCartCount();
+  closeDirectPayModal();
 
   window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
   showOrders();
