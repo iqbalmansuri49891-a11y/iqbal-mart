@@ -89,8 +89,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 .checkout { width: 100%; border: 0; background: #ff9f00; padding: 14px; font-weight: bold; cursor: pointer; border-radius: 4px; color: #111; }
 
 /* MODALS */
-.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
-.modal { width: min(520px, 100%); max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 10px; padding: 20px; color: var(--text); position: relative; }
+.modal-bg { display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
+.modal { width: min(520px, 100%); max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 12px; padding: 25px; color: var(--text); position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-product { text-align: center; }
 .big-product { height: 210px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 110px; margin-bottom: 15px; overflow: hidden; }
 .big-product img { width: 100%; height: 100%; object-fit: cover; }
@@ -200,12 +200,12 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- AUTHENTICATION & PROFILE MODAL -->
+<!-- AUTHENTICATION & PROFILE MODAL (MANDATORY ON LOAD) -->
 <div class="modal-bg" id="authModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
     <div id="authViewContainer">
-      <h2 id="authTitle">🔐 Seller & User Login</h2>
+      <h2 id="authTitle">🔐 Iqbal Mart Login</h2>
       <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Pehle Login ya Sign Up karein taaki store access kar sakein</p>
 
       <input type="email" id="authEmail" class="input-field" placeholder="Enter Email">
@@ -213,7 +213,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
       <div style="margin-top:15px; display:flex; gap:10px;">
         <button class="add-cart" style="margin-top:0; background:var(--blue); color:white;" onclick="handleLogin()">Login</button>
-        <button class="add-cart" style="margin-top:0; background:var(--yellow);" onclick="handleSignup()">Sign Up</button>
+        <button class="add-cart" style="margin-top:0; background:var(--yellow); color:#111;" onclick="handleSignup()">Sign Up</button>
       </div>
     </div>
 
@@ -236,7 +236,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </div>
 
 <!-- PRODUCT DETAILS MODAL -->
-<div class="modal-bg" id="productModal">
+<div class="modal-bg" id="productModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeProductModal()">×</button>
     <div class="modal-product">
@@ -251,7 +251,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </div>
 
 <!-- SELLER SUBSCRIPTION MODAL -->
-<div class="modal-bg" id="sellerModal">
+<div class="modal-bg" id="sellerModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
     <h2>📢 Become a Seller (Subscription Plans)</h2>
@@ -287,7 +287,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </div>
 
 <!-- ADD PRODUCT MODAL -->
-<div class="modal-bg" id="addProductModal">
+<div class="modal-bg" id="addProductModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
     <h2>📦 Upload New Product</h2>
@@ -321,7 +321,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </div>
 
 <!-- ORDERS MODAL -->
-<div class="modal-bg" id="ordersModal">
+<div class="modal-bg" id="ordersModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
     <h2>📦 My Orders & Admin Approvals</h2>
@@ -368,18 +368,16 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     window.currentUser = user;
     const navBtn = document.getElementById("authNavBtn");
     
-    // MANDATORY LOGIN ON LOAD
     if (!user) {
+      // Show mandatory login modal if user is not logged in
       document.getElementById("authModal").style.display = "flex";
       document.getElementById("authViewContainer").style.display = "block";
       document.getElementById("profileViewContainer").style.display = "none";
-    }
-
-    if (user) {
+    } else {
+      // Hide login modal and show store when logged in
+      document.getElementById("authModal").style.display = "none";
       navBtn.textContent = "👤 " + user.email.split('@')[0];
       document.getElementById("userEmailDisplay").textContent = user.email;
-      document.getElementById("authViewContainer").style.display = "none";
-      document.getElementById("profileViewContainer").style.display = "block";
       
       try {
         const docRef = doc(db, "vendor_banks", user.uid);
@@ -514,7 +512,12 @@ function submitSubscription() {
   window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
 }
 
-function openAuthModal() { document.getElementById("authModal").style.display = "flex"; }
+function openAuthModal() { 
+  document.getElementById("authViewContainer").style.display = window.currentUser ? "none" : "block";
+  document.getElementById("profileViewContainer").style.display = window.currentUser ? "block" : "none";
+  document.getElementById("authModal").style.display = "flex"; 
+}
+
 function closeAuthModal() { 
   if (!window.currentUser) {
     alert("❌ Pehle Login ya Sign Up karna zaroori hai!");
