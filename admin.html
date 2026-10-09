@@ -109,7 +109,7 @@
                 });
             } catch (error) {
                 console.error("Error loading vendor banks:", error);
-                tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-red-500">Data load karne mein error aaya.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili.</td></tr>`;
             }
         }
 
@@ -135,7 +135,7 @@
                 });
             } catch (error) {
                 console.error("Error loading products:", error);
-                tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-red-500">Products load karne mein error aaya.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-500">Products load karne mein error aaya.</td></tr>`;
             }
         }
 
