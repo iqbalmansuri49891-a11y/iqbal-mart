@@ -70,19 +70,21 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-        // Apni Firebase configuration yahan daalein
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyALVuRv4qKbafSKz9ZqULjuvENYXtTXFvc",
+            authDomain: "iqbal-mart-4324e.firebaseapp.com",
+            projectId: "iqbal-mart-4324e",
+            storageBucket: "iqbal-mart-4324e.firebasestorage.app",
+            messagingSenderId: "970971077102",
+            appId: "1:970971077102:web:7ab797480fd370a0c296ff",
+            measurementId: "G-8S0GCRK0M3"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const analytics = getAnalytics(app);
 
         async function loadVendorBanks() {
             const tableBody = document.getElementById("vendor-banks-list");
@@ -98,10 +100,10 @@
                     tableBody.innerHTML += `
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 px-6 font-mono text-xs text-gray-600">${doc.id}</td>
-                            <td class="py-3 px-6 font-medium text-gray-800">${data.accountHolder || 'N/A'}</td>
-                            <td class="py-3 px-6 font-mono">${data.accountNumber || 'N/A'}</td>
-                            <td class="py-3 px-6 font-mono uppercase">${data.ifscCode || 'N/A'}</td>
-                            <td class="py-3 px-6 font-mono text-blue-600">${data.upiId || 'N/A'}</td>
+                            <td class="py-3 px-6 font-medium text-gray-800">${data.accName || 'N/A'}</td>
+                            <td class="py-3 px-6 font-mono">${data.accNo || 'N/A'}</td>
+                            <td class="py-3 px-6 font-mono uppercase">${data.ifsc || 'N/A'}</td>
+                            <td class="py-3 px-6 font-mono text-blue-600">${data.upi || 'N/A'}</td>
                         </tr>
                     `;
                 });
@@ -127,7 +129,7 @@
                             <td class="py-3 px-6 font-medium text-gray-800">${data.name || 'N/A'}</td>
                             <td class="py-3 px-6 text-gray-600">${data.category || 'N/A'}</td>
                             <td class="py-3 px-6 font-semibold text-green-600">₹${data.price || '0'}</td>
-                            <td class="py-3 px-6 text-gray-500 text-xs">${data.sellerEmail || data.vendorEmail || 'N/A'}</td>
+                            <td class="py-3 px-6 text-gray-500 text-xs">${data.sellerEmail || 'N/A'}</td>
                         </tr>
                     `;
                 });
