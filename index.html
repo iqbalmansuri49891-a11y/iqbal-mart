@@ -206,7 +206,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
     <div id="authViewContainer">
       <h2 id="authTitle">🔐 Seller & User Login</h2>
-      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Login karein ya naya account banayein</p>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Pehle Login ya Sign Up karein taaki store access kar sakein</p>
 
       <input type="email" id="authEmail" class="input-field" placeholder="Enter Email">
       <input type="password" id="authPassword" class="input-field" placeholder="Enter Password">
@@ -367,6 +367,14 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   onAuthStateChanged(auth, async (user) => {
     window.currentUser = user;
     const navBtn = document.getElementById("authNavBtn");
+    
+    // MANDATORY LOGIN ON LOAD
+    if (!user) {
+      document.getElementById("authModal").style.display = "flex";
+      document.getElementById("authViewContainer").style.display = "block";
+      document.getElementById("profileViewContainer").style.display = "none";
+    }
+
     if (user) {
       navBtn.textContent = "👤 " + user.email.split('@')[0];
       document.getElementById("userEmailDisplay").textContent = user.email;
@@ -384,10 +392,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
           document.getElementById("bankUpi").value = data.upi || "";
         }
       } catch(e) { console.log(e); }
-    } else {
-      navBtn.textContent = "👤 Login";
-      document.getElementById("authViewContainer").style.display = "block";
-      document.getElementById("profileViewContainer").style.display = "none";
     }
   });
 
@@ -415,7 +419,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     try {
       await signOut(auth);
       alert("✅ Logged out successfully!");
-      closeAuthModal();
+      location.reload();
     } catch(e) { alert("❌ Error: " + e.message); }
   };
 
@@ -437,7 +441,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
         accName, accNo, ifsc, upi, updatedAt: new Date()
       });
       alert("✅ Bank Payout details saved successfully!");
-      closeAuthModal();
+      document.getElementById("authModal").style.display = "none";
     } catch(e) { alert("❌ Error saving bank details: " + e.message); }
   };
 
@@ -511,7 +515,13 @@ function submitSubscription() {
 }
 
 function openAuthModal() { document.getElementById("authModal").style.display = "flex"; }
-function closeAuthModal() { document.getElementById("authModal").style.display = "none"; }
+function closeAuthModal() { 
+  if (!window.currentUser) {
+    alert("❌ Pehle Login ya Sign Up karna zaroori hai!");
+    return;
+  }
+  document.getElementById("authModal").style.display = "none"; 
+}
 
 function verifyAndOpenAddProduct() {
   if (!window.currentUser) {
