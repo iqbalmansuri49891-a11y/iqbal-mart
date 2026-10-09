@@ -200,7 +200,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- AUTHENTICATION MODAL -->
+<!-- AUTHENTICATION & PROFILE MODAL -->
 <div class="modal-bg" id="authModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
@@ -222,12 +222,12 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       <h2>👤 My Profile & Bank Payout Details</h2>
       <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Apna Bank Account ya UPI ID jodein taaki sell hone par paisa mil sake:</p>
       
-      <p><b>Email:</b> <span id="userEmailDisplay"></span></p>
+      <p style="margin-bottom:10px;"><b>Email:</b> <span id="userEmailDisplay"></span></p>
 
-      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name">
+      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name (e.g. Mohd Iqbal)">
       <input type="text" id="bankAccNo" class="input-field" placeholder="Bank Account Number">
-      <input type="text" id="bankIfsc" class="input-field" placeholder="IFSC Code">
-      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID (e.g. user@okicici)">
+      <input type="text" id="bankIfsc" class="input-field uppercase" placeholder="IFSC Code (e.g. HDFC0001234)">
+      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID (e.g. iqbal@okicici)">
 
       <button class="add-cart" onclick="saveUserBankDetails()">SAVE BANK DETAILS</button>
       <button class="add-cart" style="background:#e53935; color:white; margin-top:10px;" onclick="handleLogout()">LOGOUT</button>
@@ -398,7 +398,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert("✅ Account created successfully!");
-      closeAuthModal();
     } catch(e) { alert("❌ Error: " + e.message); }
   };
 
@@ -409,7 +408,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert("✅ Logged in successfully!");
-      closeAuthModal();
     } catch(e) { alert("❌ Error: " + e.message); }
   };
 
@@ -427,6 +425,11 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     const accNo = document.getElementById("bankAccNo").value.trim();
     const ifsc = document.getElementById("bankIfsc").value.trim();
     const upi = document.getElementById("bankUpi").value.trim();
+
+    if(!accName || !accNo || !ifsc) {
+      alert("❌ Please fill Account Name, Account Number and IFSC Code.");
+      return;
+    }
 
     try {
       await setDoc(doc(db, "vendor_banks", window.currentUser.uid), {
