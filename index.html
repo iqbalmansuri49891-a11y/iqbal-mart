@@ -28,6 +28,33 @@ body.dark {
 }
 body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
 
+/* MANDATORY LOGIN LOCK: Jab tak login nahi hoga, store hide rahega */
+body:not(.logged-in) header,
+body:not(.logged-in) .categories,
+body:not(.logged-in) .hero,
+body:not(.logged-in) .section,
+body:not(.logged-in) .bottom-nav {
+  display: none !important;
+}
+
+body:not(.logged-in) {
+  background: var(--card) !important;
+}
+
+body:not(.logged-in) #authModal {
+  display: flex !important;
+  background: var(--card) !important;
+  position: static !important;
+  height: 100vh;
+}
+
+body:not(.logged-in) .modal {
+  box-shadow: none !important;
+  width: 100% !important;
+  max-width: 450px !important;
+  margin: auto;
+}
+
 /* HEADER */
 header { background: var(--blue); color: white; padding: 10px 14px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
 .topbar { display: flex; align-items: center; gap: 10px; max-width: 1200px; margin: auto; }
@@ -89,7 +116,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 .checkout { width: 100%; border: 0; background: #ff9f00; padding: 14px; font-weight: bold; cursor: pointer; border-radius: 4px; color: #111; }
 
 /* MODALS */
-.modal-bg { display: flex; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
 .modal { width: min(520px, 100%); max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 12px; padding: 25px; color: var(--text); position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .modal-product { text-align: center; }
 .big-product { height: 210px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 110px; margin-bottom: 15px; overflow: hidden; }
@@ -200,7 +227,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- AUTHENTICATION & PROFILE MODAL (MANDATORY ON LOAD) -->
+<!-- AUTHENTICATION & PROFILE MODAL -->
 <div class="modal-bg" id="authModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
@@ -369,12 +396,12 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     const navBtn = document.getElementById("authNavBtn");
     
     if (!user) {
-      // Show mandatory login modal if user is not logged in
+      document.body.classList.remove("logged-in");
       document.getElementById("authModal").style.display = "flex";
       document.getElementById("authViewContainer").style.display = "block";
       document.getElementById("profileViewContainer").style.display = "none";
     } else {
-      // Hide login modal and show store when logged in
+      document.body.classList.add("logged-in");
       document.getElementById("authModal").style.display = "none";
       navBtn.textContent = "👤 " + user.email.split('@')[0];
       document.getElementById("userEmailDisplay").textContent = user.email;
