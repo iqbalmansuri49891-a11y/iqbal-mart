@@ -200,7 +200,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- AUTHENTICATION MODAL (LOGIN / SIGNUP & BANK DETAILS) -->
+<!-- AUTHENTICATION MODAL -->
 <div class="modal-bg" id="authModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
@@ -286,7 +286,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- ADD PRODUCT MODAL (SELLER DASHBOARD) -->
+<!-- ADD PRODUCT MODAL -->
 <div class="modal-bg" id="addProductModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
@@ -310,7 +310,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹ (e.g. 24999)">
     <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹ (e.g. 32999)">
     
-    <!-- FILE UPLOAD FIELD -->
     <label style="display:block; margin-top:12px; font-size:13px; font-weight:bold; color:var(--muted);">Select Product Photo from Gallery/Camera:</label>
     <input type="file" id="newProdFile" class="input-field" accept="image/*">
 
@@ -341,11 +340,12 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE MODULE INTEGRATION WITH AUTH & FIRESTORE -->
+<!-- FIREBASE INTEGRATION -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyALVuRv4qKbafSKz9ZqULjuvENYXtTXFvc",
@@ -360,6 +360,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
+  const analytics = getAnalytics(app);
 
   window.currentUser = null;
 
@@ -372,7 +373,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       document.getElementById("authViewContainer").style.display = "none";
       document.getElementById("profileViewContainer").style.display = "block";
       
-      // Load saved bank details if available
       try {
         const docRef = doc(db, "vendor_banks", user.uid);
         const docSnap = await getDoc(docRef);
@@ -433,52 +433,14 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
         email: window.currentUser.email,
         accName, accNo, ifsc, upi, updatedAt: new Date()
       });
-      alert("✅ Bank Payout details saved successfully! Ab product sell hone par aapko isi account mein paisa bheja jayega.");
+      alert("✅ Bank Payout details saved successfully!");
       closeAuthModal();
     } catch(e) { alert("❌ Error saving bank details: " + e.message); }
   };
 
-  window.verifiedSellersList = [];
-
-  window.fetchVerifiedSellers = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "sellers"));
-      window.verifiedSellersList = [];
-      querySnapshot.forEach((doc) => {
-        window.verifiedSellersList.push(doc.data().sellerPhone);
-      });
-    } catch (e) {
-      console.log("Error fetching sellers:", e);
-    }
-  };
-
-  window.saveSellerSubscription = async (planName, planPrice, phone, utr) => {
-    try {
-      const docRef = await addDoc(collection(db, "sellers"), {
-        subscriptionPlan: planName,
-        price: planPrice,
-        sellerPhone: phone,
-        utrNumber: utr,
-        status: "Payment Verification Pending",
-        createdAt: new Date()
-      });
-      
-      const adminWhatsAppNumber = "919714739355";
-      const message = `🔔 *New Seller Subscription!*%0A%0A*Plan:* ${planName}%0A*Price:* ₹${planPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}%0A*Ref ID:* ${docRef.id}`;
-      
-      alert("✅ Payment details submitted successfully! Redirecting to WhatsApp...");
-      closeSellerModal();
-      window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
-      window.fetchVerifiedSellers();
-    } catch (e) {
-      console.error("Firestore Error: ", e);
-      alert("❌ Firestore Error: " + e.message);
-    }
-  };
-
   window.saveProductToFirestore = async (productData) => {
     try {
-      const docRef = await addDoc(collection(db, "products"), {
+      await addDoc(collection(db, "products"), {
         ...productData,
         sellerEmail: window.currentUser ? window.currentUser.email : "admin",
         createdAt: new Date()
@@ -487,7 +449,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       closeAddProductModal();
       window.loadFirebaseProducts();
     } catch (e) {
-      console.error("Error adding product: ", e);
       alert("❌ Error: " + e.message);
     }
   };
@@ -508,7 +469,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   };
 
   window.loadFirebaseProducts();
-  window.fetchVerifiedSellers();
 </script>
 
 <script>
@@ -536,20 +496,15 @@ function submitSubscription() {
   const phone = document.getElementById("sellerPhone").value.trim();
   const utr = document.getElementById("utrNo").value.trim();
 
-  if(!phone || phone.length < 10) {
-    alert("Please enter a valid WhatsApp/Mobile number.");
-    return;
-  }
-  if(!utr || utr.length < 12) {
-    alert("❌ Invalid UTR! Asli UPI payment ka 12-digit ka UTR number daalna zaroori hai.");
-    return;
-  }
+  if(!phone || phone.length < 10) { alert("Please enter a valid WhatsApp/Mobile number."); return; }
+  if(!utr || utr.length < 12) { alert("❌ Invalid UTR! Asli UPI payment ka 12-digit ka UTR number daalna zaroori hai."); return; }
 
-  if (window.saveSellerSubscription) {
-    window.saveSellerSubscription(selectedPlanName, selectedPlanPrice, phone, utr);
-  } else {
-    alert("Module loading... please retry.");
-  }
+  const adminWhatsAppNumber = "919714739355";
+  const message = `🔔 *New Seller Subscription!*%0A%0A*Plan:* ${selectedPlanName}%0A*Price:* ₹${selectedPlanPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}`;
+  
+  alert("✅ Payment details submitted successfully! Redirecting to WhatsApp...");
+  closeSellerModal();
+  window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
 }
 
 function openAuthModal() { document.getElementById("authModal").style.display = "flex"; }
@@ -564,18 +519,13 @@ function verifyAndOpenAddProduct() {
   document.getElementById("addProductModal").style.display = "flex";
 }
 
-/* INITIAL STATIC PRODUCTS WITH CAMERAS */
 const staticProducts = [
-  { id: 1, name: "Professional DSLR Camera 4K", category: "Cameras", price: 34999, oldPrice: 45999, rating: 4.8, emoji: "📷", image: "", description: "High resolution DSLR camera with 18-55mm lens for professional photography." },
-  { id: 2, name: "WiFi Security CCTV Camera", category: "Cameras", price: 1599, oldPrice: 2999, rating: 4.6, emoji: "📸", image: "", description: "Smart wireless home security camera with night vision and mobile alerts." },
-  { id: 3, name: "Multivitamin Immunity Tablets", category: "Medicines", price: 349, oldPrice: 599, rating: 4.6, emoji: "💊", image: "", description: "Daily health supplement tablets for energy and immunity." },
-  { id: 4, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt for daily wear." },
-  { id: 5, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes for running and gym." },
-  { id: 6, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set including pliers, screwdriver, and hammer." },
-  { id: 7, name: "Smartphone Pro 5G", category: "Mobiles", price: 14999, oldPrice: 19999, rating: 4.5, emoji: "📱", image: "", description: "5G smartphone with smooth performance and clear camera." },
-  { id: 8, name: "Modular Switch Board Set", category: "Electrical", price: 499, oldPrice: 899, rating: 4.6, emoji: "🔌", image: "", description: "Heavy-duty copper switches and sockets for home wiring." },
-  { id: 9, name: "CPVC Pipe & Fitting Kit", category: "Plumbing", price: 1299, oldPrice: 1999, rating: 4.4, emoji: "🔧", image: "", description: "High-grade leak-proof plumbing fittings and pipes." },
-  { id: 10, name: "Luxury 5-Seater Sofa Set", category: "Furniture", price: 18999, oldPrice: 29999, rating: 4.8, emoji: "🛋️", image: "", description: "Comfortable wooden sofa set with premium cushions." }
+  { id: 1, name: "Professional DSLR Camera 4K", category: "Cameras", price: 34999, oldPrice: 45999, rating: 4.8, emoji: "📷", image: "", description: "High resolution DSLR camera with 18-55mm lens." },
+  { id: 2, name: "WiFi Security CCTV Camera", category: "Cameras", price: 1599, oldPrice: 2999, rating: 4.6, emoji: "📸", image: "", description: "Smart wireless home security camera." },
+  { id: 3, name: "Multivitamin Immunity Tablets", category: "Medicines", price: 349, oldPrice: 599, rating: 4.6, emoji: "💊", image: "", description: "Daily health supplement tablets." },
+  { id: 4, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt." },
+  { id: 5, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes." },
+  { id: 6, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set." }
 ];
 
 let products = [...staticProducts];
@@ -623,7 +573,6 @@ function searchProducts() {
   currentProducts = products.filter(product =>
     product.name.toLowerCase().includes(query) || product.category.toLowerCase().includes(query)
   );
-  document.getElementById("sectionTitle").innerHTML = `<span id="sectionTitleText">${query ? `Search: ${query}` : "Best Deals"}</span>`;
   renderProducts(currentProducts);
 }
 
@@ -664,10 +613,7 @@ function submitNewProduct() {
   const description = document.getElementById("newProdDesc").value.trim() || "Seller uploaded product item.";
   const fileInput = document.getElementById("newProdFile");
 
-  if(!name || !price) {
-    alert("Please enter valid Product Name and Price.");
-    return;
-  }
+  if(!name || !price) { alert("Please enter valid Product Name and Price."); return; }
 
   if (fileInput.files && fileInput.files[0]) {
     const reader = new FileReader();
@@ -682,22 +628,15 @@ function submitNewProduct() {
         let height = img.height;
 
         if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
+          if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
         } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
+          if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
         }
 
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
         if (window.saveProductToFirestore) {
@@ -773,10 +712,8 @@ function removeFromCart(id) {
   saveCart(); renderCart(); showToast("Product removed");
 }
 
-/* RAZORPAY CHECKOUT INTEGRATION */
 function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
-  
   let total = 0;
   cart.forEach(item => {
     const product = products.find(p => p.id == item.id);
@@ -785,45 +722,21 @@ function proceedToCheckout() {
 
   var options = {
     "key": RAZORPAY_KEY_ID,
-    "amount": total * 100, // Amount in smallest unit (paise)
+    "amount": total * 100,
     "currency": "INR",
     "name": "Iqbal Mart",
     "description": "Multi-Vendor Marketplace Order",
-    "image": "https://iqbal-mart.vercel.app/logo.png",
     "handler": function (response) {
       const orderId = "ORD" + Date.now();
-      const order = { 
-        id: orderId, 
-        date: new Date().toLocaleString(), 
-        items: [...cart], 
-        total: total, 
-        status: "✅ Payment Successful via Razorpay", 
-        paymentId: response.razorpay_payment_id 
-      };
+      const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "✅ Payment Successful", paymentId: response.razorpay_payment_id };
       orders.unshift(order);
       localStorage.setItem("iqbal_orders", JSON.stringify(orders));
-
-      cart = []; 
-      saveCart(); 
-      updateCartCount();
-      closeCart();
-
+      cart = []; saveCart(); updateCartCount(); closeCart();
       alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
       showOrders();
     },
-    "prefill": {
-      "name": "Iqbalbhai Mansuri",
-      "email": "customer@iqbalmart.com",
-      "contact": "9876543210"
-    },
-    "notes": {
-      "address": "Iqbal Mart Online Order"
-    },
-    "theme": {
-      "color": "#2874f0"
-    }
+    "theme": { "color": "#2874f0" }
   };
-  
   var rzp = new Razorpay(options);
   rzp.open();
 }
@@ -838,7 +751,6 @@ function showOrders() {
         <b>${order.id}</b><br><small>${order.date}</small>
         <p style="margin:6px 0;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
         <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
-        <p style="margin:6px 0; font-size:13px;">Status: <b style="color:var::green);">${order.status}</b></p>
       </div>
     `).join("");
   }
@@ -848,20 +760,14 @@ function closeOrders() { document.getElementById("ordersModal").style.display = 
 
 function toggleWishlist(event, id) {
   if(event) event.stopPropagation();
-  if (wishlist.includes(id)) {
-    wishlist = wishlist.filter(x => x != id);
-    showToast("Removed from wishlist");
-  } else {
-    wishlist.push(id);
-    showToast("❤️ Added to wishlist");
-  }
+  if (wishlist.includes(id)) { wishlist = wishlist.filter(x => x != id); showToast("Removed from wishlist"); }
+  else { wishlist.push(id); showToast("❤️ Added to wishlist"); }
   localStorage.setItem("iqbal_wishlist", JSON.stringify(wishlist));
   renderProducts(currentProducts);
 }
 
 function showWishlist() {
   const list = products.filter(p => wishlist.includes(p.id));
-  document.getElementById("sectionTitle").innerHTML = `<span id="sectionTitleText">❤️ Wishlist</span>`;
   currentProducts = list; renderProducts(list);
   document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
 }
