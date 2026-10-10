@@ -9,23 +9,39 @@
     body { font-family: Arial, sans-serif; background: #f1f3f6; margin: 0; padding: 0; color: #212121; }
     header { background: #2874f0; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
     .container { padding: 15px; max-width: 800px; margin: auto; }
-    .product-card { background: white; border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .product-card, .seller-box { background: white; border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+    .product-card { display: flex; justify-content: space-between; align-items: center; }
     button { background: #ff9f00; border: none; padding: 10px 15px; color: white; font-weight: bold; cursor: pointer; border-radius: 2px; }
     .cart-btn { background: #fb641b; }
+    input { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
   </style>
 </head>
 <body>
 
   <header>
     <h2>Iqbal Mart</h2>
-    <button class="cart-btn" onclick="openCart()">Cart (<span id="cart-count">0</span>)</button>
+    <div>
+      <button onclick="toggleSeller()">Seller Panel</button>
+      <button class="cart-btn" onclick="openCart()">Cart (<span id="cart-count">0</span>)</button>
+    </div>
   </header>
 
   <div class="container">
+    <!-- Seller Panel Section -->
+    <div id="seller-panel" class="seller-box" style="display:none;">
+      <h3>Seller Dashboard (5% Commission)</h3>
+      <input type="text" id="p-name" placeholder="Product Name">
+      <input type="number" id="p-price" placeholder="Product Price (₹)">
+      <button onclick="addNewProduct()">Add Product</button>
+      <h4>Your Orders & Earnings</h4>
+      <div id="seller-orders">No orders yet.</div>
+    </div>
+
     <h3>Products</h3>
     <div id="product-list"></div>
   </div>
 
+  <!-- Cart Modal -->
   <div id="cart-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
     <div style="background:white; max-width:400px; margin:50px auto; padding:20px; border-radius:5px;">
       <h3>Your Cart</h3>
@@ -38,13 +54,15 @@
 
   <script>
     const RAZORPAY_KEY_ID = "rzp_live_Tm8vKEh9DrutliN";
+    const COMMISSION_PERCENT = 5;
 
-    const products = [
+    let products = JSON.parse(localStorage.getItem("iqbal_products")) || [
       { id: 1, name: "Switch", price: 10 },
       { id: 2, name: "Shopping Bag", price: 50 }
     ];
 
     let cart = JSON.parse(localStorage.getItem("iqbal_cart")) || [];
+    let orders = JSON.parse(localStorage.getItem("iqbal_orders")) || [];
 
     function renderProducts() {
       const list = document.getElementById("product-list");
@@ -57,6 +75,26 @@
           </div>
         `;
       });
+      renderSellerOrders();
+    }
+
+    function toggleSeller() {
+      const panel = document.getElementById("seller-panel");
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+    }
+
+    function addNewProduct() {
+      const name = document.getElementById("p-name").value;
+      const price = parseFloat(document.getElementById("p-price").value);
+      if (!name || !price) { alert("Please enter valid details"); return; }
+      
+      const newProd = { id: Date.now(), name, price };
+      products.push(newProd);
+      localStorage.setItem("iqbal_products", JSON.stringify(products));
+      document.getElementById("p-name").value = "";
+      document.getElementById("p-price").value = "";
+      renderProducts();
+      alert("Product added successfully!");
     }
 
     function addToCart(id) {
@@ -91,17 +129,28 @@
       document.getElementById("cart-modal").style.display = "none";
     }
 
+    function renderSellerOrders() {
+      const div = document.getElementById("seller-orders");
+      if (!orders.length) { div.innerHTML = "No orders yet."; return; }
+      div.innerHTML = "";
+      orders.forEach(o => {
+        div.innerHTML += `<div style="border-bottom:1px solid #ddd; padding:5px 0;">Order ID: ${o.id} | Total: ₹${o.total} | Paid (Razorpay)</div>`;
+      });
+    }
+
     function payNow() {
       let total = 0;
+      let orderItems = [];
       cart.forEach(item => {
         const p = products.find(prod => prod.id === item.id);
-        if (p) { total += p.price * item.qty; }
+        if (p) {
+          const itemTotal = p.price * item.qty;
+          total += itemTotal;
+          orderItems.push({ name: p.name, price: p.price, qty: item.qty, total: itemTotal });
+        }
       });
 
-      if (total <= 0) {
-        alert("Cart is empty!");
-        return;
-      }
+      if (total <= 0) { alert("Cart is empty!"); return; }
 
       var options = {
         "key": RAZORPAY_KEY_ID,
@@ -110,11 +159,15 @@
         "name": "Iqbal Mart",
         "description": "Live Purchase",
         "handler": function (response) {
-          alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+          const newOrder = { id: "ORD" + Date.now(), items: orderItems, total, paymentId: response.razorpay_payment_id };
+          orders.unshift(newOrder);
+          localStorage.setItem("iqbal_orders", JSON.stringify(orders));
           cart = [];
           localStorage.setItem("iqbal_cart", JSON.stringify(cart));
           updateCartCount();
           closeCart();
+          alert("✅ Payment Successful! ID: " + response.razorpay_payment_id);
+          renderProducts();
         },
         "theme": { "color": "#2874f0" }
       };
