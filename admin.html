@@ -14,6 +14,18 @@
             <span class="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">Live Mode / Payout Panel</span>
         </header>
 
+        <!-- Stats Counter Section (Ginti) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
+                <h3 class="text-gray-500 text-sm font-semibold uppercase">Total Products</h3>
+                <p id="total-products-count" class="text-2xl font-bold text-gray-800">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+                <h3 class="text-gray-500 text-sm font-semibold uppercase">Total Notifications</h3>
+                <p id="total-notifications-count" class="text-2xl font-bold text-gray-800">0</p>
+            </div>
+        </div>
+
         <!-- Live Notifications Section -->
         <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
             <div class="px-6 py-4 bg-gray-50 border-b">
@@ -130,6 +142,10 @@
             const tableBody = document.getElementById("products-list");
             try {
                 const querySnapshot = await getDocs(collection(db, "products"));
+                
+                // Update Total Products Counter (Ginti)
+                document.getElementById('total-products-count').innerText = querySnapshot.size;
+
                 if (querySnapshot.empty) {
                     tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-500">Koi products upload nahi hue hain.</td></tr>`;
                     return;
@@ -152,12 +168,15 @@
             }
         }
 
-        // Real-time Notifications Listener
+        // Real-time Notifications Listener with Counter (Ginti)
         function loadNotifications() {
             const notifList = document.getElementById('notification-list');
             const q = query(collection(db, "notifications"), orderBy("timestamp", "desc"), limit(10));
             
             onSnapshot(q, (snapshot) => {
+                // Update Total Notifications Counter (Ginti)
+                document.getElementById('total-notifications-count').innerText = snapshot.size;
+
                 notifList.innerHTML = "";
                 if (snapshot.empty) {
                     notifList.innerHTML = `<li class="py-2 text-center text-gray-500">No new notifications.</li>`;
