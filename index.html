@@ -4,59 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iqbal Mart</title>
-  <!-- Razorpay Checkout Script -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
-    :root {
-      --yellow: #ff9f00;
-      --bg: #f1f3f6;
-      --card: #ffffff;
-      --text: #212121;
-      --muted: #878787;
-      --border: #e0e0e0;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #2874f0;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .container {
-      padding: 15px;
-      max-width: 800px;
-      margin: auto;
-    }
-    .product-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    button {
-      background-color: var(--yellow);
-      border: none;
-      padding: 10px 15px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 2px;
-    }
-    .cart-btn {
-      background-color: #fb641b;
-    }
+    body { font-family: Arial, sans-serif; background: #f1f3f6; margin: 0; padding: 0; color: #212121; }
+    header { background: #2874f0; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .container { padding: 15px; max-width: 800px; margin: auto; }
+    .product-card { background: white; border: 1px solid #e0e0e0; padding: 15px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+    button { background: #ff9f00; border: none; padding: 10px 15px; color: white; font-weight: bold; cursor: pointer; border-radius: 2px; }
+    .cart-btn { background: #fb641b; }
   </style>
 </head>
 <body>
@@ -76,23 +31,20 @@
       <h3>Your Cart</h3>
       <div id="cart-items"></div>
       <h4>Total: ₹<span id="cart-total">0</span></h4>
-      <button onclick="proceedToCheckout()">PAY VIA RAZORPAY</button>
+      <button onclick="payNow()">PAY VIA RAZORPAY</button>
       <button onclick="closeCart()" style="background:#878787; margin-left:10px;">Close</button>
     </div>
   </div>
 
   <script>
-    // Live Razorpay Key ID configured directly
     const RAZORPAY_KEY_ID = "rzp_live_Tm8vKEh9DrutliN";
-    const COMMISSION_PERCENT = 5;
 
-    let products = [
+    const products = [
       { id: 1, name: "Switch", price: 10 },
       { id: 2, name: "Shopping Bag", price: 50 }
     ];
 
     let cart = JSON.parse(localStorage.getItem("iqbal_cart")) || [];
-    let orders = JSON.parse(localStorage.getItem("iqbal_orders")) || [];
 
     function renderProducts() {
       const list = document.getElementById("product-list");
@@ -100,9 +52,7 @@
       products.forEach(p => {
         list.innerHTML += `
           <div class="product-card">
-            <div>
-              <strong>${p.name}</strong><br>₹${p.price}
-            </div>
+            <div><strong>${p.name}</strong><br>₹${p.price}</div>
             <button onclick="addToCart(${p.id})">Add to Cart</button>
           </div>
         `;
@@ -111,18 +61,10 @@
 
     function addToCart(id) {
       const item = cart.find(i => i.id === id);
-      if (item) {
-        item.qty += 1;
-      } else {
-        cart.push({ id: id, qty: 1 });
-      }
-      saveCart();
-      alert("Added to cart!");
-    }
-
-    function saveCart() {
+      if (item) { item.qty += 1; } else { cart.push({ id: id, qty: 1 }); }
       localStorage.setItem("iqbal_cart", JSON.stringify(cart));
       updateCartCount();
+      alert("Added to cart!");
     }
 
     function updateCartCount() {
@@ -149,41 +91,35 @@
       document.getElementById("cart-modal").style.display = "none";
     }
 
-    async function proceedToCheckout() {
-      if (!cart.length) { alert("Cart is empty"); return; }
+    function payNow() {
       let total = 0;
-      let orderItems = [];
       cart.forEach(item => {
-        const p = products.find(prod => prod.id == item.id);
-        if (p) {
-          const itemTotal = p.price * item.qty;
-          total += itemTotal;
-          const commission = itemTotal * (COMMISSION_PERCENT / 100);
-          orderItems.push({ name: p.name, price: p.price, qty: item.qty, total: itemTotal, commission, sellerEarnings: itemTotal - commission });
-        }
+        const p = products.find(prod => prod.id === item.id);
+        if (p) { total += p.price * item.qty; }
       });
 
-      try {
-        var options = {
-          "key": RAZORPAY_KEY_ID,
-          "amount": total * 100,
-          "currency": "INR",
-          "name": "Iqbal Mart",
-          "description": "Secure Checkout",
-          "handler": function (response) {
-            const order = { id: "ORD" + Date.now(), date: new Date().toLocaleString(), items: orderItems, total, paymentId: response.razorpay_payment_id };
-            orders.unshift(order);
-            localStorage.setItem("iqbal_orders", JSON.stringify(orders));
-            cart = []; saveCart(); updateCartCount(); closeCart();
-            alert("✅ Order Successful! Payment ID: " + response.razorpay_payment_id);
-          },
-          "theme": { "color": "#2874f0" }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-      } catch (error) {
-        alert("❌ Payment initialization failed: " + error.message);
+      if (total <= 0) {
+        alert("Cart is empty!");
+        return;
       }
+
+      var options = {
+        "key": RAZORPAY_KEY_ID,
+        "amount": total * 100,
+        "currency": "INR",
+        "name": "Iqbal Mart",
+        "description": "Live Purchase",
+        "handler": function (response) {
+          alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+          cart = [];
+          localStorage.setItem("iqbal_cart", JSON.stringify(cart));
+          updateCartCount();
+          closeCart();
+        },
+        "theme": { "color": "#2874f0" }
+      };
+      var rzp = new Razorpay(options);
+      rzp.open();
     }
 
     renderProducts();
