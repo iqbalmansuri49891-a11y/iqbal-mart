@@ -8,40 +8,38 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
 /* ==========================================
-   IQBAL MART - ULTRA SMART APP THEME
+   IQBAL MART - CLEAN & SMART APP THEME
    ================================---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
 :root {
-  --primary: #2874f0;
-  --yellow: #ffc107;
-  --accent: #fb641b;
-  --bg: #f1f3f6;
+  --primary: #2563eb;
+  --yellow: #f59e0b;
+  --bg: #f8fafc;
   --card: #ffffff;
-  --text: #212121;
-  --muted: #878787;
-  --border: #f0f0f0;
-  --green: #388e3c;
-  --shadow: 0 2px 8px 0 rgba(0,0,0,.08);
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --green: #10b981;
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
 }
 
 body.dark {
-  --bg: #0f172a;
-  --card: #1e293b;
+  --bg: #090d16;
+  --card: #131c2e;
   --text: #f8fafc;
   --muted: #94a3b8;
-  --border: #334155;
-  --shadow: 0 2px 8px 0 rgba(0,0,0,0.4);
+  --border: #1e293b;
+  --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
 }
 
 body { 
   background: var(--bg); 
   color: var(--text); 
-  padding-bottom: 70px; 
+  padding-bottom: 75px; 
 }
 
 /* MANDATORY LOGIN LOCK */
 body:not(.logged-in) header,
-body:not(.logged-in) .top-tabs,
 body:not(.logged-in) .categories,
 body:not(.logged-in) .hero,
 body:not(.logged-in) .section,
@@ -58,7 +56,7 @@ body:not(.logged-in) {
   display: flex;
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #2874f0 0%, #1e3c72 100%) !important;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
   z-index: 9999;
   align-items: center;
   justify-content: center;
@@ -76,7 +74,7 @@ body:not(.logged-in) {
 
 #authModal h2 {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--primary);
   margin-bottom: 8px;
   text-align: center;
@@ -103,7 +101,7 @@ body:not(.logged-in) {
 
 #authModal .input-field:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 #authModal button.add-cart {
@@ -117,108 +115,80 @@ body:not(.logged-in) {
   border: 0;
 }
 
-/* SMART TOP TABS */
-.top-tabs {
-  background: var(--card);
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 10px 15px;
-  box-shadow: var(--shadow);
-}
-.top-tab-btn {
-  flex: 1;
-  max-width: 180px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  font-weight: bold;
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: 0.2s;
-}
-.top-tab-btn.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
 /* HEADER */
 header { 
-  background: var(--primary); 
+  background: rgba(37, 99, 235, 0.95); 
+  backdrop-filter: blur(12px);
   color: white; 
-  padding: 10px 14px; 
+  padding: 12px 16px; 
   position: sticky; 
   top: 0; 
   z-index: 1000; 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15); 
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2); 
 }
-.topbar { display: flex; align-items: center; gap: 10px; max-width: 1200px; margin: auto; }
-.logo { font-size: 22px; font-weight: 800; font-style: italic; white-space: nowrap; }
+.topbar { display: flex; align-items: center; gap: 12px; max-width: 1200px; margin: auto; }
+.logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; }
 .logo span { color: var(--yellow); }
 
 .search { 
   flex: 1; 
   display: flex; 
-  background: white; 
-  border-radius: 6px; 
+  background: rgba(255, 255, 255, 0.15); 
+  border-radius: 8px; 
   overflow: hidden; 
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
-.search input { width: 100%; border: 0; outline: none; padding: 10px 12px; font-size: 14px; color: #222; }
-.search button { width: 44px; border: 0; background: white; color: var(--primary); font-size: 18px; cursor: pointer; }
+.search input { width: 100%; border: 0; outline: none; padding: 10px 14px; font-size: 14px; background: transparent; color: inherit; }
+.search input::placeholder { color: rgba(255, 255, 255, 0.8); }
+.search button { width: 44px; border: 0; background: transparent; color: white; font-size: 18px; cursor: pointer; }
 
-.header-btn { background: transparent; border: 0; color: white; font-size: 13px; cursor: pointer; white-space: nowrap; font-weight: 500; }
-.seller-btn { background: var(--yellow); color: #111; padding: 6px 12px; border-radius: 6px; font-weight: bold; }
+.header-btn { background: rgba(255, 255, 255, 0.1); border: 0; color: white; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+.header-btn:hover { background: rgba(255, 255, 255, 0.2); }
+.seller-btn { background: var(--yellow) !important; color: #1e293b !important; font-weight: 700; box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3); }
 
 /* CATEGORY CIRCLE ROW */
 .categories { 
   background: var(--card); 
   display: flex; 
-  gap: 18px; 
-  padding: 14px 15px; 
+  gap: 16px; 
+  padding: 14px 20px; 
   overflow-x: auto; 
   border-bottom: 1px solid var(--border); 
   scrollbar-width: none; 
+  box-shadow: var(--shadow);
 }
 .categories::-webkit-scrollbar { display: none; }
-.category { min-width: 70px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text); }
-.category-icon { width: 52px; height: 52px; margin: auto auto 6px; border-radius: 50%; background: #f0f4ff; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: 0.2s; }
-body.dark .category-icon { background: #334155; }
-.category:hover .category-icon { transform: scale(1.08); background: var(--primary); color: white; }
+.category { min-width: 72px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--muted); }
+.category-icon { width: 50px; height: 50px; margin: auto auto 6px; border-radius: 14px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: 0.2s; }
+body.dark .category-icon { background: #1e293b; }
+.category:hover .category-icon { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
 
 /* HERO BANNER */
-.hero { max-width: 1200px; margin: 12px auto; padding: 0 10px; }
+.hero { max-width: 1200px; margin: 16px auto; padding: 0 12px; }
 .hero-box { 
-  min-height: 160px; 
-  border-radius: 14px; 
-  padding: 20px; 
-  background: linear-gradient(135deg, #2874f0 0%, #1e3c72 100%); 
+  min-height: 180px; 
+  border-radius: 16px; 
+  padding: 30px; 
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%); 
   color: white; 
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  box-shadow: 0 6px 20px rgba(40,116,240,0.25);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
 }
-.hero h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-.hero p { font-size: 13px; opacity: 0.9; margin-bottom: 12px; }
-.shop-btn { border: 0; background: var(--yellow); color: #111; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.hero h1 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.hero p { font-size: 14px; opacity: 0.9; margin-bottom: 16px; }
+.shop-btn { border: 0; background: var(--yellow); color: #1e293b; padding: 12px 22px; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
 
 /* PRODUCTS GRID */
-.section { max-width: 1200px; margin: 15px auto; padding: 0 10px; }
+.section { max-width: 1200px; margin: 20px auto; padding: 0 12px; }
 .section-title { 
   background: var(--card); 
-  padding: 14px 16px; 
+  padding: 16px 20px; 
   border-radius: 12px 12px 0 0; 
   border-bottom: 1px solid var(--border); 
-  font-size: 16px; 
-  font-weight: bold; 
+  font-size: 18px; 
+  font-weight: 700; 
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
@@ -226,71 +196,73 @@ body.dark .category-icon { background: #334155; }
 }
 .products { 
   background: var(--card); 
-  padding: 12px; 
+  padding: 16px; 
   border-radius: 0 0 12px 12px; 
   display: grid; 
   grid-template-columns: repeat(5, 1fr); 
-  gap: 12px; 
+  gap: 16px; 
   box-shadow: var(--shadow);
 }
 .product { 
   border: 1px solid var(--border); 
-  border-radius: 10px; 
+  border-radius: 12px; 
   overflow: hidden; 
   background: var(--card); 
-  transition: 0.2s; 
+  transition: 0.25s; 
   cursor: pointer; 
   position: relative; 
 }
-.product:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-3px); border-color: var(--primary); }
-.product-img { height: 160px; background: #fafafa; display: flex; align-items: center; justify-content: center; font-size: 60px; overflow: hidden; }
-body.dark .product-img { background: #111827; }
+.product:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); border-color: var(--primary); }
+.product-img { height: 170px; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 65px; overflow: hidden; }
+body.dark .product-img { background: #0f172a; }
 .product-img img { width: 100%; height: 100%; object-fit: cover; }
-.product-info { padding: 10px; }
-.product-name { font-size: 13px; font-weight: 500; min-height: 36px; line-height: 18px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.rating { display: inline-flex; align-items: center; background: var(--green); color: white; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: bold; margin: 4px 0; }
-.price { font-size: 15px; font-weight: bold; }
+.product-info { padding: 12px; }
+.product-name { font-size: 13px; font-weight: 600; min-height: 36px; line-height: 18px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rating { display: inline-flex; align-items: center; background: var(--green); color: white; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; margin: 6px 0; }
+.price { font-size: 16px; font-weight: 800; }
 .old-price { color: var(--muted); text-decoration: line-through; font-size: 11px; margin-left: 4px; }
-.discount { color: var(--green); font-size: 11px; font-weight: bold; margin-left: 4px; }
-.wishlist { position: absolute; right: 8px; top: 8px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: white; font-size: 15px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 10; display: flex; align-items: center; justify-content: center; }
+.discount { color: var(--green); font-size: 11px; font-weight: 700; margin-left: 4px; }
+.wishlist { position: absolute; right: 10px; top: 10px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(255,255,255,0.9); font-size: 16px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; display: flex; align-items: center; justify-content: center; }
 
 /* CART DRAWER */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; }
-.cart { position: absolute; right: 0; top: 0; height: 100%; width: min(400px, 92%); background: var(--card); color: var(--text); display: flex; flex-direction: column; box-shadow: -5px 0 25px rgba(0,0,0,0.2); }
-.cart-header { padding: 16px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); font-weight: bold; font-size: 17px; align-items: center; }
-.close { border: 0; background: transparent; font-size: 22px; cursor: pointer; color: var(--muted); }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; }
+.cart { position: absolute; right: 0; top: 0; height: 100%; width: min(420px, 94%); background: var(--card); color: var(--text); display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.2); }
+.cart-header { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); font-weight: bold; font-size: 18px; align-items: center; }
+.close { border: 0; background: transparent; font-size: 24px; cursor: pointer; color: var(--muted); }
 .cart-items { flex: 1; overflow-y: auto; padding: 12px; }
-.cart-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.cart-emoji { width: 60px; height: 60px; background: #f8fafc; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 30px; overflow: hidden; }
+.cart-item { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.cart-emoji { width: 65px; height: 65px; background: #f4f6f8; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 35px; overflow: hidden; }
 .cart-emoji img { width: 100%; height: 100%; object-fit: cover; }
 .cart-details { flex: 1; }
-.cart-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.cart-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
 .qty { display: inline-flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-.qty button { border: 0; background: var(--bg); color: var(--text); width: 28px; height: 26px; cursor: pointer; }
-.qty span { width: 30px; text-align: center; line-height: 26px; font-size: 13px; font-weight: bold; }
-.remove { border: 0; background: transparent; color: #e53935; cursor: pointer; margin-top: 4px; font-size: 11px; font-weight: bold; }
-.cart-footer { border-top: 1px solid var(--border); padding: 14px; }
-.total { display: flex; justify-content: space-between; font-size: 17px; font-weight: bold; margin-bottom: 12px; }
-.checkout { width: 100%; border: 0; background: var(--yellow); padding: 13px; font-weight: bold; cursor: pointer; border-radius: 8px; color: #111; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.qty button { border: 0; background: var(--bg); color: var(--text); width: 30px; height: 28px; cursor: pointer; }
+.qty span { width: 32px; text-align: center; line-height: 28px; font-weight: bold; }
+.remove { border: 0; background: transparent; color: #e53935; cursor: pointer; margin-top: 5px; font-size: 12px; font-weight: bold; }
+.cart-footer { border-top: 1px solid var(--border); padding: 15px; }
+.total { display: flex; justify-content: space-between; font-size: 19px; font-weight: bold; margin-bottom: 12px; }
+.checkout { width: 100%; border: 0; background: var(--yellow); padding: 14px; font-weight: bold; cursor: pointer; border-radius: 8px; color: #111; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
 
 /* MODALS */
-.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
-.modal { width: min(480px, 100%); max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 14px; padding: 24px; color: var(--text); position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.plan-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; text-align: left; cursor: pointer; }
-.plan-card.active { border: 2px solid var(--primary); background: rgba(40,116,240,0.05); }
-.qr-box { text-align: center; background: var(--bg); padding: 12px; border-radius: 8px; margin: 12px 0; border: 1px dashed var(--primary); }
-.qr-box img { width: 160px; height: 160px; border-radius: 6px; margin: 8px 0; }
-.upi-id { font-weight: bold; background: #e0edff; padding: 4px 10px; border-radius: 4px; display: inline-block; color: var(--primary); font-size: 13px; }
-body.dark .upi-id { background: #334155; }
-.select-field, .input-field { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; outline: none; background: var(--bg); color: var(--text); font-size: 13px; }
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
+.modal { width: min(520px, 100%); max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 16px; padding: 25px; color: var(--text); position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid var(--border); }
+.plan-card { border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-top: 10px; text-align: left; cursor: pointer; }
+.plan-card.active { border: 2px solid var(--primary); background: #f0f7ff; }
+body.dark .plan-card.active { background: #1e293b; }
+.qr-box { text-align: center; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px dashed var(--primary); }
+body.dark .qr-box { background: #0f172a; }
+.qr-box img { width: 180px; height: 180px; border-radius: 8px; margin: 10px 0; }
+.upi-id { font-weight: bold; background: #e0edff; padding: 6px 12px; border-radius: 4px; display: inline-block; color: var(--primary); margin-bottom: 8px; }
+body.dark .upi-id { background: #1e293b; }
+.select-field, .input-field { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid var(--border); border-radius: 8px; outline: none; background: var(--card); color: var(--text); font-size: 14px; }
 
-/* FLIPKART STYLE BOTTOM NAV */
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 58px; background: var(--card); border-top: 1px solid var(--border); display: none; z-index: 1500; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--card); border-top: 1px solid var(--border); display: none; z-index: 1500; justify-content: space-around; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
 .bottom-nav button { border: 0; background: transparent; color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; flex: 1; text-align: center; }
 .bottom-nav button.active, .bottom-nav button:hover { color: var(--primary); }
-.bottom-nav .nav-icon { display: block; font-size: 20px; margin-bottom: 2px; }
+.bottom-nav .nav-icon { display: block; font-size: 22px; margin-bottom: 2px; }
 
-.toast { position: fixed; bottom: 75px; left: 50%; transform: translateX(-50%) translateY(20px); background: #222; color: white; padding: 10px 16px; border-radius: 6px; opacity: 0; pointer-events: none; transition: .2s; z-index: 5000; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: #222; color: white; padding: 12px 18px; border-radius: 8px; opacity: 0; pointer-events: none; transition: .25s; z-index: 5000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 @media (max-width: 1024px) { .products { grid-template-columns: repeat(4, 1fr); } }
@@ -299,28 +271,22 @@ body.dark .upi-id { background: #334155; }
   .topbar { flex-wrap: wrap; }
   .header-btn { display: none; }
   .search { order: 2; flex-basis: 100%; }
-  .products { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px; }
+  .products { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
   .bottom-nav { display: flex; }
 }
 </style>
 </head>
 <body>
 
-<!-- SMART TOP TABS -->
-<div class="top-tabs">
-  <button class="top-tab-btn active">🛍️ Flipkart / Mart</button>
-  <button class="top-tab-btn" onclick="alert('✈️ Travel & Flights booking coming soon!')">✈️ Travel</button>
-</div>
-
 <!-- HEADER -->
 <header>
   <div class="topbar">
     <div class="logo">Iqbal<span>Mart</span></div>
     <div class="search">
-      <input id="searchInput" type="search" placeholder="Search for Products, Brands and More..." oninput="searchProducts()">
+      <input id="searchInput" type="search" placeholder="Search Cameras, Medicines, Fashion, Tools..." oninput="searchProducts()">
       <button onclick="searchProducts()">🔍</button>
     </div>
-    <button class="header-btn seller-btn" onclick="showSellerModal()">📢 Sell</button>
+    <button class="header-btn seller-btn" onclick="showSellerModal()">📢 Sell Products</button>
     <button class="header-btn" onclick="showOrders()">📦 Orders</button>
     <button class="header-btn" id="authNavBtn" onclick="openAuthModal()">👤 Login</button>
     <button class="header-btn" onclick="toggleDarkMode()">🌙</button>
@@ -349,17 +315,17 @@ body.dark .upi-id { background: #334155; }
     <div>
       <h1>Multi-Vendor Mega Sale!</h1>
       <p>Best Deals • 5% Platform Commission • Fast Delivery</p>
-      <button class="shop-btn" onclick="scrollProducts()">Explore Now</button>
+      <button class="shop-btn" onclick="scrollProducts()">Shop Now</button>
     </div>
-    <div style="font-size: 70px;">🛍️</div>
+    <div style="font-size: 85px;">🛍️</div>
   </div>
 </section>
 
 <!-- PRODUCTS SECTION -->
 <section class="section" id="productsSection">
   <div class="section-title">
-    <span id="sectionTitle">Top Deals of the Day</span>
-    <button class="seller-btn" style="font-size:11px; padding:5px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product</button>
+    <span id="sectionTitle">Best Deals</span>
+    <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product</button>
   </div>
   <div class="products" id="productGrid"></div>
 </section>
@@ -374,7 +340,7 @@ body.dark .upi-id { background: #334155; }
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-footer">
       <div class="total"><span>Total</span><span>₹<span id="cartTotal">0</span></span></div>
-      <button class="checkout" onclick="proceedToCheckout()">PLACE ORDER (SECURE)</button>
+      <button class="checkout" onclick="proceedToCheckout()">PAY VIA RAZORPAY</button>
     </div>
   </div>
 </div>
@@ -384,8 +350,8 @@ body.dark .upi-id { background: #334155; }
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
     <div id="authViewContainer">
-      <h2>🔐 Flipkart / Iqbal Mart</h2>
-      <p>Login or Sign Up to access marketplace & deals</p>
+      <h2>🔐 Iqbal Mart Login</h2>
+      <p>Pehle Login ya Sign Up karein taaki store access kar sakein</p>
       <input type="email" id="authEmail" class="input-field" placeholder="Enter Email">
       <input type="password" id="authPassword" class="input-field" placeholder="Enter Password">
       <div style="margin-top:15px; display:flex; gap:10px;">
@@ -394,13 +360,13 @@ body.dark .upi-id { background: #334155; }
       </div>
     </div>
     <div id="profileViewContainer" style="display:none;">
-      <h2>👤 My Profile & Bank Payout</h2>
-      <p>Manage your seller payout details securely:</p>
+      <h2>👤 My Profile & Bank Payout Details</h2>
+      <p>Apna Bank Account ya UPI ID jodein taaki sell hone par paisa mil sake:</p>
       <p style="margin-bottom:10px;"><b>Email:</b> <span id="userEmailDisplay"></span></p>
       <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name">
       <input type="text" id="bankAccNo" class="input-field" placeholder="Bank Account Number">
       <input type="text" id="bankIfsc" class="input-field" placeholder="IFSC Code">
-      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID (e.g. iqbal@okicici)">
+      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID">
       <button class="add-cart" style="background:var(--primary); color:white;" onclick="saveUserBankDetails()">SAVE BANK DETAILS</button>
       <button class="add-cart" style="background:#e53935; color:white; margin-top:10px;" onclick="handleLogout()">LOGOUT</button>
     </div>
@@ -411,18 +377,18 @@ body.dark .upi-id { background: #334155; }
 <div class="modal-bg" id="sellerModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
-    <h2>📢 Seller Subscription Plan</h2>
-    <p>Choose plan & scan UPI QR to activate store</p>
+    <h2>📢 Become a Seller</h2>
+    <p>Choose plan & scan UPI QR to pay directly into Bank Account!</p>
     <div class="plan-card active">
       <b>Pro Plan - ₹499 / month</b>
-      <p style="font-size:12px; color:var(--muted);">Unlimited Listings + 5% Commission Model</p>
+      <p style="font-size:12px; color:var(--muted);">Unlimited Product Listings + 5% Commission Model</p>
     </div>
     <div class="qr-box">
       <div class="upi-id">iqbalelectricplumber-1@okicici</div><br>
-      <img id="dynamicQr" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalElectric&am=499&cu=INR" alt="QR">
+      <img id="dynamicQr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalElectric&am=499&cu=INR" alt="QR">
     </div>
     <input type="text" id="sellerPhone" class="input-field" placeholder="WhatsApp Number">
-    <input type="text" id="utrNo" class="input-field" placeholder="12-Digit UPI UTR Transaction ID">
+    <input type="text" id="utrNo" class="input-field" placeholder="12-Digit UPI UTR No.">
     <button class="add-cart" style="background:var(--yellow); color:#111;" onclick="submitSubscription()">VERIFY & START SELLING</button>
   </div>
 </div>
@@ -432,7 +398,7 @@ body.dark .upi-id { background: #334155; }
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
     <h2>📦 Upload New Product</h2>
-    <p>List product (5% platform commission applicable)</p>
+    <p>List item on Iqbal Mart marketplace (5% Platform Commission Applicable)</p>
     <input type="text" id="newProdName" class="input-field" placeholder="Product Name">
     <select id="newProdCategory" class="select-field">
       <option value="Cameras">Cameras</option>
@@ -441,6 +407,8 @@ body.dark .upi-id { background: #334155; }
       <option value="Tools">Tools</option>
       <option value="Electrical">Electrical</option>
       <option value="Mobiles">Mobiles</option>
+      <option value="Furniture">Furniture</option>
+      <option value="Grocery">Grocery</option>
     </select>
     <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹">
     <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹">
@@ -460,13 +428,13 @@ body.dark .upi-id { background: #334155; }
   </div>
 </div>
 
-<!-- FLIPKART STYLE BOTTOM NAV -->
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
-  <button class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="nav-icon">🏠</span>होम</button>
-  <button onclick="document.getElementById('searchInput').focus()"><span class="nav-icon">🔍</span>कैटेगरी</button>
-  <button onclick="showWishlist()"><span class="nav-icon">❤️</span>विशलिस्ट</button>
-  <button onclick="openCart()"><span class="nav-icon">🛒</span>कार्ट</button>
-  <button onclick="showSellerModal()"><span class="nav-icon">📢</span>सेल</button>
+  <button class="active" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="nav-icon">🏠</span> Home</button>
+  <button onclick="document.getElementById('searchInput').focus()"><span class="nav-icon">🔍</span> Search</button>
+  <button onclick="showWishlist()"><span class="nav-icon">❤️</span> Wishlist</button>
+  <button onclick="openCart()"><span class="nav-icon">🛒</span> Cart</button>
+  <button onclick="showSellerModal()"><span class="nav-icon">📢</span> Sell</button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -731,7 +699,7 @@ function proceedToCheckout() {
       alert("✅ Order Successful! Payment ID: " + response.razorpay_payment_id);
       showOrders();
     },
-    "theme": { "color": "#2874f0" }
+    "theme": { "color": "#2563eb" }
   };
   new Razorpay(options).open();
 }
