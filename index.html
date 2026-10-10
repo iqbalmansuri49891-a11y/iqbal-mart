@@ -41,7 +41,7 @@ body:not(.logged-in) {
   background: var(--card) !important;
 }
 
-/* SHANDAAR MODERN AUTH LOGIN MODAL STYLING */
+/* MODERN AUTH LOGIN MODAL STYLING */
 #authModal {
   display: flex;
   position: fixed;
@@ -455,7 +455,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  const analytics = getAnalytics(app);
+  try { getAnalytics(app); } catch(e) {}
 
   window.currentUser = null;
 
@@ -471,8 +471,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     } else {
       document.body.classList.add("logged-in");
       document.getElementById("authModal").style.display = "none";
-      navBtn.textContent = "👤 " + user.email.split('@')[0];
-      document.getElementById("userEmailDisplay").textContent = user.email;
+      navBtn.textContent = "👤 " + (user.email ? user.email.split('@')[0] : "User");
+      document.getElementById("userEmailDisplay").textContent = user.email || "";
       
       try {
         const docRef = doc(db, "vendor_banks", user.uid);
@@ -484,7 +484,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
           document.getElementById("bankIfsc").value = data.ifsc || "";
           document.getElementById("bankUpi").value = data.upi || "";
         }
-      } catch(e) { console.log(e); }
+      } catch(e) { console.error("Error loading bank details:", e); }
     }
   });
 
@@ -532,7 +532,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       await setDoc(doc(db, "vendor_banks", window.currentUser.uid), {
         email: window.currentUser.email,
         accName, accNo, ifsc, upi, updatedAt: new Date()
-      });
+      }, { merge: true });
       alert("✅ Bank Payout details saved successfully!");
       document.getElementById("authModal").style.display = "none";
     } catch(e) { alert("❌ Error saving bank details: " + e.message); }
@@ -542,6 +542,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     try {
       await addDoc(collection(db, "products"), {
         ...productData,
+        sellerUid: window.currentUser ? window.currentUser.uid : "anonymous",
         sellerEmail: window.currentUser ? window.currentUser.email : "admin",
         createdAt: new Date()
       });
@@ -560,11 +561,11 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       querySnapshot.forEach((doc) => {
         firebaseProducts.push({ id: doc.id, ...doc.data() });
       });
-      if(firebaseProducts.length > 0) {
+      if(firebaseProducts.length > 0 && typeof window.mergeProducts === "function") {
         window.mergeProducts(firebaseProducts);
       }
     } catch (e) {
-      console.log("Error loading products:", e);
+      console.error("Error loading products:", e);
     }
   };
 
@@ -579,9 +580,11 @@ let selectedPlanName = "Pro";
 let selectedPlanPrice = 499;
 
 function updateQrCode() {
-  document.getElementById("payAmount").textContent = selectedPlanPrice;
+  const payAmountElem = document.getElementById("payAmount");
+  if(payAmountElem) payAmountElem.textContent = selectedPlanPrice;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=${YOUR_UPI_ID}&pn=IqbalElectric&am=${selectedPlanPrice}&cu=INR`;
-  document.getElementById("dynamicQr").src = qrUrl;
+  const dynamicQrElem = document.getElementById("dynamicQr");
+  if(dynamicQrElem) dynamicQrElem.src = qrUrl;
 }
 
 function selectPlan(element, name, price) {
@@ -608,9 +611,12 @@ function submitSubscription() {
 }
 
 function openAuthModal() { 
-  document.getElementById("authViewContainer").style.display = window.currentUser ? "none" : "block";
-  document.getElementById("profileViewContainer").style.display = window.currentUser ? "block" : "none";
-  document.getElementById("authModal").style.display = "flex"; 
+  const authView = document.getElementById("authViewContainer");
+  const profileView = document.getElementById("profileViewContainer");
+  if(authView) authView.style.display = window.currentUser ? "none" : "block";
+  if(profileView) profileView.style.display = window.currentUser ? "block" : "none";
+  const authModal = document.getElementById("authModal");
+  if(authModal) authModal.style.display = "flex"; 
 }
 
 function closeAuthModal() { 
@@ -618,7 +624,8 @@ function closeAuthModal() {
     alert("❌ Pehle Login ya Sign Up karna zaroori hai!");
     return;
   }
-  document.getElementById("authModal").style.display = "none"; 
+  const authModal = document.getElementById("authModal");
+  if(authModal) authModal.style.display = "none"; 
 }
 
 function verifyAndOpenAddProduct() {
@@ -627,16 +634,17 @@ function verifyAndOpenAddProduct() {
     openAuthModal();
     return;
   }
-  document.getElementById("addProductModal").style.display = "flex";
+  const addProdModal = document.getElementById("addProductModal");
+  if(addProdModal) addProdModal.style.display = "flex";
 }
 
 const staticProducts = [
-  { id: 1, name: "Professional DSLR Camera 4K", category: "Cameras", price: 34999, oldPrice: 45999, rating: 4.8, emoji: "📷", image: "", description: "High resolution DSLR camera with 18-55mm lens." },
-  { id: 2, name: "WiFi Security CCTV Camera", category: "Cameras", price: 1599, oldPrice: 2999, rating: 4.6, emoji: "📸", image: "", description: "Smart wireless home security camera." },
-  { id: 3, name: "Multivitamin Immunity Tablets", category: "Medicines", price: 349, oldPrice: 599, rating: 4.6, emoji: "💊", image: "", description: "Daily health supplement tablets." },
-  { id: 4, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt." },
-  { id: 5, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes." },
-  { id: 6, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set." }
+  { id: 's1', name: "Professional DSLR Camera 4K", category: "Cameras", price: 34999, oldPrice: 45999, rating: 4.8, emoji: "📷", image: "", description: "High resolution DSLR camera with 18-55mm lens." },
+  { id: 's2', name: "WiFi Security CCTV Camera", category: "Cameras", price: 1599, oldPrice: 2999, rating: 4.6, emoji: "📸", image: "", description: "Smart wireless home security camera." },
+  { id: 's3', name: "Multivitamin Immunity Tablets", category: "Medicines", price: 349, oldPrice: 599, rating: 4.6, emoji: "💊", image: "", description: "Daily health supplement tablets." },
+  { id: 's4', name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt." },
+  { id: 's5', name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes." },
+  { id: 's6', name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set." }
 ];
 
 let products = [...staticProducts];
@@ -654,8 +662,9 @@ window.mergeProducts = function(firebaseList) {
 
 function renderProducts(list = currentProducts) {
   const grid = document.getElementById("productGrid");
+  if (!grid) return;
   if (!list.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;">😔<br><br>No products found.</div>`;
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1; text-align:center; padding:20px;">😔<br><br>No products found.</div>`;
     return;
   }
   grid.innerHTML = list.map(product => {
@@ -680,7 +689,9 @@ function renderProducts(list = currentProducts) {
 }
 
 function searchProducts() {
-  const query = document.getElementById("searchInput").value.toLowerCase().trim();
+  const searchInput = document.getElementById("searchInput");
+  if(!searchInput) return;
+  const query = searchInput.value.toLowerCase().trim();
   currentProducts = products.filter(product =>
     product.name.toLowerCase().includes(query) || product.category.toLowerCase().includes(query)
   );
@@ -694,26 +705,50 @@ function filterCategory(category) {
     currentProducts = products.filter(p => p.category === category);
   }
   renderProducts(currentProducts);
-  document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
+  const prodSec = document.getElementById("productsSection");
+  if(prodSec) prodSec.scrollIntoView({ behavior: "smooth" });
 }
 
 function openProduct(id) {
   selectedProduct = products.find(p => p.id == id);
   if (!selectedProduct) return;
   const displayMedia = selectedProduct.image ? `<img src="${selectedProduct.image}" alt="${selectedProduct.name}">` : (selectedProduct.emoji || '📦');
-  document.getElementById("modalEmoji").innerHTML = displayMedia;
-  document.getElementById("modalName").textContent = selectedProduct.name;
-  document.getElementById("modalRating").textContent = `⭐ ${selectedProduct.rating || 4.5} Rating`;
-  document.getElementById("modalPrice").textContent = selectedProduct.price.toLocaleString("en-IN");
-  document.getElementById("modalDescription").textContent = selectedProduct.description || 'Verified product listing.';
-  document.getElementById("productModal").style.display = "flex";
-}
-function closeProductModal() { document.getElementById("productModal").style.display = "none"; }
-function addModalProduct() { if (!selectedProduct) return; addToCart(selectedProduct.id); closeProductModal(); }
+  const modalEmoji = document.getElementById("modalEmoji");
+  const modalName = document.getElementById("modalName");
+  const modalRating = document.getElementById("modalRating");
+  const modalPrice = document.getElementById("modalPrice");
+  const modalDesc = document.getElementById("modalDescription");
+  const productModal = document.getElementById("productModal");
 
-function showSellerModal() { document.getElementById("sellerModal").style.display = "flex"; }
-function closeSellerModal() { document.getElementById("sellerModal").style.display = "none"; }
-function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
+  if(modalEmoji) modalEmoji.innerHTML = displayMedia;
+  if(modalName) modalName.textContent = selectedProduct.name;
+  if(modalRating) modalRating.textContent = `⭐ ${selectedProduct.rating || 4.5} Rating`;
+  if(modalPrice) modalPrice.textContent = selectedProduct.price.toLocaleString("en-IN");
+  if(modalDesc) modalDesc.textContent = selectedProduct.description || 'Verified product listing.';
+  if(productModal) productModal.style.display = "flex";
+}
+function closeProductModal() { 
+  const pModal = document.getElementById("productModal");
+  if(pModal) pModal.style.display = "none"; 
+}
+function addModalProduct() { 
+  if (!selectedProduct) return; 
+  addToCart(selectedProduct.id); 
+  closeProductModal(); 
+}
+
+function showSellerModal() { 
+  const sModal = document.getElementById("sellerModal");
+  if(sModal) sModal.style.display = "flex"; 
+}
+function closeSellerModal() { 
+  const sModal = document.getElementById("sellerModal");
+  if(sModal) sModal.style.display = "none"; 
+}
+function closeAddProductModal() { 
+  const addModal = document.getElementById("addProductModal");
+  if(addModal) addModal.style.display = "none"; 
+}
 
 function submitNewProduct() {
   const name = document.getElementById("newProdName").value.trim();
@@ -726,7 +761,7 @@ function submitNewProduct() {
 
   if(!name || !price) { alert("Please enter valid Product Name and Price."); return; }
 
-  if (fileInput.files && fileInput.files[0]) {
+  if (fileInput && fileInput.files && fileInput.files[0]) {
     const reader = new FileReader();
     reader.onload = function(e) {
       const img = new Image();
@@ -770,20 +805,35 @@ function addToCart(id) {
   showToast("🛒 Added to cart");
   renderCart();
 }
-function saveCart() { localStorage.setItem("iqbal_cart", JSON.stringify(cart)); updateCartCount(); }
+function saveCart() { 
+  localStorage.setItem("iqbal_cart", JSON.stringify(cart)); 
+  updateCartCount(); 
+}
 function updateCartCount() {
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
-  document.getElementById("cartCount").textContent = count;
+  const cartCountElem = document.getElementById("cartCount");
+  if(cartCountElem) cartCountElem.textContent = count;
 }
-function openCart() { renderCart(); document.getElementById("cartOverlay").style.display = "block"; }
-function closeCart() { document.getElementById("cartOverlay").style.display = "none"; }
-function closeCartOutside(event) { if (event.target.id === "cartOverlay") closeCart(); }
+function openCart() { 
+  renderCart(); 
+  const cartOverlay = document.getElementById("cartOverlay");
+  if(cartOverlay) cartOverlay.style.display = "block"; 
+}
+function closeCart() { 
+  const cartOverlay = document.getElementById("cartOverlay");
+  if(cartOverlay) cartOverlay.style.display = "none"; 
+}
+function closeCartOutside(event) { 
+  if (event.target.id === "cartOverlay") closeCart(); 
+}
 
 function renderCart() {
   const container = document.getElementById("cartItems");
+  const cartTotalElem = document.getElementById("cartTotal");
+  if (!container) return;
   if (!cart.length) {
-    container.innerHTML = `<div class="empty">🛒<br><br>Your cart is empty.</div>`;
-    document.getElementById("cartTotal").textContent = "0";
+    container.innerHTML = `<div class="empty" style="text-align:center; padding:20px;">🛒<br><br>Your cart is empty.</div>`;
+    if(cartTotalElem) cartTotalElem.textContent = "0";
     return;
   }
   let total = 0;
@@ -808,7 +858,7 @@ function renderCart() {
       </div>
     `;
   }).join("");
-  document.getElementById("cartTotal").textContent = total.toLocaleString("en-IN");
+  if(cartTotalElem) cartTotalElem.textContent = total.toLocaleString("en-IN");
 }
 
 function changeQty(id, change) {
@@ -854,8 +904,9 @@ function proceedToCheckout() {
 
 function showOrders() {
   const content = document.getElementById("ordersContent");
+  if (!content) return;
   if (!orders.length) {
-    content.innerHTML = `<div class="empty">📦<br><br>No orders yet.</div>`;
+    content.innerHTML = `<div class="empty" style="text-align:center; padding:20px;">📦<br><br>No orders yet.</div>`;
   } else {
     content.innerHTML = orders.map(order => `
       <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px; background:var(--bg);">
@@ -865,9 +916,13 @@ function showOrders() {
       </div>
     `).join("");
   }
-  document.getElementById("ordersModal").style.display = "flex";
+  const ordersModal = document.getElementById("ordersModal");
+  if(ordersModal) ordersModal.style.display = "flex";
 }
-function closeOrders() { document.getElementById("ordersModal").style.display = "none"; }
+function closeOrders() { 
+  const ordersModal = document.getElementById("ordersModal");
+  if(ordersModal) ordersModal.style.display = "none"; 
+}
 
 function toggleWishlist(event, id) {
   if(event) event.stopPropagation();
@@ -880,7 +935,8 @@ function toggleWishlist(event, id) {
 function showWishlist() {
   const list = products.filter(p => wishlist.includes(p.id));
   currentProducts = list; renderProducts(list);
-  document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
+  const prodSec = document.getElementById("productsSection");
+  if(prodSec) prodSec.scrollIntoView({ behavior: "smooth" });
 }
 
 function toggleDarkMode() {
@@ -891,11 +947,15 @@ if (localStorage.getItem("iqbal_dark") === "true") document.body.classList.add("
 
 function showToast(message) {
   const toast = document.getElementById("toast");
+  if (!toast) return;
   toast.textContent = message; toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 1800);
 }
 
-function scrollProducts() { document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" }); }
+function scrollProducts() { 
+  const prodSec = document.getElementById("productsSection");
+  if(prodSec) prodSec.scrollIntoView({ behavior: "smooth" }); 
+}
 
 renderProducts();
 updateCartCount();
