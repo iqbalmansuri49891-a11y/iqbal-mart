@@ -573,7 +573,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
 <script>
 const YOUR_UPI_ID = "iqbalelectricplumber-1@okicici"; 
-const RAZORPAY_KEY_ID = "Rzp_live_Tm8vKEh9DrutliN";
 
 let selectedPlanName = "Pro";
 let selectedPlanPrice = 499;
@@ -823,7 +822,7 @@ function removeFromCart(id) {
   saveCart(); renderCart(); showToast("Product removed");
 }
 
-function proceedToCheckout() {
+async function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
   let total = 0;
   cart.forEach(item => {
@@ -831,25 +830,53 @@ function proceedToCheckout() {
     if (product) total += product.price * item.qty;
   });
 
-  var options = {
-    "key": RAZORPAY_KEY_ID,
-    "amount": total * 100,
-    "currency": "INR",
-    "name": "Iqbal Mart",
-    "description": "Multi-Vendor Marketplace Order",
-    "handler": function (response) {
-      const orderId = "ORD" + Date.now();
-      const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "✅ Payment Successful", paymentId: response.razorpay_payment_id };
-      orders.unshift(order);
-      localStorage.setItem("iqbal_orders", JSON.stringify(orders));
-      cart = []; saveCart(); updateCartCount(); closeCart();
-      alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
-      showOrders();
-    },
-    "theme": { "color": "#2874f0" }
-  };
-  var rzp = new Razorpay(options);
-  rzp.open();
+  try {
+    // 1. Vercel Backend API se secure order generate karwayein
+    const response = await fetch('/api/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: total * 100 }) // Amount in paise
+    });
+
+    const order = await response.json();
+    if (!order.id) {
+      alert("Order create nahi ho paya. Kripya dobara koshish karein.");
+      return;
+    }
+
+    // 2. Razorpay popup kholein
+    var options = {
+      "key": order.key_id || "", 
+      "amount": order.amount,
+      "currency": "INR",
+      "name": "Iqbal Mart",
+      "description": "Multi-Vendor Marketplace Order",
+      "order_id": order.id,
+      "handler": function (response) {
+        const orderId = "ORD" + Date.now();
+        const savedOrder = { 
+          id: orderId, 
+          date: new Date().toLocaleString(), 
+          items: [...cart], 
+          total: total, 
+          status: "✅ Payment Successful", 
+          paymentId: response.razorpay_payment_id 
+        };
+        orders.unshift(savedOrder);
+        localStorage.setItem("iqbal_orders", JSON.stringify(orders));
+        cart = []; saveCart(); updateCartCount(); closeCart();
+        alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
+        showOrders();
+      },
+      "theme": { "color": "#2874f0" }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+
+  } catch (error) {
+    console.error("Payment error:", error);
+    alert("Payment process mein koi dikkat aa gayi hai.");
+  }
 }
 
 function showOrders() {
