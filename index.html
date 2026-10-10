@@ -135,7 +135,7 @@ body.dark #authModal .modal {
   box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
-/* HEADER - Glassmorphism Effect */
+/* HEADER */
 header { 
   background: rgba(37, 99, 235, 0.95); 
   backdrop-filter: blur(12px);
@@ -437,7 +437,7 @@ body.dark .upi-id { background: #1e293b; }
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
     <h2>📦 Upload New Product</h2>
-    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">List your item on Iqbal Mart marketplace</p>
+    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">List your item on Iqbal Mart marketplace (5% Platform Commission Applicable)</p>
 
     <input type="text" id="newProdName" class="input-field" placeholder="Product Name (e.g. DSLR Camera)">
     <select id="newProdCategory" class="select-field">
@@ -470,7 +470,7 @@ body.dark .upi-id { background: #1e293b; }
 <div class="modal-bg" id="ordersModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
-    <h2>📦 My Orders & Admin Approvals</h2>
+    <h2>📦 My Orders & Commission Details</h2>
     <div id="ordersContent"></div>
   </div>
 </div>
@@ -642,6 +642,7 @@ body.dark .upi-id { background: #1e293b; }
 <script>
 const YOUR_UPI_ID = "iqbalelectricplumber-1@okicici"; 
 const RAZORPAY_KEY_ID = "rzp_test_TlY2MahiyPXMeT";
+const COMMISSION_PERCENT = 5; // 5% Platform Commission
 
 let selectedPlanName = "Pro";
 let selectedPlanPrice = 499;
@@ -943,9 +944,28 @@ function removeFromCart(id) {
 function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
   let total = 0;
+  let orderItemsWithCommission = [];
+
   cart.forEach(item => {
     const product = products.find(p => p.id == item.id);
-    if (product) total += product.price * item.qty;
+    if (product) {
+      const itemTotal = product.price * item.qty;
+      total += itemTotal;
+
+      // 5% Platform Commission Calculation per product
+      const platformCommission = itemTotal * (COMMISSION_PERCENT / 100);
+      const sellerNetAmount = itemTotal - platformCommission;
+
+      orderItemsWithCommission.push({
+        productId: product.id,
+        productName: product.name,
+        price: product.price,
+        qty: item.qty,
+        total: itemTotal,
+        commission: platformCommission,
+        sellerEarnings: sellerNetAmount
+      });
+    }
   });
 
   var options = {
@@ -953,14 +973,21 @@ function proceedToCheckout() {
     "amount": total * 100,
     "currency": "INR",
     "name": "Iqbal Mart",
-    "description": "Multi-Vendor Marketplace Order",
+    "description": "Multi-Vendor Order (5% Platform Commission Applied)",
     "handler": function (response) {
       const orderId = "ORD" + Date.now();
-      const order = { id: orderId, date: new Date().toLocaleString(), items: [...cart], total: total, status: "✅ Payment Successful", paymentId: response.razorpay_payment_id };
+      const order = { 
+        id: orderId, 
+        date: new Date().toLocaleString(), 
+        items: orderItemsWithCommission, 
+        total: total, 
+        status: "✅ Payment Successful", 
+        paymentId: response.razorpay_payment_id 
+      };
       orders.unshift(order);
       localStorage.setItem("iqbal_orders", JSON.stringify(orders));
       cart = []; saveCart(); updateCartCount(); closeCart();
-      alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
+      alert("✅ Payment Successful! 5% Commission deducted securely. Payment ID: " + response.razorpay_payment_id);
       showOrders();
     },
     "theme": { "color": "#2563eb" }
@@ -975,13 +1002,24 @@ function showOrders() {
   if (!orders.length) {
     content.innerHTML = `<div class="empty" style="text-align:center; padding:20px;">📦<br><br>No orders yet.</div>`;
   } else {
-    content.innerHTML = orders.map(order => `
-      <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px; background:var(--bg);">
-        <b>${order.id}</b><br><small>${order.date}</small>
-        <p style="margin:6px 0;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
-        <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
-      </div>
-    `).join("");
+    content.innerHTML = orders.map(order => {
+      let itemsHtml = order.items.map(i => `
+        <div style="font-size:13px; margin:4px 0; color:var(--muted);">
+          • ${i.productName} (x${i.qty}) - Total: ₹${i.total} <br>
+          <span style="color:var(--green); font-weight:bold;">Platform Commission (5%): ₹${i.commission.toFixed(2)}</span> | 
+          <span style="color:var(--blue); font-weight:bold;">Seller Earning: ₹${i.sellerEarnings.toFixed(2)}</span>
+        </div>
+      `).join("");
+
+      return `
+        <div style="border:1px solid var(--border); border-radius:10px; padding:14px; margin-top:12px; background:var(--bg);">
+          <b>${order.id}</b> <span style="float:right; font-size:12px; color:var(--muted);">${order.date}</span><br>
+          <p style="margin:6px 0; font-size:13px;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
+          <div style="margin:8px 0; border-top:1px dashed var(--border); padding-top:6px;">${itemsHtml}</div>
+          <p style="margin-top:6px; font-size:14px;">Grand Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
+        </div>
+      `;
+    }).join("");
   }
   const ordersModal = document.getElementById("ordersModal");
   if(ordersModal) ordersModal.style.display = "flex";
