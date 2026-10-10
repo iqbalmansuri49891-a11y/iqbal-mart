@@ -1000,23 +1000,23 @@ function showOrders() {
   const content = document.getElementById("ordersContent");
   if (!content) return;
   if (!orders.length) {
-    content.innerHTML = `<div class="empty" style="text-align:center; padding:20px;">📦<br><br>No orders yet.</div>`;
+    content.innerHTML = `<div class="empty" style="text-align:center; padding:20px;">📦<br><br>No orders yet. Place an order via checkout to view 5% commission details!</div>`;
   } else {
     content.innerHTML = orders.map(order => {
       let itemsHtml = order.items.map(i => `
-        <div style="font-size:13px; margin:4px 0; color:var(--muted);">
-          • ${i.productName} (x${i.qty}) - Total: ₹${i.total} <br>
-          <span style="color:var(--green); font-weight:bold;">Platform Commission (5%): ₹${i.commission.toFixed(2)}</span> | 
-          <span style="color:var(--blue); font-weight:bold;">Seller Earning: ₹${i.sellerEarnings.toFixed(2)}</span>
+        <div style="font-size:13px; margin:6px 0; padding:6px; background:rgba(37,99,235,0.05); border-radius:6px;">
+          <b>${i.productName}</b> (x${i.qty}) — ₹${i.total} <br>
+          <span style="color:var(--green); font-weight:bold;">Platform Commission (5%): ₹${i.commission.toFixed(2)}</span><br>
+          <span style="color:var(--blue); font-weight:bold;">Seller Net Earning: ₹${i.sellerEarnings.toFixed(2)}</span>
         </div>
       `).join("");
 
       return `
         <div style="border:1px solid var(--border); border-radius:10px; padding:14px; margin-top:12px; background:var(--bg);">
-          <b>${order.id}</b> <span style="float:right; font-size:12px; color:var(--muted);">${order.date}</span><br>
+          <b>Order ID: ${order.id}</b> <span style="float:right; font-size:12px; color:var(--muted);">${order.date}</span><br>
           <p style="margin:6px 0; font-size:13px;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
           <div style="margin:8px 0; border-top:1px dashed var(--border); padding-top:6px;">${itemsHtml}</div>
-          <p style="margin-top:6px; font-size:14px;">Grand Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
+          <p style="margin-top:6px; font-size:14px; font-weight:bold;">Grand Total Paid: ₹${order.total.toLocaleString("en-IN")}</p>
         </div>
       `;
     }).join("");
