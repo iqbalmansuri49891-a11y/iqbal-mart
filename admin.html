@@ -14,6 +14,19 @@
             <span class="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">Live Mode / Payout Panel</span>
         </header>
 
+        <!-- Live Notifications Section -->
+        <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
+            <div class="px-6 py-4 bg-gray-50 border-b">
+                <h2 class="text-lg font-semibold text-gray-700">🔔 Live Admin Notifications (`notifications`)</h2>
+                <p class="text-sm text-gray-500">Real-time alerts for new products and order status updates.</p>
+            </div>
+            <div class="p-6">
+                <ul id="notification-list" class="divide-y divide-gray-200">
+                    <li class="py-2 text-center text-gray-500">Loading notifications...</li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Sellers Bank & UPI Details Section -->
         <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
             <div class="px-6 py-4 bg-gray-50 border-b">
@@ -33,7 +46,7 @@
                     </thead>
                     <tbody id="vendor-banks-list" class="text-gray-700 text-sm divide-y divide-gray-200">
                         <tr>
-                            <td colspan="5" class="py-4 text-center text-gray-500">Loading vendor bank details...</td>
+                            <td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -58,7 +71,7 @@
                     </thead>
                     <tbody id="products-list" class="text-gray-700 text-sm divide-y divide-gray-200">
                         <tr>
-                            <td colspan="4" class="py-4 text-center text-gray-500">Loading products...</td>
+                            <td colspan="4" class="py-4 text-center text-gray-500">Koi products upload nahi hue hain.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -69,7 +82,7 @@
     <!-- Firebase Script Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
         const firebaseConfig = {
@@ -139,9 +152,36 @@
             }
         }
 
+        // Real-time Notifications Listener
+        function loadNotifications() {
+            const notifList = document.getElementById('notification-list');
+            const q = query(collection(db, "notifications"), orderBy("timestamp", "desc"), limit(10));
+            
+            onSnapshot(q, (snapshot) => {
+                notifList.innerHTML = "";
+                if (snapshot.empty) {
+                    notifList.innerHTML = `<li class="py-2 text-center text-gray-500">No new notifications.</li>`;
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const li = document.createElement('li');
+                    li.className = "py-3 flex justify-between items-center";
+                    li.innerHTML = `
+                        <div>
+                            <span class="font-semibold text-gray-800">${data.title || 'Alert'}</span>
+                            <p class="text-sm text-gray-600">${data.message || ''}</p>
+                        </div>
+                    `;
+                    notifList.appendChild(li);
+                });
+            });
+        }
+
         window.addEventListener("DOMContentLoaded", () => {
             loadVendorBanks();
             loadProducts();
+            loadNotifications();
         });
     </script>
 </body>
