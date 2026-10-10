@@ -7,9 +7,6 @@
 <!-- RAZORPAY CHECKOUT SCRIPT -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
-/* ==========================================
-   IQBAL MART - CLEAN & SMART APP THEME
-   ================================---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
 :root {
   --primary: #2563eb;
@@ -345,7 +342,7 @@ body.dark .upi-id { background: #1e293b; }
   </div>
 </div>
 
-<!-- AUTHENTICATION MODAL -->
+<!-- AUTHENTICATION & PROFILE MODAL -->
 <div class="modal-bg" id="authModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
@@ -359,14 +356,16 @@ body.dark .upi-id { background: #1e293b; }
         <button class="add-cart" style="background:var(--yellow); color:#111;" onclick="handleSignup()">Sign Up</button>
       </div>
     </div>
+    
+    <!-- BANK & PROFILE VIEW -->
     <div id="profileViewContainer" style="display:none;">
       <h2>👤 My Profile & Bank Payout Details</h2>
       <p>Apna Bank Account ya UPI ID jodein taaki sell hone par paisa mil sake:</p>
       <p style="margin-bottom:10px;"><b>Email:</b> <span id="userEmailDisplay"></span></p>
-      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name">
+      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name (e.g. Mohd Iqbal)">
       <input type="text" id="bankAccNo" class="input-field" placeholder="Bank Account Number">
-      <input type="text" id="bankIfsc" class="input-field" placeholder="IFSC Code">
-      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID">
+      <input type="text" id="bankIfsc" class="input-field" placeholder="IFSC Code (e.g. HDFC0001234)">
+      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID (e.g. iqbal@okicici)">
       <button class="add-cart" style="background:var(--primary); color:white;" onclick="saveUserBankDetails()">SAVE BANK DETAILS</button>
       <button class="add-cart" style="background:#e53935; color:white; margin-top:10px;" onclick="handleLogout()">LOGOUT</button>
     </div>
@@ -463,13 +462,17 @@ body.dark .upi-id { background: #1e293b; }
   onAuthStateChanged(auth, async (user) => {
     window.currentUser = user;
     const navBtn = document.getElementById("authNavBtn");
+    const authModal = document.getElementById("authModal");
+    const authView = document.getElementById("authViewContainer");
+    const profileView = document.getElementById("profileViewContainer");
+
     if (!user) {
       document.body.classList.remove("logged-in");
-      const authModal = document.getElementById("authModal");
       if(authModal) authModal.style.display = "flex";
+      if(authView) authView.style.display = "block";
+      if(profileView) profileView.style.display = "none";
     } else {
       document.body.classList.add("logged-in");
-      const authModal = document.getElementById("authModal");
       if(authModal) authModal.style.display = "none";
       if(navBtn) navBtn.textContent = "👤 " + (user.email ? user.email.split('@')[0] : "User");
       const emailDisp = document.getElementById("userEmailDisplay");
@@ -493,14 +496,14 @@ body.dark .upi-id { background: #1e293b; }
     const email = document.getElementById("authEmail").value.trim();
     const password = document.getElementById("authPassword").value.trim();
     if(!email || !password) { alert("Enter email & password"); return; }
-    try { await createUserWithEmailAndPassword(auth, email, password); alert("Account created!"); } catch(e) { alert(e.message); }
+    try { await createUserWithEmailAndPassword(auth, email, password); alert("✅ Account created!"); } catch(e) { alert("❌ " + e.message); }
   };
 
   window.handleLogin = async () => {
     const email = document.getElementById("authEmail").value.trim();
     const password = document.getElementById("authPassword").value.trim();
     if(!email || !password) { alert("Enter email & password"); return; }
-    try { await signInWithEmailAndPassword(auth, email, password); alert("Logged in!"); } catch(e) { alert(e.message); }
+    try { await signInWithEmailAndPassword(auth, email, password); alert("✅ Logged in!"); } catch(e) { alert("❌ " + e.message); }
   };
 
   window.handleLogout = async () => { await signOut(auth); location.reload(); };
@@ -511,8 +514,12 @@ body.dark .upi-id { background: #1e293b; }
     const accNo = document.getElementById("bankAccNo").value.trim();
     const ifsc = document.getElementById("bankIfsc").value.trim();
     const upi = document.getElementById("bankUpi").value.trim();
+    
+    if(!accName || !accNo || !ifsc) { alert("❌ Please fill Account Name, Number and IFSC."); return; }
+
     await setDoc(doc(db, "vendor_banks", window.currentUser.uid), { email: window.currentUser.email, accName, accNo, ifsc, upi }, { merge: true });
-    alert("Bank details saved securely!");
+    alert("✅ Bank details saved securely!");
+    document.getElementById("authModal").style.display = "none";
   };
 
   window.saveProductToFirestore = async (productData) => {
@@ -523,10 +530,10 @@ body.dark .upi-id { background: #1e293b; }
         sellerEmail: window.currentUser.email,
         createdAt: new Date()
       });
-      alert("Product published successfully!");
+      alert("✅ Product published successfully!");
       document.getElementById("addProductModal").style.display = "none";
       window.loadFirebaseProducts();
-    } catch(e) { alert(e.message); }
+    } catch(e) { alert("❌ " + e.message); }
   };
 
   window.loadFirebaseProducts = async () => {
@@ -751,8 +758,14 @@ function showToast(msg) {
 }
 
 function scrollProducts() { document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" }); }
-function openAuthModal() { document.getElementById("authModal").style.display = "flex"; }
-function closeAuthModal() { if(!window.currentUser) { alert("Login required"); return; } document.getElementById("authModal").style.display = "none"; }
+function openAuthModal() {
+  const authView = document.getElementById("authViewContainer");
+  const profileView = document.getElementById("profileViewContainer");
+  if(authView) authView.style.display = window.currentUser ? "none" : "block";
+  if(profileView) profileView.style.display = window.currentUser ? "block" : "none";
+  document.getElementById("authModal").style.display = "flex";
+}
+function closeAuthModal() { if(!window.currentUser) { alert("❌ Pehle Login ya Sign Up karna zaroori hai!"); return; } document.getElementById("authModal").style.display = "none"; }
 function verifyAndOpenAddProduct() { if(!window.currentUser) { openAuthModal(); return; } document.getElementById("addProductModal").style.display = "flex"; }
 function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
 function showSellerModal() { document.getElementById("sellerModal").style.display = "flex"; }
