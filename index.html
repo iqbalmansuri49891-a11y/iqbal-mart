@@ -41,7 +41,7 @@ body:not(.logged-in) {
   background: var(--card) !important;
 }
 
-/* SHANDAAR MODERN AUTH LOGIN MODAL STYLING */
+/* MODERN AUTH LOGIN MODAL STYLING */
 #authModal {
   display: flex;
   position: fixed;
@@ -60,18 +60,12 @@ body:not(.logged-in) {
   border-radius: 16px;
   padding: 30px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.4s ease-out;
   color: #212121;
 }
 
 body.dark #authModal .modal {
   background: rgba(31, 41, 55, 0.95);
   color: #f9fafb;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 #authModal h2 {
@@ -99,12 +93,6 @@ body.dark #authModal .modal {
   font-size: 15px;
   background: var(--card);
   color: var(--text);
-  transition: all 0.3s;
-}
-
-#authModal .input-field:focus {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 4px rgba(40, 116, 240, 0.15);
 }
 
 #authModal button.add-cart {
@@ -114,13 +102,7 @@ body.dark #authModal .modal {
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
   margin-top: 15px;
-}
-
-#authModal button.add-cart:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
 /* HEADER */
@@ -189,19 +171,17 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 .modal-product { text-align: center; }
 .big-product { height: 210px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 110px; margin-bottom: 15px; overflow: hidden; }
 .big-product img { width: 100%; height: 100%; object-fit: cover; }
-.modal h2 { margin-bottom: 8px; }
-.modal-price { font-size: 25px; font-weight: bold; margin: 10px 0; }
 .add-cart { width: 100%; border: 0; padding: 14px; background: var(--yellow); border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 15px; }
 
 /* SUBSCRIPTION & PAYMENT */
-.plan-card { border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-top: 10px; text-align: left; cursor: pointer; transition: 0.2s; }
+.plan-card { border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-top: 10px; text-align: left; cursor: pointer; }
 .plan-card.active { border: 2px solid var(--blue); background: #f0f7ff; }
 .qr-box { text-align: center; background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px dashed var(--blue); }
 .qr-box img { width: 180px; height: 180px; border-radius: 8px; margin: 10px 0; }
 .upi-id { font-weight: bold; background: #e0edff; padding: 6px 12px; border-radius: 4px; display: inline-block; color: var(--blue); margin-bottom: 8px; }
 .select-field { width: 100%; padding: 12px; margin-top: 10px; border: 1px solid var(--border); border-radius: 5px; outline: none; font-size: 14px; background: var(--card); color: var(--text); }
 
-/* BOTTOM NAV & RESPONSIVE */
+/* BOTTOM NAV */
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 62px; background: var(--card); border-top: 1px solid var(--border); display: none; z-index: 1500; justify-content: space-around; }
 .bottom-nav button { border: 0; background: transparent; color: var(--muted); font-size: 11px; cursor: pointer; }
 .bottom-nav .nav-icon { display: block; font-size: 21px; margin-bottom: 2px; }
@@ -215,12 +195,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   .logo { font-size: 20px; }
   .header-btn { display: none; }
   .search { order: 2; flex-basis: 100%; }
-  .hero-box { min-height: 160px; padding: 22px; }
-  .hero h1 { font-size: 23px; }
-  .hero-icon { font-size: 65px; }
   .products { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px; }
-  .product-img { height: 140px; font-size: 65px; }
-  .section { padding: 0 7px; }
   .bottom-nav { display: flex; }
 }
 </style>
@@ -294,35 +269,27 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- AUTHENTICATION & PROFILE MODAL -->
+<!-- AUTHENTICATION MODAL -->
 <div class="modal-bg" id="authModal">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAuthModal()">×</button>
     <div id="authViewContainer">
-      <h2 id="authTitle">🔐 Iqbal Mart Login</h2>
-      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Pehle Login ya Sign Up karein taaki store access kar sakein</p>
-
+      <h2>🔐 Iqbal Mart Login</h2>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Pehle Login ya Sign Up karein</p>
       <input type="email" id="authEmail" class="input-field" placeholder="Enter Email">
       <input type="password" id="authPassword" class="input-field" placeholder="Enter Password">
-
       <div style="margin-top:15px; display:flex; gap:10px;">
         <button class="add-cart" style="margin-top:0; background:var(--blue); color:white;" onclick="handleLogin()">Login</button>
         <button class="add-cart" style="margin-top:0; background:var(--yellow); color:#111;" onclick="handleSignup()">Sign Up</button>
       </div>
     </div>
-
-    <!-- LOGGED IN PROFILE & BANK DETAILS SECTION -->
     <div id="profileViewContainer" style="display:none;">
       <h2>👤 My Profile & Bank Payout Details</h2>
-      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Apna Bank Account ya UPI ID jodein taaki sell hone par paisa mil sake:</p>
-      
-      <p style="margin-bottom:10px;"><b>Email:</b> <span id="userEmailDisplay"></span></p>
-
-      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name (e.g. Mohd Iqbal)">
+      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;"><b>Email:</b> <span id="userEmailDisplay"></span></p>
+      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name">
       <input type="text" id="bankAccNo" class="input-field" placeholder="Bank Account Number">
-      <input type="text" id="bankIfsc" class="input-field uppercase" placeholder="IFSC Code (e.g. HDFC0001234)">
-      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID (e.g. iqbal@okicici)">
-
+      <input type="text" id="bankIfsc" class="input-field" placeholder="IFSC Code">
+      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID">
       <button class="add-cart" onclick="saveUserBankDetails()">SAVE BANK DETAILS</button>
       <button class="add-cart" style="background:#e53935; color:white; margin-top:10px;" onclick="handleLogout()">LOGOUT</button>
     </div>
@@ -337,8 +304,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       <div class="big-product" id="modalEmoji">📱</div>
       <h2 id="modalName">Product</h2>
       <div id="modalRating">⭐ 4.5</div>
-      <div class="modal-price">₹<span id="modalPrice">999</span></div>
-      <p id="modalDescription">Good quality product with fast delivery.</p>
+      <div class="modal-price" style="font-size:25px; font-weight:bold; margin:10px 0;">₹<span id="modalPrice">999</span></div>
+      <p id="modalDescription">Good quality product.</p>
       <button class="add-cart" onclick="addModalProduct()">🛒 ADD TO CART</button>
     </div>
   </div>
@@ -348,34 +315,16 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="modal-bg" id="sellerModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
-    <h2>📢 Become a Seller (Subscription Plans)</h2>
-    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Choose plan & scan UPI QR to pay directly into Bank Account!</p>
-    
-    <div class="plan-card" onclick="selectPlan(this, 'Basic', 199)">
-      <b>Basic Plan - ₹199 / month</b>
-      <p style="font-size:12px; color:var(--muted);">Upload up to 10 products</p>
-    </div>
+    <h2>📢 Become a Seller</h2>
     <div class="plan-card active" onclick="selectPlan(this, 'Pro', 499)">
       <b>Pro Plan - ₹499 / month</b>
-      <p style="font-size:12px; color:var(--muted);">Upload up to 100 products + Priority Support</p>
     </div>
-    <div class="plan-card" onclick="selectPlan(this, 'Enterprise', 999)">
-      <b>Enterprise Plan - ₹999 / month</b>
-      <p style="font-size:12px; color:var(--muted);">Unlimited Product Listings + National Delivery</p>
-    </div>
-
-    <!-- UPI QR DISPLAY SECTION -->
     <div class="qr-box">
-      <p style="font-weight:bold; font-size:14px; color:#333;">Scan & Pay via GPay / PhonePe / Paytm</p>
-      <div class="upi-id" id="displayUpi">UPI ID: iqbalelectricplumber-1@okicici</div><br>
-      <img id="dynamicQr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalElectric&am=499&cu=INR" alt="UPI QR Code">
-      <p style="font-size:13px; font-weight:bold; color:var(--blue);">Paying Amount: ₹<span id="payAmount">499</span></p>
+      <div class="upi-id">iqbalelectricplumber-1@okicici</div>
+      <img id="dynamicQr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=iqbalelectricplumber-1@okicici&pn=IqbalElectric&am=499&cu=INR" alt="QR">
     </div>
-
-    <!-- TRANSACTION PROOF -->
-    <input type="text" id="sellerPhone" class="input-field" placeholder="Enter Your Mobile / WhatsApp Number">
+    <input type="text" id="sellerPhone" class="input-field" placeholder="Enter Mobile / WhatsApp Number">
     <input type="text" id="utrNo" class="input-field" placeholder="Enter 12-Digit UPI UTR No.">
-
     <button class="add-cart" onclick="submitSubscription()">VERIFY & START SELLING</button>
   </div>
 </div>
@@ -385,31 +334,24 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeAddProductModal()">×</button>
     <h2>📦 Upload New Product</h2>
-    <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">List your item on Iqbal Mart marketplace</p>
-
-    <input type="text" id="newProdName" class="input-field" placeholder="Product Name (e.g. DSLR Camera)">
+    <input type="text" id="newProdName" class="input-field" placeholder="Product Name (e.g. MCB Switch)">
     <select id="newProdCategory" class="select-field">
+      <option value="Electrical">Electrical</option>
       <option value="Cameras">Cameras</option>
       <option value="Fashion">Fashion</option>
-      <option value="Footwear">Footwear</option>
       <option value="Tools">Tools</option>
-      <option value="Electrical">Electrical</option>
       <option value="Plumbing">Plumbing</option>
       <option value="Mobiles">Mobiles</option>
-      <option value="Furniture">Furniture</option>
-      <option value="Electronics">Electronics</option>
-      <option value="Grocery">Grocery</option>
     </select>
-    <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹ (e.g. 24999)">
-    <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹ (e.g. 32999)">
+    <input type="number" id="newProdPrice" class="input-field" placeholder="Price in ₹ (e.g. 200)">
+    <input type="number" id="newProdOldPrice" class="input-field" placeholder="Old Price in ₹ (e.g. 500)">
     
     <label style="display:block; margin-top:12px; font-size:13px; font-weight:bold; color:var(--muted);">Select Product Photo from Gallery/Camera:</label>
     <input type="file" id="newProdFile" class="input-field" accept="image/*">
 
-    <input type="text" id="newProdEmoji" class="input-field" placeholder="Fallback Emoji Icon (e.g. 📷 or 📱)">
+    <input type="text" id="newProdEmoji" class="input-field" placeholder="Fallback Emoji (e.g. ⚡)">
     <input type="text" id="newProdDesc" class="input-field" placeholder="Short description...">
-
-    <button class="add-cart" onclick="submitNewProduct()">PUBLISH PRODUCT</button>
+    <button class="add-cart" onclick="submitNewProduct()">PUBLISH TO FIREBASE</button>
   </div>
 </div>
 
@@ -417,16 +359,14 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="modal-bg" id="ordersModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
-    <h2>📦 My Orders & Admin Approvals</h2>
+    <h2>📦 My Orders</h2>
     <div id="ordersContent"></div>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="nav-icon">🏠</span> Home</button>
   <button onclick="document.getElementById('searchInput').focus()"><span class="nav-icon">🔍</span> Search</button>
-  <button onclick="showWishlist()"><span class="nav-icon">❤️</span> Wishlist</button>
   <button onclick="openCart()"><span class="nav-icon">🛒</span> Cart</button>
   <button onclick="showSellerModal()"><span class="nav-icon">📢</span> Sell</button>
 </nav>
@@ -438,7 +378,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyALVuRv4qKbafSKz9ZqULjuvENYXtTXFvc",
@@ -453,14 +392,12 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  const analytics = getAnalytics(app);
 
   window.currentUser = null;
 
   onAuthStateChanged(auth, async (user) => {
     window.currentUser = user;
     const navBtn = document.getElementById("authNavBtn");
-    
     if (!user) {
       document.body.classList.remove("logged-in");
       document.getElementById("authModal").style.display = "flex";
@@ -471,25 +408,13 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       document.getElementById("authModal").style.display = "none";
       navBtn.textContent = "👤 " + user.email.split('@')[0];
       document.getElementById("userEmailDisplay").textContent = user.email;
-      
-      try {
-        const docRef = doc(db, "vendor_banks", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById("bankAccName").value = data.accName || "";
-          document.getElementById("bankAccNo").value = data.accNo || "";
-          document.getElementById("bankIfsc").value = data.ifsc || "";
-          document.getElementById("bankUpi").value = data.upi || "";
-        }
-      } catch(e) { console.log(e); }
     }
   });
 
   window.handleSignup = async () => {
     const email = document.getElementById("authEmail").value.trim();
     const password = document.getElementById("authPassword").value.trim();
-    if(!email || !password) { alert("Please enter email and password."); return; }
+    if(!email || !password) { alert("Enter email and password."); return; }
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert("✅ Account created successfully!");
@@ -499,7 +424,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   window.handleLogin = async () => {
     const email = document.getElementById("authEmail").value.trim();
     const password = document.getElementById("authPassword").value.trim();
-    if(!email || !password) { alert("Please enter email and password."); return; }
+    if(!email || !password) { alert("Enter email and password."); return; }
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert("✅ Logged in successfully!");
@@ -507,33 +432,8 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   };
 
   window.handleLogout = async () => {
-    try {
-      await signOut(auth);
-      alert("✅ Logged out successfully!");
-      location.reload();
-    } catch(e) { alert("❌ Error: " + e.message); }
-  };
-
-  window.saveUserBankDetails = async () => {
-    if(!window.currentUser) return;
-    const accName = document.getElementById("bankAccName").value.trim();
-    const accNo = document.getElementById("bankAccNo").value.trim();
-    const ifsc = document.getElementById("bankIfsc").value.trim();
-    const upi = document.getElementById("bankUpi").value.trim();
-
-    if(!accName || !accNo || !ifsc) {
-      alert("❌ Please fill Account Name, Account Number and IFSC Code.");
-      return;
-    }
-
-    try {
-      await setDoc(doc(db, "vendor_banks", window.currentUser.uid), {
-        email: window.currentUser.email,
-        accName, accNo, ifsc, upi, updatedAt: new Date()
-      });
-      alert("✅ Bank Payout details saved successfully!");
-      document.getElementById("authModal").style.display = "none";
-    } catch(e) { alert("❌ Error saving bank details: " + e.message); }
+    await signOut(auth);
+    location.reload();
   };
 
   window.saveProductToFirestore = async (productData) => {
@@ -543,7 +443,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
         sellerEmail: window.currentUser ? window.currentUser.email : "admin",
         createdAt: new Date()
       });
-      alert("✅ Product published successfully on Iqbal Mart!");
+      alert("✅ Product published successfully to Firebase!");
       closeAddProductModal();
       window.loadFirebaseProducts();
     } catch (e) {
@@ -570,80 +470,15 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 </script>
 
 <script>
-const YOUR_UPI_ID = "iqbalelectricplumber-1@okicici"; 
-
-let selectedPlanName = "Pro";
-let selectedPlanPrice = 499;
-
-function updateQrCode() {
-  document.getElementById("payAmount").textContent = selectedPlanPrice;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=${YOUR_UPI_ID}&pn=IqbalElectric&am=${selectedPlanPrice}&cu=INR`;
-  document.getElementById("dynamicQr").src = qrUrl;
-}
-
-function selectPlan(element, name, price) {
-  document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('active'));
-  element.classList.add('active');
-  selectedPlanName = name;
-  selectedPlanPrice = price;
-  updateQrCode();
-}
-
-function submitSubscription() {
-  const phone = document.getElementById("sellerPhone").value.trim();
-  const utr = document.getElementById("utrNo").value.trim();
-
-  if(!phone || phone.length < 10) { alert("Please enter a valid WhatsApp/Mobile number."); return; }
-  if(!utr || utr.length < 12) { alert("❌ Invalid UTR! Asli UPI payment ka 12-digit ka UTR number dalna zaroori hai."); return; }
-
-  const adminWhatsAppNumber = "919714739355";
-  const message = `🔔 *New Seller Subscription!*%0A%0A*Plan:* ${selectedPlanName}%0A*Price:* ₹${selectedPlanPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}`;
-  
-  alert("✅ Payment details submitted successfully! Redirecting to WhatsApp...");
-  closeSellerModal();
-  window.open(`https://wa.me/${adminWhatsAppNumber}?text=${message}`, '_blank');
-}
-
-function openAuthModal() { 
-  document.getElementById("authViewContainer").style.display = window.currentUser ? "none" : "block";
-  document.getElementById("profileViewContainer").style.display = window.currentUser ? "block" : "none";
-  document.getElementById("authModal").style.display = "flex"; 
-}
-
-function closeAuthModal() { 
-  if (!window.currentUser) {
-    alert("❌ Pehle Login ya Sign Up karna zaroori hai!");
-    return;
-  }
-  document.getElementById("authModal").style.display = "none"; 
-}
-
-function verifyAndOpenAddProduct() {
-  if (!window.currentUser) {
-    alert("❌ Please Login first to add products!");
-    openAuthModal();
-    return;
-  }
-  document.getElementById("addProductModal").style.display = "flex";
-}
-
-const staticProducts = [
-  { id: 1, name: "Professional DSLR Camera 4K", category: "Cameras", price: 34999, oldPrice: 45999, rating: 4.8, emoji: "📷", image: "", description: "High resolution DSLR camera with 18-55mm lens." },
-  { id: 2, name: "WiFi Security CCTV Camera", category: "Cameras", price: 1599, oldPrice: 2999, rating: 4.6, emoji: "📸", image: "", description: "Smart wireless home security camera." },
-  { id: 3, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt." },
-  { id: 4, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes." },
-  { id: 5, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set." }
-];
-
-let products = [...staticProducts];
 let cart = JSON.parse(localStorage.getItem("iqbal_cart") || "[]");
 let wishlist = JSON.parse(localStorage.getItem("iqbal_wishlist") || "[]");
 let orders = JSON.parse(localStorage.getItem("iqbal_orders") || "[]");
-let currentProducts = [...products];
+let products = [];
+let currentProducts = [];
 let selectedProduct = null;
 
 window.mergeProducts = function(firebaseList) {
-  products = [...firebaseList, ...staticProducts];
+  products = [...firebaseList];
   currentProducts = [...products];
   renderProducts(currentProducts);
 }
@@ -651,7 +486,7 @@ window.mergeProducts = function(firebaseList) {
 function renderProducts(list = currentProducts) {
   const grid = document.getElementById("productGrid");
   if (!list.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;">😔<br><br>No products found.</div>`;
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1; text-align:center; padding:30px;">😔<br>No products found in Firebase. Add one!</div>`;
     return;
   }
   grid.innerHTML = list.map(product => {
@@ -664,7 +499,7 @@ function renderProducts(list = currentProducts) {
         <div class="product-img">${displayMedia}</div>
         <div class="product-info">
           <div class="product-name">${product.name}</div>
-          <span class="rating">⭐ ${product.rating || 4.5}</span>
+          <span class="rating">⭐ 4.6</span>
           <div>
             <span class="price">₹${product.price.toLocaleString("en-IN")}</span>
             ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice.toLocaleString("en-IN")}</span><span class="discount">${discount}% off</span>` : ''}
@@ -690,7 +525,6 @@ function filterCategory(category) {
     currentProducts = products.filter(p => p.category === category);
   }
   renderProducts(currentProducts);
-  document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
 }
 
 function openProduct(id) {
@@ -699,7 +533,6 @@ function openProduct(id) {
   const displayMedia = selectedProduct.image ? `<img src="${selectedProduct.image}" alt="${selectedProduct.name}">` : (selectedProduct.emoji || '📦');
   document.getElementById("modalEmoji").innerHTML = displayMedia;
   document.getElementById("modalName").textContent = selectedProduct.name;
-  document.getElementById("modalRating").textContent = `⭐ ${selectedProduct.rating || 4.5} Rating`;
   document.getElementById("modalPrice").textContent = selectedProduct.price.toLocaleString("en-IN");
   document.getElementById("modalDescription").textContent = selectedProduct.description || 'Verified product listing.';
   document.getElementById("productModal").style.display = "flex";
@@ -711,16 +544,25 @@ function showSellerModal() { document.getElementById("sellerModal").style.displa
 function closeSellerModal() { document.getElementById("sellerModal").style.display = "none"; }
 function closeAddProductModal() { document.getElementById("addProductModal").style.display = "none"; }
 
+function verifyAndOpenAddProduct() {
+  if (!window.currentUser) {
+    alert("❌ Please Login first!");
+    openAuthModal();
+    return;
+  }
+  document.getElementById("addProductModal").style.display = "flex";
+}
+
 function submitNewProduct() {
   const name = document.getElementById("newProdName").value.trim();
   const category = document.getElementById("newProdCategory").value;
   const price = Number(document.getElementById("newProdPrice").value);
-  const oldPrice = Number(document.getElementById("newProdOldPrice").value) || price + 500;
-  const emoji = document.getElementById("newProdEmoji").value.trim() || "🛍️";
-  const description = document.getElementById("newProdDesc").value.trim() || "Seller uploaded product item.";
+  const oldPrice = Number(document.getElementById("newProdOldPrice").value) || price + 200;
+  const emoji = document.getElementById("newProdEmoji").value.trim() || "⚡";
+  const description = document.getElementById("newProdDesc").value.trim() || "Seller item.";
   const fileInput = document.getElementById("newProdFile");
 
-  if(!name || !price) { alert("Please enter valid Product Name and Price."); return; }
+  if(!name || !price) { alert("Please enter Product Name and Price."); return; }
 
   if (fileInput.files && fileInput.files[0]) {
     const reader = new FileReader();
@@ -747,14 +589,14 @@ function submitNewProduct() {
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
         if (window.saveProductToFirestore) {
-          window.saveProductToFirestore({ name, category, price, oldPrice, image: compressedBase64, emoji, description, rating: 4.6 });
+          window.saveProductToFirestore({ name, category, price, oldPrice, image: compressedBase64, emoji, description });
         }
       };
     };
     reader.readAsDataURL(fileInput.files[0]);
   } else {
     if (window.saveProductToFirestore) {
-      window.saveProductToFirestore({ name, category, price, oldPrice, image: "", emoji, description, rating: 4.6 });
+      window.saveProductToFirestore({ name, category, price, oldPrice, image: "", emoji, description });
     }
   }
 }
@@ -764,7 +606,6 @@ function addToCart(id) {
   if (existing) { existing.qty++; } else { cart.push({ id: id, qty: 1 }); }
   saveCart();
   showToast("🛒 Added to cart");
-  renderCart();
 }
 function saveCart() { localStorage.setItem("iqbal_cart", JSON.stringify(cart)); updateCartCount(); }
 function updateCartCount() {
@@ -778,7 +619,7 @@ function closeCartOutside(event) { if (event.target.id === "cartOverlay") closeC
 function renderCart() {
   const container = document.getElementById("cartItems");
   if (!cart.length) {
-    container.innerHTML = `<div class="empty">🛒<br><br>Your cart is empty.</div>`;
+    container.innerHTML = `<div class="empty" style="text-align:center; padding:30px;">🛒<br>Your cart is empty.</div>`;
     document.getElementById("cartTotal").textContent = "0";
     return;
   }
@@ -793,12 +634,7 @@ function renderCart() {
         <div class="cart-emoji">${cartMedia}</div>
         <div class="cart-details">
           <div class="cart-name">${product.name}</div>
-          <b>₹${product.price.toLocaleString("en-IN")}</b><br><br>
-          <div class="qty">
-            <button onclick="changeQty('${product.id}', -1)">−</button>
-            <span>${item.qty}</span>
-            <button onclick="changeQty('${product.id}', 1)">+</button>
-          </div><br>
+          <b>₹${product.price.toLocaleString("en-IN")}</b><br>
           <button class="remove" onclick="removeFromCart('${product.id}')">Remove</button>
         </div>
       </div>
@@ -806,120 +642,50 @@ function renderCart() {
   }).join("");
   document.getElementById("cartTotal").textContent = total.toLocaleString("en-IN");
 }
-
-function changeQty(id, change) {
-  const item = cart.find(i => i.id == id);
-  if (!item) return;
-  item.qty += change;
-  if (item.qty <= 0) cart = cart.filter(i => i.id != id);
-  saveCart(); renderCart();
-}
 function removeFromCart(id) {
   cart = cart.filter(item => item.id != id);
-  saveCart(); renderCart(); showToast("Product removed");
+  saveCart(); renderCart();
 }
 
 async function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
-  let total = 0;
-  cart.forEach(item => {
-    const product = products.find(p => p.id == item.id);
-    if (product) total += product.price * item.qty;
-  });
+  let total = cart.reduce((sum, item) => {
+    const p = products.find(x => x.id == item.id);
+    return sum + (p ? p.price * item.qty : 0);
+  }, 0);
 
-  try {
-    const response = await fetch('/api/create-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: total * 100 })
-    });
-
-    const order = await response.json();
-    if (!order.id) {
-      alert("Order create nahi ho paya. Kripya dobara koshish karein.");
-      return;
-    }
-
-    var options = {
-      "key": order.key_id || "", 
-      "amount": order.amount,
-      "currency": "INR",
-      "name": "Iqbal Mart",
-      "description": "Multi-Vendor Marketplace Order",
-      "order_id": order.id,
-      "handler": function (response) {
-        const orderId = "ORD" + Date.now();
-        const savedOrder = { 
-          id: orderId, 
-          date: new Date().toLocaleString(), 
-          items: [...cart], 
-          total: total, 
-          status: "✅ Payment Successful", 
-          paymentId: response.razorpay_payment_id 
-        };
-        orders.unshift(savedOrder);
-        localStorage.setItem("iqbal_orders", JSON.stringify(orders));
-        cart = []; saveCart(); updateCartCount(); closeCart();
-        alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
-        showOrders();
-      },
-      "theme": { "color": "#2874f0" }
-    };
-    var rzp = new Razorpay(options);
-    rzp.open();
-
-  } catch (error) {
-    console.error("Payment error:", error);
-    alert("Payment process mein koi dikkat aa gayi hai.");
-  }
+  var options = {
+    "key": "rzp_test_YourKeyHere", 
+    "amount": total * 100,
+    "currency": "INR",
+    "name": "Iqbal Mart",
+    "description": "Multi-Vendor Order",
+    "handler": function (response) {
+      alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
+      cart = []; saveCart(); updateCartCount(); closeCart();
+    },
+    "theme": { "color": "#2874f0" }
+  };
+  var rzp = new Razorpay(options);
+  rzp.open();
 }
 
-function showOrders() {
-  const content = document.getElementById("ordersContent");
-  if (!orders.length) {
-    content.innerHTML = `<div class="empty">📦<br><br>No orders yet.</div>`;
-  } else {
-    content.innerHTML = orders.map(order => `
-      <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px; background:var(--bg);">
-        <b>${order.id}</b><br><small>${order.date}</small>
-        <p style="margin:6px 0;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
-        <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
-      </div>
-    `).join("");
-  }
-  document.getElementById("ordersModal").style.display = "flex";
-}
+function showOrders() { document.getElementById("ordersModal").style.display = "flex"; }
 function closeOrders() { document.getElementById("ordersModal").style.display = "none"; }
-
 function toggleWishlist(event, id) {
-  if(event) event.stopPropagation();
-  if (wishlist.includes(id)) { wishlist = wishlist.filter(x => x != id); showToast("Removed from wishlist"); }
-  else { wishlist.push(id); showToast("❤️ Added to wishlist"); }
+  event.stopPropagation();
+  if (wishlist.includes(id)) wishlist = wishlist.filter(x => x != id);
+  else wishlist.push(id);
   localStorage.setItem("iqbal_wishlist", JSON.stringify(wishlist));
   renderProducts(currentProducts);
 }
-
-function showWishlist() {
-  const list = products.filter(p => wishlist.includes(p.id));
-  currentProducts = list; renderProducts(list);
-  document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" });
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1500);
 }
-
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("iqbal_dark", document.body.classList.contains("dark"));
-}
-if (localStorage.getItem("iqbal_dark") === "true") document.body.classList.add("dark");
-
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message; toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1800);
-}
-
 function scrollProducts() { document.getElementById("productsSection").scrollIntoView({ behavior: "smooth" }); }
 
-renderProducts();
 updateCartCount();
 </script>
 </body>
