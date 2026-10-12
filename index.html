@@ -437,7 +437,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -453,7 +452,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const storage = getStorage(app);
   const auth = getAuth(app);
   const analytics = getAnalytics(app);
 
@@ -538,23 +536,13 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     } catch(e) { alert("❌ Error saving bank details: " + e.message); }
   };
 
-  // Firebase Storage Image Upload + Firestore Product Saving
-  window.saveProductToFirestore = async (productData, file) => {
+  window.saveProductToFirestore = async (productData) => {
     try {
-      let imageUrl = "";
-      if (file) {
-        const storageRef = ref(storage, 'products/' + Date.now() + '_' + file.name);
-        const snapshot = await uploadBytes(storageRef, file);
-        imageUrl = await getDownloadURL(snapshot.ref);
-      }
-
       await addDoc(collection(db, "products"), {
         ...productData,
-        image: imageUrl,
         sellerEmail: window.currentUser ? window.currentUser.email : "admin",
         createdAt: new Date()
       });
-
       alert("✅ Product published successfully on Iqbal Mart!");
       closeAddProductModal();
       window.loadFirebaseProducts();
@@ -669,7 +657,7 @@ function renderProducts(list = currentProducts) {
   grid.innerHTML = list.map(product => {
     const discount = product.oldPrice ? Math.round((1 - product.price / product.oldPrice) * 100) : 10;
     const liked = wishlist.includes(product.id);
-    const displayMedia = product.image ? `<img src="${product.image}" alt="${product.name}">` : (product.emoji || '📦');
+    const displayMedia = product.image ? `<img src="${product.image}" alt="${product.name}">` : `<span style="font-size:65px;">${product.emoji || '📦'}</span>`;
     return `
       <div class="product" onclick="openProduct('${product.id}')">
         <button class="wishlist" onclick="toggleWishlist(event, '${product.id}')">${liked ? "❤️" : "♡"}</button>
@@ -708,7 +696,7 @@ function filterCategory(category) {
 function openProduct(id) {
   selectedProduct = products.find(p => p.id == id);
   if (!selectedProduct) return;
-  const displayMedia = selectedProduct.image ? `<img src="${selectedProduct.image}" alt="${selectedProduct.name}">` : (selectedProduct.emoji || '📦');
+  const displayMedia = selectedProduct.image ? `<img src="${selectedProduct.image}" alt="${selectedProduct.name}">` : `<span style="font-size:100px;">${selectedProduct.emoji || '📦'}</span>`;
   document.getElementById("modalEmoji").innerHTML = displayMedia;
   document.getElementById("modalName").textContent = selectedProduct.name;
   document.getElementById("modalRating").textContent = `⭐ ${selectedProduct.rating || 4.5} Rating`;
@@ -734,9 +722,40 @@ function submitNewProduct() {
 
   if(!name || !price) { alert("Please enter valid Product Name and Price."); return; }
 
-  const file = fileInput.files[0] || null;
-  if (window.saveProductToFirestore) {
-    window.saveProductToFirestore({ name, category, price, oldPrice, emoji, description, rating: 4.6 }, file);
+  if (fileInput.files && fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 300;
+        const MAX_HEIGHT = 300;
+        let width = img.width;
+        let height = img.height; // Fix corrected here
+
+        if (width > height) {
+          if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+        } else {
+          if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5);
+
+        if (window.saveProductToFirestore) {
+          window.saveProductToFirestore({ name, category, price, oldPrice, image: compressedBase64, emoji, description, rating: 4.6 });
+        }
+      };
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    if (window.saveProductToFirestore) {
+      window.saveProductToFirestore({ name, category, price, oldPrice, image: "", emoji, description, rating: 4.6 });
+    }
   }
 }
 
@@ -768,7 +787,7 @@ function renderCart() {
     const product = products.find(p => p.id == item.id);
     if (!product) return "";
     total += product.price * item.qty;
-    const cartMedia = product.image ? `<img src="${product.image}" alt="${product.name}">` : (product.emoji || '📦');
+    const cartMedia = product.image ? `<img src="${product.image}" alt="${product.name}">` : `<span style="font-size:35px;">${product.emoji || '📦'}</span>`;
     return `
       <div class="cart-item">
         <div class="cart-emoji">${cartMedia}</div>
@@ -804,7 +823,7 @@ async function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
   let total = 0;
   cart.forEach(item => {
-    const product = products.find(p => p.id == item.id);
+    const product = products.find(p => p.id == item.id); // Fixed products.products bug
     if (product) total += product.price * item.qty;
   });
 
