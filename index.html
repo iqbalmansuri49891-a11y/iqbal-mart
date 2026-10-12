@@ -232,7 +232,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="topbar">
     <div class="logo">Iqbal<span>Mart</span></div>
     <div class="search">
-      <input id="searchInput" type="search" placeholder="Search Cameras, Medicines, Fashion, Tools..." oninput="searchProducts()">
+      <input id="searchInput" type="search" placeholder="Search Cameras, Fashion, Tools, Electronics..." oninput="searchProducts()">
       <button onclick="searchProducts()">🔍</button>
     </div>
     <button class="header-btn seller-btn" onclick="showSellerModal()">📢 Sell Products</button>
@@ -247,7 +247,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="categories">
   <div class="category" onclick="filterCategory('All')"><div class="category-icon">🏠</div>All</div>
   <div class="category" onclick="filterCategory('Cameras')"><div class="category-icon">📷</div>Cameras</div>
-  <div class="category" onclick="filterCategory('Medicines')"><div class="category-icon">💊</div>Medicines</div>
   <div class="category" onclick="filterCategory('Fashion')"><div class="category-icon">👕</div>Fashion</div>
   <div class="category" onclick="filterCategory('Footwear')"><div class="category-icon">👟</div>Footwear</div>
   <div class="category" onclick="filterCategory('Tools')"><div class="category-icon">🛠️</div>Tools</div>
@@ -264,7 +263,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   <div class="hero-box">
     <div>
       <h1>Multi-Vendor Mega Sale!</h1>
-      <p>Cameras • Medicines • Fashion • Footwear • Tools • Fast Delivery</p>
+      <p>Cameras • Fashion • Footwear • Tools • Fast Delivery</p>
       <button class="shop-btn" onclick="scrollProducts()">Shop Now</button>
     </div>
     <div class="hero-icon">🛍️</div>
@@ -391,7 +390,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <input type="text" id="newProdName" class="input-field" placeholder="Product Name (e.g. DSLR Camera)">
     <select id="newProdCategory" class="select-field">
       <option value="Cameras">Cameras</option>
-      <option value="Medicines">Medicines</option>
       <option value="Fashion">Fashion</option>
       <option value="Footwear">Footwear</option>
       <option value="Tools">Tools</option>
@@ -596,7 +594,7 @@ function submitSubscription() {
   const utr = document.getElementById("utrNo").value.trim();
 
   if(!phone || phone.length < 10) { alert("Please enter a valid WhatsApp/Mobile number."); return; }
-  if(!utr || utr.length < 12) { alert("❌ Invalid UTR! Asli UPI payment ka 12-digit ka UTR number daalna zaroori hai."); return; }
+  if(!utr || utr.length < 12) { alert("❌ Invalid UTR! Asli UPI payment ka 12-digit ka UTR number dalna zaroori hai."); return; }
 
   const adminWhatsAppNumber = "919714739355";
   const message = `🔔 *New Seller Subscription!*%0A%0A*Plan:* ${selectedPlanName}%0A*Price:* ₹${selectedPlanPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}`;
@@ -632,10 +630,9 @@ function verifyAndOpenAddProduct() {
 const staticProducts = [
   { id: 1, name: "Professional DSLR Camera 4K", category: "Cameras", price: 34999, oldPrice: 45999, rating: 4.8, emoji: "📷", image: "", description: "High resolution DSLR camera with 18-55mm lens." },
   { id: 2, name: "WiFi Security CCTV Camera", category: "Cameras", price: 1599, oldPrice: 2999, rating: 4.6, emoji: "📸", image: "", description: "Smart wireless home security camera." },
-  { id: 3, name: "Multivitamin Immunity Tablets", category: "Medicines", price: 349, oldPrice: 599, rating: 4.6, emoji: "💊", image: "", description: "Daily health supplement tablets." },
-  { id: 4, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt." },
-  { id: 5, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes." },
-  { id: 6, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set." }
+  { id: 3, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt." },
+  { id: 4, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes." },
+  { id: 5, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set." }
 ];
 
 let products = [...staticProducts];
@@ -831,11 +828,10 @@ async function proceedToCheckout() {
   });
 
   try {
-    // 1. Vercel Backend API se secure order generate karwayein
     const response = await fetch('/api/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: total * 100 }) // Amount in paise
+      body: JSON.stringify({ amount: total * 100 })
     });
 
     const order = await response.json();
@@ -844,7 +840,6 @@ async function proceedToCheckout() {
       return;
     }
 
-    // 2. Razorpay popup kholein
     var options = {
       "key": order.key_id || "", 
       "amount": order.amount,
