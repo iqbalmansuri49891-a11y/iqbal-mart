@@ -53,7 +53,136 @@ body:not(.logged-in) {
   padding: 20px;
 }
 
-#authModal .mo: 100%; border: 0; background: #ff9f00; padding: 14px; font-weight: bold; cursor: pointer; bord
+#authModal .modal {
+  width: min(440px, 100%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease-out;
+  color: #212121;
+}
+
+body.dark #authModal .modal {
+  background: rgba(31, 41, 55, 0.95);
+  color: #f9fafb;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#authModal h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--blue);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+#authModal p {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+#authModal .input-field {
+  width: 100%;
+  padding: 14px 16px;
+  margin-top: 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  font-size: 15px;
+  background: var(--card);
+  color: var(--text);
+  transition: all 0.3s;
+}
+
+#authModal .input-field:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(40, 116, 240, 0.15);
+}
+
+#authModal button.add-cart {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 15px;
+}
+
+#authModal button.add-cart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+/* HEADER */
+header { background: var(--blue); color: white; padding: 10px 14px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+.topbar { display: flex; align-items: center; gap: 10px; max-width: 1200px; margin: auto; }
+.logo { font-size: 23px; font-weight: bold; white-space: nowrap; }
+.logo span { color: var(--yellow); }
+.search { flex: 1; display: flex; background: white; border-radius: 4px; overflow: hidden; }
+.search input { width: 100%; border: 0; outline: none; padding: 12px; font-size: 15px; color: #222; }
+.search button { width: 48px; border: 0; background: white; color: var(--blue); font-size: 20px; cursor: pointer; }
+.header-btn { background: transparent; border: 0; color: white; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.seller-btn { background: var(--yellow); color: #111; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+
+/* CATEGORY BAR */
+.categories { background: var(--card); display: flex; gap: 22px; padding: 12px 15px; overflow-x: auto; border-bottom: 1px solid var(--border); scrollbar-width: none; }
+.categories::-webkit-scrollbar { display: none; }
+.category { min-width: 75px; text-align: center; cursor: pointer; font-size: 13px; color: var(--text); }
+.category-icon { width: 48px; height: 48px; margin: auto auto 5px; border-radius: 50%; background: #eef4ff; display: flex; align-items: center; justify-content: center; font-size: 25px; }
+
+/* HERO */
+.hero { max-width: 1200px; margin: 12px auto; padding: 0 12px; }
+.hero-box { min-height: 180px; border-radius: 8px; padding: 30px; background: linear-gradient(110deg, #2874f0, #6aa0ff); color: white; display: flex; align-items: center; justify-content: space-between; overflow: hidden; }
+.hero h1 { font-size: 30px; margin-bottom: 8px; }
+.hero p { margin-bottom: 15px; }
+.shop-btn { border: 0; background: var(--yellow); padding: 11px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.hero-icon { font-size: 95px; opacity: .9; }
+
+/* PRODUCTS */
+.section { max-width: 1200px; margin: 15px auto; padding: 0 12px; }
+.section-title { background: var(--card); padding: 15px; border-bottom: 1px solid var(--border); font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+.products { background: var(--card); padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.product { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--card); transition: .2s; cursor: pointer; position: relative; }
+.product:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,.12); }
+.product-img { height: 170px; background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 75px; overflow: hidden; }
+.product-img img { width: 100%; height: 100%; object-fit: cover; }
+.product-info { padding: 10px; }
+.product-name { font-size: 14px; min-height: 38px; line-height: 19px; }
+.rating { display: inline-block; background: var(--green); color: white; padding: 3px 6px; border-radius: 4px; font-size: 12px; margin: 6px 0; }
+.price { font-size: 18px; font-weight: bold; }
+.old-price { color: var(--muted); text-decoration: line-through; font-size: 12px; margin-left: 5px; }
+.discount { color: var(--green); font-size: 12px; margin-left: 5px; }
+.wishlist { position: absolute; right: 8px; top: 8px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: white; font-size: 19px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.15); z-index: 10; }
+
+/* CART DRAWER */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 2000; }
+.cart { position: absolute; right: 0; top: 0; height: 100%; width: min(420px, 94%); background: var(--card); color: var(--text); display: flex; flex-direction: column; }
+.cart-header { padding: 17px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); font-weight: bold; font-size: 18px; }
+.close { border: 0; background: transparent; font-size: 24px; cursor: pointer; color: var(--text); }
+.cart-items { flex: 1; overflow-y: auto; padding: 12px; }
+.cart-item { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.cart-emoji { width: 65px; height: 65px; background: #f4f6f8; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 35px; overflow: hidden; }
+.cart-emoji img { width: 100%; height: 100%; object-fit: cover; }
+.cart-details { flex: 1; }
+.cart-name { font-size: 14px; margin-bottom: 6px; }
+.qty { display: inline-flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.qty button { border: 0; background: var(--bg); color: var(--text); width: 30px; height: 28px; cursor: pointer; }
+.qty span { width: 32px; text-align: center; line-height: 28px; }
+.remove { border: 0; background: transparent; color: #e53935; cursor: pointer; margin-top: 5px; font-size: 12px; }
+.cart-footer { border-top: 1px solid var(--border); padding: 15px; }
+.total { display: flex; justify-content: space-between; font-size: 19px; font-weight: bold; margin-bottom: 12px; }
+.checkout { width: 100%; border: 0; background: #ff9f00; padding: 14px; font-weight: bold; cursor: pointer; border-radius: 4px; color: #111; }
+
 /* MODALS */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
 .modal { width: min(520px, 100%); max-height: 90vh; overflow-y: auto; background: var(--card); border-radius: 12px; padding: 25px; color: var(--text); position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
@@ -110,7 +239,9 @@ body:not(.logged-in) {
     <button class="header-btn" onclick="showOrders()">📦 Orders</button>
     <button class="header-btn" id="authNavBtn" onclick="openAuthModal()">👤 Login</button>
     <button class="header-btn" onclick="toggleDarkMode()">🌙</button>
-    <button class="header-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</b</header>
+    <button class="header-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+  </div>
+</header>
 
 <!-- CATEGORIES -->
 <div class="categories">
@@ -143,7 +274,8 @@ body:not(.logged-in) {
 <section class="section" id="productsSection">
   <div class="section-title">
     <span id="sectionTitle">Best Deals</span>
-    <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product (Seller)</butt  </div>
+    <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product (Seller)</button>
+  </div>
   <div class="products" id="productGrid"></div>
 </section>
 
@@ -179,7 +311,43 @@ body:not(.logged-in) {
       </div>
     </div>
 
-    <!-- LOGGED IN position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
+    <!-- LOGGED IN PROFILE & BANK DETAILS SECTION -->
+    <div id="profileViewContainer" style="display:none;">
+      <h2>👤 My Profile & Bank Payout Details</h2>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Apna Bank Account या UPI ID jodein taaki sell hone par paisa mil sake:</p>
+      
+      <p style="margin-bottom:10px;"><b>Email:</b> <span id="userEmailDisplay"></span></p>
+
+      <input type="text" id="bankAccName" class="input-field" placeholder="Account Holder Name (e.g. Mohd Iqbal)">
+      <input type="text" id="bankAccNo" class="input-field" placeholder="Bank Account Number">
+      <input type="text" id="bankIfsc" class="input-field uppercase" placeholder="IFSC Code (e.g. HDFC0001234)">
+      <input type="text" id="bankUpi" class="input-field" placeholder="UPI ID (e.g. iqbal@okicici)">
+
+      <button class="add-cart" onclick="saveUserBankDetails()">SAVE BANK DETAILS</button>
+      <button class="add-cart" style="background:#e53935; color:white; margin-top:10px;" onclick="handleLogout()">LOGOUT</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAILS MODAL -->
+<div class="modal-bg" id="productModal" style="display:none;">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeProductModal()">×</button>
+    <div class="modal-product">
+      <div class="big-product" id="modalEmoji">📱</div>
+      <h2 id="modalName">Product</h2>
+      <div id="modalRating">⭐ 4.5</div>
+      <div class="modal-price">₹<span id="modalPrice">999</span></div>
+      <p id="modalDescription">Good quality product with fast delivery.</p>
+      <button class="add-cart" onclick="addModalProduct()">🛒 ADD TO CART</button>
+    </div>
+  </div>
+</div>
+
+<!-- SELLER SUBSCRIPTION MODAL -->
+<div class="modal-bg" id="sellerModal" style="display:none;">
+  <div class="modal">
+    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeSellerModal()">×</button>
     <h2>📢 Become a Seller (Subscription Plans)</h2>
     <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Choose plan & scan UPI QR to pay directly into Bank Account!</p>
     
@@ -192,7 +360,8 @@ body:not(.logged-in) {
       <p style="font-size:12px; color:var(--muted);">Upload up to 100 products + Priority Support</p>
     </div>
     <div class="plan-card" onclick="selectPlan(this, 'Enterprise', 999)">
-      <b>Et-size:12px; color:var(--muted);">Unlimited Product Listings + National Delivery</p>
+      <b>Enterprise Plan - ₹999 / month</b>
+      <p style="font-size:12px; color:var(--muted);">Unlimited Product Listings + National Delivery</p>
     </div>
 
     <!-- UPI QR DISPLAY SECTION -->
@@ -367,10 +536,54 @@ body:not(.logged-in) {
     } catch(e) { alert("❌ Error saving bank details: " + e.message); }
   };
 
+  // यहाँ saveProductToFirestore फंक्शन जोड़ दिया गया है
   window.saveProductToFirestore = async (productData) => {
     try {
-      await addDoc(collection(db, "products"), 
-function  => card.classList.remove('active'));
+      await addDoc(collection(db, "products"), {
+        ...productData,
+        sellerEmail: window.currentUser ? window.currentUser.email : "admin",
+        createdAt: new Date()
+      });
+      alert("✅ Product published successfully on Iqbal Mart!");
+      closeAddProductModal();
+      window.loadFirebaseProducts();
+    } catch (e) {
+      alert("❌ Error: " + e.message);
+    }
+  };
+
+  window.loadFirebaseProducts = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const firebaseProducts = [];
+      querySnapshot.forEach((doc) => {
+        firebaseProducts.push({ id: doc.id, ...doc.data() });
+      });
+      if(firebaseProducts.length > 0) {
+        window.mergeProducts(firebaseProducts);
+      }
+    } catch (e) {
+      console.log("Error loading products:", e);
+    }
+  };
+
+  window.loadFirebaseProducts();
+</script>
+
+<script>
+const YOUR_UPI_ID = "iqbalelectricplumber-1@okicici"; 
+
+let selectedPlanName = "Pro";
+let selectedPlanPrice = 499;
+
+function updateQrCode() {
+  document.getElementById("payAmount").textContent = selectedPlanPrice;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=${YOUR_UPI_ID}&pn=IqbalElectric&am=${selectedPlanPrice}&cu=INR`;
+  document.getElementById("dynamicQr").src = qrUrl;
+}
+
+function selectPlan(element, name, price) {
+  document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('active'));
   element.classList.add('active');
   selectedPlanName = name;
   selectedPlanPrice = price;
@@ -384,7 +597,8 @@ function submitSubscription() {
   if(!phone || phone.length < 10) { alert("Please enter a valid WhatsApp/Mobile number."); return; }
   if(!utr || utr.length < 12) { alert("❌ Invalid UTR! Asli UPI payment ka 12-digit ka UTR number dalna zaroori hai."); return; }
 
-  const adminWhatsAppNumber = "919714739355 Seller Subscription!*%0A%0A*Plan:* ${selectedPlanName}%0A*Price:* ₹${selectedPlanPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}`;
+  const adminWhatsAppNumber = "919714739355";
+  const message = `🔔 *New Seller Subscription!*%0A%0A*Plan:* ${selectedPlanName}%0A*Price:* ₹${selectedPlanPrice}%0A*Seller Phone:* ${phone}%0A*UTR No:* ${utr}`;
   
   alert("✅ Payment details submitted successfully! Redirecting to WhatsApp...");
   closeSellerModal();
