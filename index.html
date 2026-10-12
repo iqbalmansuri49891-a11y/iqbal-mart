@@ -558,9 +558,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       querySnapshot.forEach((doc) => {
         firebaseProducts.push({ id: doc.id, ...doc.data() });
       });
-      if(firebaseProducts.length > 0) {
-        window.mergeProducts(firebaseProducts);
-      }
+      window.mergeProducts(firebaseProducts);
     } catch (e) {
       console.log("Error loading products:", e);
     }
@@ -627,13 +625,7 @@ function verifyAndOpenAddProduct() {
   document.getElementById("addProductModal").style.display = "flex";
 }
 
-const staticProducts = [
-  { id: 1, name: "Professional DSLR Camera 4K", category: "Cameras", price: 34999, oldPrice: 45999, rating: 4.8, emoji: "📷", image: "", description: "High resolution DSLR camera with 18-55mm lens." },
-  { id: 2, name: "WiFi Security CCTV Camera", category: "Cameras", price: 1599, oldPrice: 2999, rating: 4.6, emoji: "📸", image: "", description: "Smart wireless home security camera." },
-  { id: 3, name: "Men's Casual Cotton Shirt", category: "Fashion", price: 699, oldPrice: 1299, rating: 4.5, emoji: "👕", image: "", description: "Comfortable slim-fit cotton shirt." },
-  { id: 4, name: "Stylish Running Sports Shoes", category: "Footwear", price: 1199, oldPrice: 2499, rating: 4.7, emoji: "👟", image: "", description: "Lightweight breathable shoes." },
-  { id: 5, name: "Professional Hand Tool Kit", category: "Tools", price: 899, oldPrice: 1599, rating: 4.8, emoji: "🛠️", image: "", description: "Complete tool set." }
-];
+const staticProducts = [];
 
 let products = [...staticProducts];
 let cart = JSON.parse(localStorage.getItem("iqbal_cart") || "[]");
@@ -651,7 +643,7 @@ window.mergeProducts = function(firebaseList) {
 function renderProducts(list = currentProducts) {
   const grid = document.getElementById("productGrid");
   if (!list.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;">😔<br><br>No products found.</div>`;
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1; text-align:center; padding:40px; color:var(--muted);">😔<br><br>No products found. Add your products via Seller panel!</div>`;
     return;
   }
   grid.innerHTML = list.map(product => {
@@ -732,7 +724,7 @@ function submitNewProduct() {
         const MAX_WIDTH = 300;
         const MAX_HEIGHT = 300;
         let width = img.width;
-        let height = img.height; // Fix corrected here
+        let height = img.height;
 
         if (width > height) {
           if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
@@ -823,7 +815,7 @@ async function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
   let total = 0;
   cart.forEach(item => {
-    const product = products.find(p => p.id == item.id); // Fixed products.products bug
+    const product = products.find(p => p.id == item.id);
     if (product) total += product.price * item.qty;
   });
 
