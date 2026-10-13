@@ -288,6 +288,17 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     </div>
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-footer">
+      <!-- SHIPPING DETAILS FORM -->
+      <div id="shipping-form" style="margin-bottom: 12px; padding: 10px; background: var(--bg); border-radius: 6px;">
+        <h4 style="font-size: 14px; margin-bottom: 8px; color: var(--text);">📍 Delivery Address Details</h4>
+        <input type="text" id="cust-name" placeholder="Full Name" class="input-field" style="margin-top:4px; padding:8px; font-size:13px;">
+        <input type="tel" id="cust-phone" placeholder="Mobile Number" class="input-field" style="margin-top:6px; padding:8px; font-size:13px;">
+        <input type="text" id="cust-address" placeholder="Street Address / House No." class="input-field" style="margin-top:6px; padding:8px; font-size:13px;">
+        <input type="text" id="cust-city" placeholder="City" class="input-field" style="margin-top:6px; padding:8px; font-size:13px;">
+        <input type="text" id="cust-state" placeholder="State" class="input-field" style="margin-top:6px; padding:8px; font-size:13px;">
+        <input type="text" id="cust-pincode" placeholder="Pincode" class="input-field" style="margin-top:6px; padding:8px; font-size:13px;">
+      </div>
+
       <div class="total"><span>Total</span><span>₹<span id="cartTotal">0</span></span></div>
       <button class="checkout" onclick="proceedToCheckout()">PAY VIA RAZORPAY</button>
     </div>
@@ -813,6 +824,19 @@ function removeFromCart(id) {
 
 async function proceedToCheckout() {
   if (!cart.length) { showToast("Your cart is empty"); return; }
+  
+  const name = document.getElementById('cust-name').value.trim();
+  const phone = document.getElementById('cust-phone').value.trim();
+  const address = document.getElementById('cust-address').value.trim();
+  const city = document.getElementById('cust-city').value.trim();
+  const state = document.getElementById('cust-state').value.trim();
+  const pincode = document.getElementById('cust-pincode').value.trim();
+
+  if(!name || !phone || !address || !city || !state || !pincode) {
+    alert("❌ Kripya apna poora delivery address, naam aur mobile number bharein!");
+    return;
+  }
+
   let total = 0;
   cart.forEach(item => {
     const product = products.find(p => p.id == item.id);
@@ -846,6 +870,7 @@ async function proceedToCheckout() {
           date: new Date().toLocaleString(), 
           items: [...cart], 
           total: total, 
+          shipping: { name, phone, address, city, state, pincode },
           status: "✅ Payment Successful", 
           paymentId: response.razorpay_payment_id 
         };
@@ -874,6 +899,7 @@ function showOrders() {
     content.innerHTML = orders.map(order => `
       <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px; background:var(--bg);">
         <b>${order.id}</b><br><small>${order.date}</small>
+        ${order.shipping ? `<p style="margin:6px 0; font-size:13px;"><b>Deliver to:</b> ${order.shipping.name},${order.shipping.phone}, ${order.shipping.address},${order.shipping.city}, ${order.shipping.state} -${order.shipping.pincode}</p>` : ''}
         <p style="margin:6px 0;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
         <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
       </div>
