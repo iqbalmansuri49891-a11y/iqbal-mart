@@ -896,14 +896,40 @@ function showOrders() {
   if (!orders.length) {
     content.innerHTML = `<div class="empty">📦<br><br>No orders yet.</div>`;
   } else {
-    content.innerHTML = orders.map(order => `
-      <div style="border:1px solid var(--border); border-radius:8px; padding:12px; margin-top:12px; background:var(--bg);">
-        <b>${order.id}</b><br><small>${order.date}</small>
-        ${order.shipping ? `<p style="margin:6px 0; font-size:13px;"><b>Deliver to:</b> ${order.shipping.name},${order.shipping.phone}, ${order.shipping.address},${order.shipping.city}, ${order.shipping.state} -${order.shipping.pincode}</p>` : ''}
-        <p style="margin:6px 0;">Payment ID: <b>${order.paymentId || 'N/A'}</b></p>
-        <p style="margin:6px 0;">Total: <b>₹${order.total.toLocaleString("en-IN")}</b></p>
-      </div>
-    `).join("");
+    content.innerHTML = orders.map(order => {
+      const itemsList = order.items.map(item => {
+        const prod = products.find(p => p.id == item.id);
+        return prod ? `• ${prod.name} (Qty: ${item.qty}) - ₹${prod.price * item.qty}` : '';
+      }).join("<br>");
+
+      return `
+        <div style="border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:12px; background:var(--bg);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <b style="color:var(--blue); font-size:15px;">${order.id}</b>
+            <span style="font-size:12px; color:var(--muted);">${order.date}</span>
+          </div>
+          
+          <div style="margin-bottom:8px; font-size:13px;">
+            <b>📦 Purchased Products:</b><br>
+            ${itemsList}
+          </div>
+
+          ${order.shipping ? `
+            <div style="margin-bottom:8px; font-size:13px; background:var(--card); padding:8px; border-radius:4px; border:1px solid var(--border);">
+              <b>📍 Delivery Address Saved:</b><br>
+              Name: ${order.shipping.name}<br>
+              Phone: ${order.shipping.phone}<br>
+              Address: ${order.shipping.address},${order.shipping.city}, ${order.shipping.state} -${order.shipping.pincode}
+            </div>
+          ` : ''}
+
+          <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid var(--border); padding-top:6px;">
+            <span>Payment ID: <b>${order.paymentId || 'N/A'}</b></span>
+            <span>Total: <b>₹${order.total.toLocaleString("en-IN")}</b></span>
+          </div>
+        </div>
+      `;
+    }).join("");
   }
   document.getElementById("ordersModal").style.display = "flex";
 }
