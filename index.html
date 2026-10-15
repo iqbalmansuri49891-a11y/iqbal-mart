@@ -274,7 +274,10 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <section class="section" id="productsSection">
   <div class="section-title">
     <span id="sectionTitle">Best Deals</span>
-    <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product (Seller)</button>
+    <div style="display:flex; gap:8px;">
+      <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product</button>
+      <button class="seller-btn" style="font-size:12px; padding:6px 10px; background:#e53935; color:white;" onclick="promptDeleteProduct()">🗑️ Delete Product</button>
+    </div>
   </div>
   <div class="products" id="productGrid"></div>
 </section>
@@ -575,23 +578,30 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     }
   };
 
-  // PASSWORD PROTECTED FIREBASE/LOCAL DELETE FUNCTION
-  window.deleteProductWithPassword = async (event, productId) => {
-    event.stopPropagation();
-    const password = window.prompt("🔒 Enter Admin Password to delete product:");
+  // PROMPT BASED PASSWORD PROTECTED DELETE FUNCTION
+  window.promptDeleteProduct = async () => {
+    const prodName = prompt("🗑️ Kis product ko delete karna hai? Uska naam ya thoda hissa likhein:");
+    if (!prodName) return;
+
+    const found = products.find(p => p.name.toLowerCase().includes(prodName.toLowerCase()));
+    if (!found) {
+      alert("❌ Is naam ka koi product nahi mila!");
+      return;
+    }
+
+    const password = prompt(`🔒 Enter Admin Password to delete "${found.name}":`);
     if (password === "Iqbal@9714739355") {
       try {
-        // Agar Firebase doc id hai toh Firestore se delete karein
-        await deleteDoc(doc(db, "products", productId));
+        await deleteDoc(doc(db, "products", found.id));
       } catch(e) {
         console.log("Local or static product deletion");
       }
-      products = products.filter(p => p.id != productId);
-      currentProducts = currentProducts.filter(p => p.id != productId);
+      products = products.filter(p => p.id != found.id);
+      currentProducts = currentProducts.filter(p => p.id != found.id);
       renderProducts(currentProducts);
-      alert("✅ Product website se successfully delete ho gaya hai!");
+      alert(`✅ "${found.name}" successfully delete ho gaya hai!`);
     } else if (password !== null) {
-      alert("❌ Wrong Password! Product delete nahi kiya ja saka.");
+      alert("❌ Wrong Password!");
     }
   };
 
@@ -692,10 +702,6 @@ function renderProducts(list = currentProducts) {
             <span class="price">₹${product.price.toLocaleString("en-IN")}</span>
             ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice.toLocaleString("en-IN")}</span><span class="discount">${discount}% off</span>` : ''}
           </div>
-          <!-- PASSWORD PROTECTED DELETE BUTTON -->
-          <button onclick="deleteProductWithPassword(event, '${product.id}')" style="margin-top:8px; width:100%; background:#e53935; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;">
-            🗑️ Delete Product
-          </button>
         </div>
       </div>
     `;
