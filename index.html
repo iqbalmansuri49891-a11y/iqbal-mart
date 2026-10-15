@@ -325,7 +325,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     <!-- LOGGED IN PROFILE & BANK DETAILS SECTION -->
     <div id="profileViewContainer" style="display:none;">
       <h2>👤 My Profile & Bank Payout Details</h2>
-      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Apna Bank Account या UPI ID jodein taaki sell hone par paisa mil sake:</p>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:15px;">Apna Bank Account ya UPI ID jodein taaki sell hone par paisa mil sake:</p>
       
       <p style="margin-bottom:10px;"><b>Email:</b> <span id="userEmailDisplay"></span></p>
 
@@ -447,7 +447,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <!-- FIREBASE INTEGRATION -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -575,6 +575,26 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
     }
   };
 
+  // PASSWORD PROTECTED FIREBASE/LOCAL DELETE FUNCTION
+  window.deleteProductWithPassword = async (event, productId) => {
+    event.stopPropagation();
+    const password = window.prompt("🔒 Enter Admin Password to delete product:");
+    if (password === "Iqbal@9714739355") {
+      try {
+        // Agar Firebase doc id hai toh Firestore se delete karein
+        await deleteDoc(doc(db, "products", productId));
+      } catch(e) {
+        console.log("Local or static product deletion");
+      }
+      products = products.filter(p => p.id != productId);
+      currentProducts = currentProducts.filter(p => p.id != productId);
+      renderProducts(currentProducts);
+      alert("✅ Product website se successfully delete ho gaya hai!");
+    } else if (password !== null) {
+      alert("❌ Wrong Password! Product delete nahi kiya ja saka.");
+    }
+  };
+
   window.loadFirebaseProducts();
 </script>
 
@@ -672,6 +692,10 @@ function renderProducts(list = currentProducts) {
             <span class="price">₹${product.price.toLocaleString("en-IN")}</span>
             ${product.oldPrice ? `<span class="old-price">₹${product.oldPrice.toLocaleString("en-IN")}</span><span class="discount">${discount}% off</span>` : ''}
           </div>
+          <!-- PASSWORD PROTECTED DELETE BUTTON -->
+          <button onclick="deleteProductWithPassword(event, '${product.id}')" style="margin-top:8px; width:100%; background:#e53935; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;">
+            🗑️ Delete Product
+          </button>
         </div>
       </div>
     `;
@@ -843,6 +867,19 @@ async function proceedToCheckout() {
     if (product) total += product.price * item.qty;
   });
 
+  const orderId = "ORD" + Date.now();
+  const newOrder = { 
+    id: orderId, 
+    date: new Date().toLocaleString(), 
+    items: [...cart], 
+    total: total, 
+    shipping: { name, phone, address, city, state, pincode },
+    status: "⏳ Payment Pending", 
+    paymentId: "N/A" 
+  };
+  orders.unshift(newOrder);
+  localStorage.setItem("iqbal_orders", JSON.stringify(orders));
+
   try {
     const response = await fetch('/api/create-order', {
       method: 'POST',
@@ -864,18 +901,10 @@ async function proceedToCheckout() {
       "description": "Multi-Vendor Marketplace Order",
       "order_id": order.id,
       "handler": function (response) {
-        const orderId = "ORD" + Date.now();
-        const savedOrder = { 
-          id: orderId, 
-          date: new Date().toLocaleString(), 
-          items: [...cart], 
-          total: total, 
-          shipping: { name, phone, address, city, state, pincode },
-          status: "✅ Order Placed", 
-          paymentId: response.razorpay_payment_id 
-        };
-        orders.unshift(savedOrder);
+        newOrder.status = "✅ Order Placed";
+        newOrder.paymentId = response.razorpay_payment_id;
         localStorage.setItem("iqbal_orders", JSON.stringify(orders));
+        
         cart = []; saveCart(); updateCartCount(); closeCart();
         alert("✅ Payment Successful! Order ID: " + orderId);
         showOrders();
