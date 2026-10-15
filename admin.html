@@ -19,8 +19,8 @@
 
         <!-- Delete Product Section -->
         <div class="bg-white p-6 rounded-lg shadow mb-8 border border-red-200 bg-red-50">
-            <h3 class="text-red-600 font-bold mb-2">🗑️ Password Protected Product Deletion</h3>
-            <p class="text-sm text-gray-600 mb-4">Product ka naam likhein aur admin password (`Iqbal@9714739355`) daal kar database se hatayein:</p>
+            <h3 class="text-red-600 font-bold mb-2">🗑️ Secure Product Deletion</h3>
+            <p class="text-sm text-gray-600 mb-4">Product ka naam likhein aur delete button dabayein (Admin password required):</p>
             <div class="flex gap-4">
                 <input type="text" id="delProdName" class="flex-1 p-2 border rounded" placeholder="Enter Product Name">
                 <button onclick="adminDeleteProduct()" class="bg-red-600 text-white px-6 py-2 rounded font-bold hover:bg-red-700">Delete</button>
@@ -64,7 +64,7 @@
         <!-- Sellers Bank & UPI Details Section -->
         <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
             <div class="px-6 py-4 bg-gray-50 border-b">
-                <h2 class="text-lg font-semibold text-gray-700">💳 Vendor Payout Details (`vendor_banks`)[span_1](start_span)[span_1](end_span)</h2>
+                <h2 class="text-lg font-semibold text-gray-700">💳 Vendor Payout Details (`vendor_banks`)[span_0](start_span)[span_0](end_span)</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -78,7 +78,7 @@
                         </tr>
                     </thead>
                     <tbody id="vendor-banks-list" class="text-gray-700 text-sm divide-y divide-gray-200">
-                        <tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili[span_2](start_span)[span_2](end_span).</td></tr>
+                        <tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili[span_1](start_span)[span_1](end_span).</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -107,9 +107,9 @@
             const queryName = document.getElementById("delProdName").value.trim().toLowerCase();
             if(!queryName) { alert("Kripya product ka naam likhein!"); return; }
 
-            const password = prompt("Enter Admin Password:");
+            const password = prompt("🔒 Enter Admin Password:");
             if(password !== "Iqbal@9714739355") {
-                if(password !== null) alert("Wrong Password!");
+                if(password !== null) alert("❌ Wrong Password!");
                 return;
             }
 
@@ -137,7 +137,7 @@
             try {
                 const querySnapshot = await getDocs(collection(db, "vendor_banks"));
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili[span_3](start_span)[span_3](end_span).</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili[span_2](start_span)[span_2](end_span).</td></tr>`;
                     return;
                 }
                 tableBody.innerHTML = "";
@@ -153,9 +153,7 @@
                         </tr>
                     `;
                 });
-            } catch (error) {
-                console.error(error);
-            }
+            } catch (error) { console.error(error); }
         }
 
         async function loadProductsCount() {
