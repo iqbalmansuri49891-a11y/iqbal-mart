@@ -131,7 +131,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 .search { flex: 1; display: flex; background: white; border-radius: 4px; overflow: hidden; }
 .search input { width: 100%; border: 0; outline: none; padding: 12px; font-size: 15px; color: #222; }
 .search button { width: 48px; border: 0; background: white; color: var(--blue); font-size: 20px; cursor: pointer; }
-.header-btn { background: transparent; border: 0; color: white; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.header-btn { background: transparent; border: 0; color: white; font-size: 14px; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; }
 .seller-btn { background: var(--yellow); color: #111; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
 
 /* CATEGORY BAR */
@@ -236,7 +236,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       <button onclick="searchProducts()">🔍</button>
     </div>
     <button class="header-btn seller-btn" onclick="showSellerModal()">📢 Sell Products</button>
-    <button class="header-btn" onclick="showOrders()">📦 Orders</button>
+    <a href="admin.html" class="header-btn">📦 Orders & Admin</a>
     <button class="header-btn" id="authNavBtn" onclick="openAuthModal()">👤 Login</button>
     <button class="header-btn" onclick="toggleDarkMode()">🌙</button>
     <button class="header-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
@@ -274,10 +274,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <section class="section" id="productsSection">
   <div class="section-title">
     <span id="sectionTitle">Best Deals</span>
-    <div style="display:flex; gap:8px;">
-      <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product</button>
-      <button class="seller-btn" style="font-size:12px; padding:6px 10px; background:#e53935; color:white;" onclick="promptDeleteProduct()">🗑️ Delete Product</button>
-    </div>
+    <button class="seller-btn" style="font-size:12px; padding:6px 10px;" onclick="verifyAndOpenAddProduct()">➕ Add Product (Seller)</button>
   </div>
   <div class="products" id="productGrid"></div>
 </section>
@@ -427,15 +424,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
   </div>
 </div>
 
-<!-- ORDERS MODAL -->
-<div class="modal-bg" id="ordersModal" style="display:none;">
-  <div class="modal">
-    <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
-    <h2>📦 My Orders & Cancel Option</h2>
-    <div id="ordersContent"></div>
-  </div>
-</div>
-
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="nav-icon">🏠</span> Home</button>
@@ -450,7 +438,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <!-- FIREBASE INTEGRATION -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
@@ -575,33 +563,6 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
       window.mergeProducts(firebaseProducts);
     } catch (e) {
       console.log("Error loading products:", e);
-    }
-  };
-
-  // PROMPT BASED PASSWORD PROTECTED DELETE FUNCTION
-  window.promptDeleteProduct = async () => {
-    const prodName = prompt("🗑️ Kis product ko delete karna hai? Uska naam ya thoda hissa likhein:");
-    if (!prodName) return;
-
-    const found = products.find(p => p.name.toLowerCase().includes(prodName.toLowerCase()));
-    if (!found) {
-      alert("❌ Is naam ka koi product nahi mila!");
-      return;
-    }
-
-    const password = prompt(`🔒 Enter Admin Password to delete "${found.name}":`);
-    if (password === "Iqbal@9714739355") {
-      try {
-        await deleteDoc(doc(db, "products", found.id));
-      } catch(e) {
-        console.log("Local or static product deletion");
-      }
-      products = products.filter(p => p.id != found.id);
-      currentProducts = currentProducts.filter(p => p.id != found.id);
-      renderProducts(currentProducts);
-      alert(`✅ "${found.name}" successfully delete ho gaya hai!`);
-    } else if (password !== null) {
-      alert("❌ Wrong Password!");
     }
   };
 
@@ -913,7 +874,6 @@ async function proceedToCheckout() {
         
         cart = []; saveCart(); updateCartCount(); closeCart();
         alert("✅ Payment Successful! Order ID: " + orderId);
-        showOrders();
       },
       "theme": { "color": "#2874f0" }
     };
@@ -925,72 +885,6 @@ async function proceedToCheckout() {
     alert("Payment process mein koi dikkat aa gayi hai.");
   }
 }
-
-function showOrders() {
-  const content = document.getElementById("ordersContent");
-  if (!orders.length) {
-    content.innerHTML = `<div class="empty">📦<br><br>No orders yet.</div>`;
-  } else {
-    content.innerHTML = orders.map(order => {
-      const itemsList = order.items.map(item => {
-        const prod = products.find(p => p.id == item.id);
-        return prod ? `• ${prod.name} (Qty: ${item.qty}) - ₹${prod.price * item.qty}` : '';
-      }).join("<br>");
-
-      return `
-        <div style="border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:12px; background:var(--bg);" id="order-${order.id}">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <b style="color:var(--blue); font-size:15px;">${order.id}</b>
-            <span style="font-size:12px; color:var(--muted);">${order.date}</span>
-          </div>
-          
-          <div style="margin-bottom:8px; font-size:13px;">
-            <b>Status:</b> <span style="color:var(--green); font-weight:bold;">${order.status}</span><br><br>
-            <b>📦 Purchased Products:</b><br>
-            ${itemsList}
-          </div>
-
-          ${order.shipping ? `
-            <div style="margin-bottom:8px; font-size:13px; background:var(--card); padding:8px; border-radius:4px; border:1px solid var(--border);">
-              <b>📍 Delivery Address:</b><br>
-              Name: ${order.shipping.name}<br>
-              Phone: ${order.shipping.phone}<br>
-              Address: ${order.shipping.address},${order.shipping.city}, ${order.shipping.state} -${order.shipping.pincode}
-            </div>
-          ` : ''}
-
-          <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid var(--border); padding-top:6px; margin-bottom:10px;">
-            <span>Payment ID: <b>${order.paymentId || 'N/A'}</b></span>
-            <span>Total: <b>₹${order.total.toLocaleString("en-IN")}</b></span>
-          </div>
-
-          ${order.status !== "❌ Cancelled" ? `
-            <button onclick="cancelCustomerOrder('${order.id}')" style="background:#e53935; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:13px; font-weight:bold; width:100%;">
-              ❌ Cancel Order
-            </button>
-          ` : `
-            <div style="color:#e53935; font-weight:bold; font-size:13px; text-align:center;">Order Cancelled</div>
-          `}
-        </div>
-      `;
-    }).join("");
-  }
-  document.getElementById("ordersModal").style.display = "flex";
-}
-
-function cancelCustomerOrder(orderId) {
-  if (confirm("Kya aap waqai apna yeh order cancel karna chahte hain?")) {
-    const ord = orders.find(o => o.id === orderId);
-    if (ord) {
-      ord.status = "❌ Cancelled";
-      localStorage.setItem("iqbal_orders", JSON.stringify(orders));
-      showOrders();
-      showToast("Order successfully cancelled");
-    }
-  }
-}
-
-function closeOrders() { document.getElementById("ordersModal").style.display = "none"; }
 
 function toggleWishlist(event, id) {
   if(event) event.stopPropagation();
