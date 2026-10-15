@@ -428,7 +428,7 @@ header { background: var(--blue); color: white; padding: 10px 14px; position: st
 <div class="modal-bg" id="ordersModal" style="display:none;">
   <div class="modal">
     <button class="close" style="position:absolute;right:15px;top:10px;" onclick="closeOrders()">×</button>
-    <h2>📦 My Orders & Admin Approvals</h2>
+    <h2>📦 My Orders & Cancel Option</h2>
     <div id="ordersContent"></div>
   </div>
 </div>
@@ -871,13 +871,13 @@ async function proceedToCheckout() {
           items: [...cart], 
           total: total, 
           shipping: { name, phone, address, city, state, pincode },
-          status: "✅ Payment Successful", 
+          status: "✅ Order Placed", 
           paymentId: response.razorpay_payment_id 
         };
         orders.unshift(savedOrder);
         localStorage.setItem("iqbal_orders", JSON.stringify(orders));
         cart = []; saveCart(); updateCartCount(); closeCart();
-        alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
+        alert("✅ Payment Successful! Order ID: " + orderId);
         showOrders();
       },
       "theme": { "color": "#2874f0" }
@@ -903,36 +903,58 @@ function showOrders() {
       }).join("<br>");
 
       return `
-        <div style="border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:12px; background:var(--bg);">
+        <div style="border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:12px; background:var(--bg);" id="order-${order.id}">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
             <b style="color:var(--blue); font-size:15px;">${order.id}</b>
             <span style="font-size:12px; color:var(--muted);">${order.date}</span>
           </div>
           
           <div style="margin-bottom:8px; font-size:13px;">
+            <b>Status:</b> <span style="color:var(--green); font-weight:bold;">${order.status}</span><br><br>
             <b>📦 Purchased Products:</b><br>
             ${itemsList}
           </div>
 
           ${order.shipping ? `
             <div style="margin-bottom:8px; font-size:13px; background:var(--card); padding:8px; border-radius:4px; border:1px solid var(--border);">
-              <b>📍 Delivery Address Saved:</b><br>
+              <b>📍 Delivery Address:</b><br>
               Name: ${order.shipping.name}<br>
               Phone: ${order.shipping.phone}<br>
               Address: ${order.shipping.address},${order.shipping.city}, ${order.shipping.state} -${order.shipping.pincode}
             </div>
           ` : ''}
 
-          <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid var(--border); padding-top:6px;">
+          <div style="display:flex; justify-content:space-between; font-size:13px; border-top:1px solid var(--border); padding-top:6px; margin-bottom:10px;">
             <span>Payment ID: <b>${order.paymentId || 'N/A'}</b></span>
             <span>Total: <b>₹${order.total.toLocaleString("en-IN")}</b></span>
           </div>
+
+          ${order.status !== "❌ Cancelled" ? `
+            <button onclick="cancelCustomerOrder('${order.id}')" style="background:#e53935; color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:13px; font-weight:bold; width:100%;">
+              ❌ Cancel Order
+            </button>
+          ` : `
+            <div style="color:#e53935; font-weight:bold; font-size:13px; text-align:center;">Order Cancelled</div>
+          `}
         </div>
       `;
     }).join("");
   }
   document.getElementById("ordersModal").style.display = "flex";
 }
+
+function cancelCustomerOrder(orderId) {
+  if (confirm("Kya aap waqai apna yeh order cancel karna chahte hain?")) {
+    const ord = orders.find(o => o.id === orderId);
+    if (ord) {
+      ord.status = "❌ Cancelled";
+      localStorage.setItem("iqbal_orders", JSON.stringify(orders));
+      showOrders();
+      showToast("Order successfully cancelled");
+    }
+  }
+}
+
 function closeOrders() { document.getElementById("ordersModal").style.display = "none"; }
 
 function toggleWishlist(event, id) {
