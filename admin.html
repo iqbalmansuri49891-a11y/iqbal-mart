@@ -10,11 +10,24 @@
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <header class="flex justify-between items-center mb-8 bg-white p-4 rounded-lg shadow">
-            <h1 class="text-2xl font-bold text-gray-800">🛍️ Iqbal Mart Admin Dashboard</h1>
+            <div>
+                <a href="index.html" class="inline-block bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold mb-2">⬅️ Back to Store</a>
+                <h1 class="text-2xl font-bold text-gray-800">🛍️ Iqbal Mart Admin Dashboard</h1>
+            </div>
             <span class="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">Live Mode / Payout Panel</span>
         </header>
 
-        <!-- Stats Counter Section (Ginti) -->
+        <!-- Delete Product Section -->
+        <div class="bg-white p-6 rounded-lg shadow mb-8 border border-red-200 bg-red-50">
+            <h3 class="text-red-600 font-bold mb-2">🗑️ Password Protected Product Deletion</h3>
+            <p class="text-sm text-gray-600 mb-4">Product ka naam likhein aur admin password (`Iqbal@9714739355`) daal kar database se hatayein:</p>
+            <div class="flex gap-4">
+                <input type="text" id="delProdName" class="flex-1 p-2 border rounded" placeholder="Enter Product Name">
+                <button onclick="adminDeleteProduct()" class="bg-red-600 text-white px-6 py-2 rounded font-bold hover:bg-red-700">Delete</button>
+            </div>
+        </div>
+
+        <!-- Stats Counter Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
                 <h3 class="text-gray-500 text-sm font-semibold uppercase">Total Products</h3>
@@ -26,11 +39,20 @@
             </div>
         </div>
 
+        <!-- Customer Orders Section -->
+        <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
+            <div class="px-6 py-4 bg-gray-50 border-b">
+                <h2 class="text-lg font-semibold text-gray-700">📦 Customer Orders</h2>
+            </div>
+            <div class="p-6" id="adminOrdersContent">
+                <p class="text-gray-500 text-center">Loading orders...</p>
+            </div>
+        </div>
+
         <!-- Live Notifications Section -->
         <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
             <div class="px-6 py-4 bg-gray-50 border-b">
                 <h2 class="text-lg font-semibold text-gray-700">🔔 Live Admin Notifications (`notifications`)</h2>
-                <p class="text-sm text-gray-500">Real-time alerts for new products and order status updates.</p>
             </div>
             <div class="p-6">
                 <ul id="notification-list" class="divide-y divide-gray-200">
@@ -42,8 +64,7 @@
         <!-- Sellers Bank & UPI Details Section -->
         <div class="bg-white rounded-lg shadow overflow-hidden mb-8">
             <div class="px-6 py-4 bg-gray-50 border-b">
-                <h2 class="text-lg font-semibold text-gray-700">💳 Vendor Payout Details (`vendor_banks`)</h2>
-                <p class="text-sm text-gray-500">Yeh wahi secure bank aur UPI details hain jo sellers ne apni profile mein save ki hain.</p>
+                <h2 class="text-lg font-semibold text-gray-700">💳 Vendor Payout Details (`vendor_banks`)[span_1](start_span)[span_1](end_span)</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -57,34 +78,7 @@
                         </tr>
                     </thead>
                     <tbody id="vendor-banks-list" class="text-gray-700 text-sm divide-y divide-gray-200">
-                        <tr>
-                            <td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Products Management Section -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="px-6 py-4 bg-gray-50 border-b">
-                <h2 class="text-lg font-semibold text-gray-700">📦 Marketplace Products (`products`)</h2>
-                <p class="text-sm text-gray-500">Sellers dwara upload kiye gaye sabhi products ki list.</p>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-600 text-sm uppercase">
-                            <th class="py-3 px-6">Product Name</th>
-                            <th class="py-3 px-6">Category</th>
-                            <th class="py-3 px-6">Price</th>
-                            <th class="py-3 px-6">Seller Email</th>
-                        </tr>
-                    </thead>
-                    <tbody id="products-list" class="text-gray-700 text-sm divide-y divide-gray-200">
-                        <tr>
-                            <td colspan="4" class="py-4 text-center text-gray-500">Koi products upload nahi hue hain.</td>
-                        </tr>
+                        <tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili[span_2](start_span)[span_2](end_span).</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -94,8 +88,7 @@
     <!-- Firebase Script Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getFirestore, collection, getDocs, onSnapshot, query, orderBy, limit, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyALVuRv4qKbafSKz9ZqULjuvENYXtTXFvc",
@@ -109,14 +102,42 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const analytics = getAnalytics(app);
+
+        window.adminDeleteProduct = async function() {
+            const queryName = document.getElementById("delProdName").value.trim().toLowerCase();
+            if(!queryName) { alert("Kripya product ka naam likhein!"); return; }
+
+            const password = prompt("Enter Admin Password:");
+            if(password !== "Iqbal@9714739355") {
+                if(password !== null) alert("Wrong Password!");
+                return;
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                let foundDocId = null;
+                querySnapshot.forEach((d) => {
+                    if(d.data().name.toLowerCase().includes(queryName)) foundDocId = d.id;
+                });
+
+                if(foundDocId) {
+                    await deleteDoc(doc(db, "products", foundDocId));
+                    alert("✅ Product successfully deleted!");
+                    document.getElementById("delProdName").value = "";
+                } else {
+                    alert("❌ Product nahi mila!");
+                }
+            } catch(e) {
+                alert("Error: " + e.message);
+            }
+        }
 
         async function loadVendorBanks() {
             const tableBody = document.getElementById("vendor-banks-list");
             try {
                 const querySnapshot = await getDocs(collection(db, "vendor_banks"));
                 if (querySnapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili[span_3](start_span)[span_3](end_span).</td></tr>`;
                     return;
                 }
                 tableBody.innerHTML = "";
@@ -133,50 +154,22 @@
                     `;
                 });
             } catch (error) {
-                console.error("Error loading vendor banks:", error);
-                tableBody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">Koi vendor bank details nahi mili.</td></tr>`;
+                console.error(error);
             }
         }
 
-        async function loadProducts() {
-            const tableBody = document.getElementById("products-list");
+        async function loadProductsCount() {
             try {
                 const querySnapshot = await getDocs(collection(db, "products"));
-                
-                // Update Total Products Counter (Ginti)
                 document.getElementById('total-products-count').innerText = querySnapshot.size;
-
-                if (querySnapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-500">Koi products upload nahi hue hain.</td></tr>`;
-                    return;
-                }
-                tableBody.innerHTML = "";
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    tableBody.innerHTML += `
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-3 px-6 font-medium text-gray-800">${data.name || 'N/A'}</td>
-                            <td class="py-3 px-6 text-gray-600">${data.category || 'N/A'}</td>
-                            <td class="py-3 px-6 font-semibold text-green-600">₹${data.price || '0'}</td>
-                            <td class="py-3 px-6 text-gray-500 text-xs">${data.sellerEmail || 'N/A'}</td>
-                        </tr>
-                    `;
-                });
-            } catch (error) {
-                console.error("Error loading products:", error);
-                tableBody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-500">Products load karne mein error aaya.</td></tr>`;
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Real-time Notifications Listener with Counter (Ginti)
         function loadNotifications() {
             const notifList = document.getElementById('notification-list');
             const q = query(collection(db, "notifications"), orderBy("timestamp", "desc"), limit(10));
-            
             onSnapshot(q, (snapshot) => {
-                // Update Total Notifications Counter (Ginti)
                 document.getElementById('total-notifications-count').innerText = snapshot.size;
-
                 notifList.innerHTML = "";
                 if (snapshot.empty) {
                     notifList.innerHTML = `<li class="py-2 text-center text-gray-500">No new notifications.</li>`;
@@ -186,21 +179,38 @@
                     const data = doc.data();
                     const li = document.createElement('li');
                     li.className = "py-3 flex justify-between items-center";
-                    li.innerHTML = `
-                        <div>
-                            <span class="font-semibold text-gray-800">${data.title || 'Alert'}</span>
-                            <p class="text-sm text-gray-600">${data.message || ''}</p>
-                        </div>
-                    `;
+                    li.innerHTML = `<div><span class="font-semibold text-gray-800">${data.title || 'Alert'}</span><p class="text-sm text-gray-600">${data.message || ''}</p></div>`;
                     notifList.appendChild(li);
                 });
             });
         }
 
+        function loadAdminOrders() {
+            let orders = JSON.parse(localStorage.getItem("iqbal_orders") || "[]");
+            const container = document.getElementById("adminOrdersContent");
+            if (!orders.length) {
+                container.innerHTML = `<p class="text-gray-500 text-center">No orders received yet.</p>`;
+                return;
+            }
+            container.innerHTML = orders.map(order => `
+                <div class="border rounded p-4 mb-4 bg-gray-50">
+                    <div class="flex justify-between font-bold text-blue-600 mb-2">
+                        <span>${order.id}</span>
+                        <span class="text-gray-500 text-sm">${order.date}</span>
+                    </div>
+                    <p class="text-sm"><b>Status:</b> <span class="text-green-600">${order.status}</span></p>
+                    <p class="text-sm"><b>Customer:</b> ${order.shipping.name} (${order.shipping.phone})</p>
+                    <p class="text-sm"><b>Address:</b> ${order.shipping.address}</p>
+                    <p class="text-sm font-bold mt-2">Total: ₹${order.total.toLocaleString("en-IN")}</p>
+                </div>
+            `).join("");
+        }
+
         window.addEventListener("DOMContentLoaded", () => {
             loadVendorBanks();
-            loadProducts();
+            loadProductsCount();
             loadNotifications();
+            loadAdminOrders();
         });
     </script>
 </body>
